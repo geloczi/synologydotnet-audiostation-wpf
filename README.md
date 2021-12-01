@@ -37,9 +37,8 @@ Partial syncs are triggered in the background when you navigate in the library.
 #### Keyboard shortcuts
 These keys are working only **if the the application is focused**.  
 
-| Syntax | Description |
-| - | - |
 | Key combination | Action |
+| - | - |
 | Ctrl + S | Stop |
 | Ctrl + P | Play |
 | Pause | Pause |
@@ -66,7 +65,7 @@ These keys **always work**, even if the app is running **in the background**. Al
 
 #### Albums, Artists broser
 
-| Syntax | Description |
+| Key combination | Action |
 | - | - |
 | Key combination | Action |
 | Home | Jump to first item |
@@ -79,7 +78,7 @@ These keys **always work**, even if the app is running **in the background**. Al
 
 #### Song list
 
-| Syntax | Description |
+| Key combination | Action |
 | - | - |
 | Key combination | Action |
 | Page-Up | Navigate one page upwards |
