@@ -1,7 +1,6 @@
 # SynAudio
 
-Synology AudioStation like desktop application.
-It is already in a stable working state, but it is under heavy development. Built on top of my [SynologyDotNet.AudioStation](https://github.com/geloczigeri/synologydotnet-audiostation) package.  
+AudioStation like **desktop application for Windows to stream music from your Synology NAS**. Built on top of my [SynologyDotNet.AudioStation](https://github.com/geloczigeri/synologydotnet-audiostation) package. It is under heavy development, but always stable. The music listening is already an easy-going and smooth experience with this app, I use it everyday.  
 
 ![plot](./assets/artists.png)  
 
@@ -12,14 +11,13 @@ It is already in a stable working state, but it is under heavy development. Buil
 * Browse albums of an artist
 * Browse songs in an album or all albums of an artist.
 * Display covers
-* Rate song
+* Rate song (the 5 stars)
 * Shuffle, Repeat, Start, Stop, Pause, Seek, Volume, Mute
 * Saves session, no need to login on next startup (does not save password!)
-* NowPlaying
+* NowPlaying list
 * Drag&Drop songs into NowPlaying
-* Reorder songs list with Drag&Drop
-* Hotkeys to control playback, rate a song
-* Media hotkeys support, even when the app is in the background.
+* Reorder songs list with Drag&Drop in the NowPlaying list
+* Hotkey support (see below)
 * Multiple tabs support (Ctrl + click a navigation item in the **My Music** section on the left)
 * Local cache built from the Synology database, very fast browsing
 * Automatic sync with the Synology database
@@ -67,7 +65,6 @@ These keys **always work**, even if the app is running **in the background**. Al
 
 | Key combination | Action |
 | - | - |
-| Key combination | Action |
 | Home | Jump to first item |
 | End | Jump to last item |
 | Arrow keys | Move selection |
@@ -81,7 +78,6 @@ These keys **always work**, even if the app is running **in the background**. Al
 
 | Key combination | Action |
 | - | - |
-| Key combination | Action |
 | Page-Up | Navigate one page upwards |
 | Page-Down | Navigate one page downwards |
 | Arrow keys | Move selection |
@@ -93,9 +89,21 @@ These keys **always work**, even if the app is running **in the background**. Al
 
 ## Coming soon
 
-Under heavy development, but always stable. The GUI will be improved a lot.
-I focused mainly on under-the-hood components like the synchronization and the Synology API implementation.
-The GUI is minimalistic, but usable and super fast.
+### Massive user interface improvements
+Until recently I could focus mainly on under-the-hood components, like the synchronization and the Synology API implementation, so I simply haven't got the time needed to finish the GUI, this is why you see standard controls. 
+* Dark theme support
+* Skins
+* Improve layout and the GUI in general
+* Add more useful functionalities
+
+
+### Personal music library support
+Only the shared music library is displayed at the moment in this app, so you see items from your "/music" folder on your NAS. 
+The personal library is filled from your "/home/music" folder and visible only to you. I plan to implement this, so this app will be able to display music content from your personal music folder as well.  
+
+### Many more various improvements
+
+Apart from sability improvements and bug fixes, I want to implement most of the functionality available in the original Audio Station app, and implement features which are simplfy not possible with it. 
 
 ## Screenshots
 
