@@ -73,6 +73,7 @@ These keys **always work**, even if the app is running **in the background**. Al
 | Arrow keys | Move selection |
 | ENTER | Open selected item |
 | A-Z | Jump to the first item what's name starts with the pressed letter |
+| Double-LeftMouseClick | Open this item |
 | Shift + LeftMouseClick | Multi-Select |
 | RightMouseClick | Open context menu |
 
@@ -85,6 +86,7 @@ These keys **always work**, even if the app is running **in the background**. Al
 | Page-Down | Navigate one page downwards |
 | Arrow keys | Move selection |
 | ENTER | Play selected items |
+| Double-LeftMouseClick | Start playback with current list from the clicked song |
 | Shift + LeftMouseClick | Multi-Select |
 | RightMouseClick | Open context menu |
 | Drag&Drop | Songs can be dropped into the NowPlaying list |
