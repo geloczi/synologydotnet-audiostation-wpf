@@ -60,7 +60,35 @@ These keys **always work**, even if the app is running **in the background**. Al
 * Play
 * Stop
 * NextTrack
-* PreviousTrack  
+* PreviousTrack
+
+### Navigation inside the application using the keyboard
+
+#### Albums, Artists broser
+
+| Syntax | Description |
+| - | - |
+| Key combination | Action |
+| Home | Jump to first item |
+| End | Jump to last item |
+| Arrow keys | Move selection |
+| ENTER | Open selected item |
+| A-Z | Jump to the first item what's name starts with the pressed letter |
+| Shift + LeftMouseClick | Multi-Select |
+| RightMouseClick | Open context menu |
+
+#### Song list
+
+| Syntax | Description |
+| - | - |
+| Key combination | Action |
+| Page-Up | Navigate one page upwards |
+| Page-Down | Navigate one page downwards |
+| Arrow keys | Move selection |
+| ENTER | Play selected items |
+| Shift + LeftMouseClick | Multi-Select |
+| RightMouseClick | Open context menu |
+| Drag&Drop | Songs can be dropped into the NowPlaying list |
 
 ## Coming soon
 
