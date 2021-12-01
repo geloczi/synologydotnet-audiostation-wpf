@@ -520,6 +520,12 @@ namespace SynAudio.ViewModels
             StartPlaypack(NowPlaying.CurrentSong);
         }
 
+        public void Disconnect()
+        {
+            Library.Logout();
+            Application.Current.Shutdown();
+        }
+
         public void BackupUserData()
         {
             try
@@ -608,36 +614,6 @@ namespace SynAudio.ViewModels
             {
                 Library.SyncDatabaseAsync(true);
             }
-        }
-
-        public bool ShowLoginDialog()
-        {
-            var vm = new LoginDialogViewModel()
-            {
-                Url = Settings.Connection.Url,
-                Username = Settings.Connection.Username,
-                MusicFolder = Settings.Connection.MusicFolderPath
-            };
-            try
-            {
-                vm.Password = string.IsNullOrEmpty(Settings.Connection.Password) ? string.Empty : App.Encrypter.Decrypt(Settings.Connection.Password);
-            }
-            catch { }
-
-            var ld = new LoginDialog(vm)
-            {
-                Owner = App.Current.MainWindow
-            };
-            if (ld.ShowDialog() == true)
-            {
-                Settings.Connection.Url = ld.Result.Url;
-                Settings.Connection.MusicFolderPath = ld.Result.MusicFolder;
-                Settings.Connection.Username = ld.Result.Username;
-                Settings.Connection.Password = App.Encrypter.Encrypt(ld.Result.Password);
-                Library.Logout();
-                return true;
-            }
-            return false;
         }
 
         public bool LibraryLoaded { get; set; }
@@ -793,32 +769,34 @@ namespace SynAudio.ViewModels
 
         private async Task TryToConnect()
         {
-            async Task ConnectLibrary()
+            Credentials credentials = null; // Try to re-use the session first
+            while (!Connected)
             {
                 try
                 {
-                    if (!Settings.Connection.IsSet())
-                        throw new Exception("Please enter the connection parameters correctly!");
                     using (var cur = new CursorChange(Cursors.Wait))
-                    {
-                        Connected = await Task.Run(async () => await Library.ConnectAsync());
-                    }
+                        Connected = await Task.Run(async () => await Library.ConnectAsync(credentials?.Password));
                 }
                 catch (Exception ex)
                 {
-                    Connected = false;
-                    LogAndShowException(ex, "Could not connect to the server.");
+                    _log.Error(ex);
                 }
-            }
 
-            if (Settings.Connection.IsSet()) //Skip the first attempt if we already know that the login dialog has to be shown
-                await ConnectLibrary();
-            while (!Connected)
-            {
-                if (ShowLoginDialog())
-                    await ConnectLibrary();
-                else
-                    Environment.Exit(0);
+                // Show login dialog
+                if (!Connected)
+                {
+                    if (credentials is null)
+                        credentials = new Credentials()
+                        {
+                            Url = Settings.Url,
+                            Username = Settings.Username
+                        };
+                    if (new LoginDialog(credentials).ShowDialog() != true)
+                        Environment.Exit(0);
+                    Settings.Url = credentials.Url;
+                    Settings.Username = credentials.Username;
+                    App.SaveSettings();
+                }
             }
             App.RefreshCommands();
         }

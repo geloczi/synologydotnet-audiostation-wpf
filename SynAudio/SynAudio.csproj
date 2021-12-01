@@ -73,6 +73,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Behaviors\TabContent.cs" />
+    <Compile Include="DAL\ByteArrayValue.cs" />
+    <Compile Include="DAL\ByteArrayValues.cs" />
     <Compile Include="MediaPlayer\PlaybackStateType.cs" />
     <Compile Include="Utils\BindingErrorTraceListener.cs" />
     <Compile Include="Utils\RangeObservableCollection.cs" />
@@ -133,12 +135,12 @@
     <Compile Include="Library\AudioLibrary.synchronization.cs" />
     <Compile Include="Library\Cache.cs" />
     <Compile Include="Library\Exceptions\LibraryResponseException.cs" />
-    <Compile Include="Models\Config\ConnectionSettingsModel.cs" />
     <Compile Include="Models\Config\RectangleD.cs" />
     <Compile Include="Models\Config\SettingsModel.cs" />
     <Compile Include="DAL\SongBackup.cs" />
     <Compile Include="Models\FolderContentsModel.cs" />
     <Compile Include="ViewModels\FolderViewModel.cs" />
+    <Compile Include="Models\Credentials.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="DAL\AlbumModel.cs" />
     <Compile Include="DAL\ArtistModel.cs" />
@@ -149,7 +151,6 @@
     <Compile Include="ViewModels\NowPlayingViewModel.cs" />
     <Compile Include="ViewModels\SongViewModel.cs" />
     <Compile Include="StaticCommands.cs" />
-    <Compile Include="ViewModels\LoginDialogViewModel.cs" />
     <Compile Include="ViewModels\TabContentViewModel.cs" />
     <Compile Include="ViewModels\TabViewModel.cs" />
     <Compile Include="ViewModels\NavigationItem.cs" />

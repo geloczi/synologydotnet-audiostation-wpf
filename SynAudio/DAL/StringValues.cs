@@ -2,7 +2,6 @@
 {
     public enum StringValues
     {
-        AudioStationConnectorSession,
         NowPlaying_CurrentSongId
     }
 }

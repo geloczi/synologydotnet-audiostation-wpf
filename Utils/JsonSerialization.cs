@@ -55,7 +55,7 @@ namespace SynCommon.Serialization
 				return _serializer.Deserialize(jtr);
 			}
 		}
-
+		
 		public static byte[] SerializeToBytes(object o)
 		{
 			using (var ms = new MemoryStream())
@@ -67,12 +67,30 @@ namespace SynCommon.Serialization
 
 		public static object DeserializeFromBytes(byte[] buffer) 
 			=> DeserializeFromBytes(buffer, 0, buffer.Length);
-
 		public static object DeserializeFromBytes(byte[] buffer, int offset, int count)
 		{
 			using (var ms = new MemoryStream(buffer, offset, count, false))
 			{
 				return DeserializeFromStream(ms);
+			}
+		}
+		public static T DeserializeFromStream<T>(Stream stream)
+		{
+			using (var sr = new StreamReader(stream))
+			using (var jtr = new JsonTextReader(sr))
+			{
+				return _serializer.Deserialize<T>(jtr);
+			}
+		}
+
+		public static T DeserializeFromBytes<T>(byte[] buffer)
+			=> DeserializeFromBytes<T>(buffer, 0, buffer.Length);
+
+		public static T DeserializeFromBytes<T>(byte[] buffer, int offset, int count)
+		{
+			using (var ms = new MemoryStream(buffer, offset, count, false))
+			{
+				return DeserializeFromStream<T>(ms);
 			}
 		}
 	}

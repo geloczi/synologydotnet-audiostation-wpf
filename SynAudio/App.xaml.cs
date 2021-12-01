@@ -34,7 +34,7 @@ namespace SynAudio
 		internal static readonly string UserDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof(SynAudio));
 #endif
 
-        internal static readonly Encryption.Encrypter Encrypter = new Encryption.Encrypter("2BE93913-B573-4DE5-8CCA-9BC14FA41201", Encoding.UTF8.GetBytes("35FE3A9B-227A-4184-8426-3765669C12F8"));
+        internal static readonly Encryption.Encrypter Encrypter = new Encryption.Encrypter("833236b9e38f36c240fba48a48d2a160185671cc08a9d4fef75cc8b33e4166cd", Encoding.UTF8.GetBytes($"{UserDataFolder}-{Environment.UserDomainName}-{Environment.UserName}"));
 
         internal static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings()
         {
@@ -76,20 +76,26 @@ namespace SynAudio
             Current.Dispatcher.BeginInvoke(new Action(() => System.Windows.Input.CommandManager.InvalidateRequerySuggested()));
         }
 
-        internal static string GetNasFileFullUncPath(string internalPath) => NetworkHelper.GetUncPath(Settings.Connection.MusicFolderPath, internalPath);
+        //internal static string GetNasFileFullUncPath(string internalPath) => NetworkHelper.GetUncPath(MusicFolderPath, internalPath);
 
         internal static bool ExistsOnHost(string path, out string uncPath)
         {
             uncPath = null;
-            if (MusicFolderAvailableOnLan)
-            {
-                uncPath = GetNasFileFullUncPath(path);
-                return File.Exists(uncPath);
-            }
+            // Todo
+            //if (MusicFolderAvailableOnLan)
+            //{
+            //    uncPath = GetNasFileFullUncPath(path);
+            //    return File.Exists(uncPath);
+            //}
             return false;
         }
 
         internal static SqlCeLibrary.SqlCe GetSql() => new SqlCeLibrary.SqlCe(LibraryDatabaseFile, false);
+
+        internal static void SaveSettings()
+        {
+            Storage.Save(nameof(Settings), Settings);
+        }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -165,7 +171,6 @@ namespace SynAudio
                 if (!Storage.TryLoad<SettingsModel>(nameof(Settings), out var settings))
                     settings = new SettingsModel();
                 Settings = settings;
-                MusicFolderAvailableOnLan = !string.IsNullOrWhiteSpace(Settings.Connection.MusicFolderPath) && Directory.Exists(Settings.Connection.MusicFolderPath);
 
                 // Catch binding errors
                 PresentationTraceSources.Refresh();
@@ -196,7 +201,7 @@ namespace SynAudio
         protected override void OnExit(ExitEventArgs e)
         {
             _log.Info(nameof(OnExit));
-            Storage.Save(nameof(Settings), Settings);
+            SaveSettings();
             NLog.LogManager.Shutdown();
             if (_mutex != null)
                 _mutex.ReleaseMutex();

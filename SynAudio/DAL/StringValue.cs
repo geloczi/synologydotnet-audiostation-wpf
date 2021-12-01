@@ -7,6 +7,7 @@ namespace SynAudio.DAL
     {
         [Column, PrimaryKey]
         public string Key { get; set; }
+
         [Column(Size = "1000"), NotNull]
         public string Value { get; set; }
 

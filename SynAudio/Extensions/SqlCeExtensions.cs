@@ -16,5 +16,11 @@ namespace SqlCeLibrary
         public static bool TryReadString(this SqlCe sql, StringValues key, out string value) => StringValue.TryRead(sql, key.ToString(), out value);
         public static void WriteString(this SqlCe sql, StringValues key, string value) => StringValue.Write(sql, key.ToString(), value);
         #endregion
+
+        #region BlobValue
+        public static byte[] ReadBlob(this SqlCe sql, ByteArrayValues key) => ByteArrayValue.Read(sql, key.ToString());
+        public static bool TryReadBlob(this SqlCe sql, ByteArrayValues key, out byte[] value) => ByteArrayValue.TryRead(sql, key.ToString(), out value);
+        public static void WriteBlob(this SqlCe sql, ByteArrayValues key, byte[] value) => ByteArrayValue.Write(sql, key.ToString(), value);
+        #endregion
     }
 }

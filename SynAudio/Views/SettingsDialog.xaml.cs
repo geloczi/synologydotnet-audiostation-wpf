@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using SynAudio.Models.Config;
 using SynAudio.ViewModels;
 
 namespace SynAudio.Views
@@ -21,9 +20,7 @@ namespace SynAudio.Views
 
         private void btnDisconnect_Click(object sender, RoutedEventArgs e)
         {
-            //if (VM.Main.ShowLoginDialog())
-            VM.Settings.Connection = new ConnectionSettingsModel();
-            Application.Current.Shutdown();
+            VM.Main.Disconnect();
         }
 
         private void btnBackupUserData_Click(object sender, RoutedEventArgs e)

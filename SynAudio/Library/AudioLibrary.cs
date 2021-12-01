@@ -1,12 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SqlCeLibrary;
 using SynAudio.DAL;
 using SynAudio.Library.Exceptions;
+using SynAudio.Models;
 using SynAudio.Models.Config;
 using SynAudio.Utils;
+using SynCommon.Serialization;
 using SynologyDotNet;
 using SynologyDotNet.AudioStation;
 using SynologyDotNet.Core.Model;
@@ -79,49 +82,47 @@ namespace SynAudio.Library
             }
         }
 
-        public async Task<bool> ConnectAsync()
+        public async Task<bool> ConnectAsync(string password = null)
         {
-            _log.Debug(nameof(ConnectAsync));
-            try
+            if (!(_audioStation is null))
             {
-                if (!(_audioStation is null))
-                {
-                    _audioStation.Dispose();
-                    _audioStation = null;
-                }
-
-                if (string.IsNullOrWhiteSpace(Settings.Connection.Url))
-                    throw new NullReferenceException("API url is null");
-
-                _audioStation = new AudioStationClient();
-                _synoClient = new SynoClient(new Uri(Settings.Connection.Url), true, _audioStation);
-
-                using (var sql = Sql())
-                {
-                    // Login
-                    SynoSession session;
-                    if (sql.TryReadString(StringValues.AudioStationConnectorSession, out var json))
-                    {
-                        session = JsonConvert.DeserializeObject<SynoSession>(json);
-                        await _synoClient.LoginWithPreviousSessionAsync(session, false);
-                    }
-                    else
-                    {
-                        session = await _synoClient.LoginAsync(Settings.Connection.Username, App.Encrypter.Decrypt(Settings.Connection.Password)).ConfigureAwait(false);
-                    }
-
-                    // Test connection
-                    var response = await _audioStation.ListSongsAsync(1, 0, SynologyDotNet.AudioStation.Model.SongQueryAdditional.None).ConfigureAwait(false);
-                    if (!response.Success)
-                        session = null;
-                    sql.WriteString(StringValues.AudioStationConnectorSession, !(session is null) ? JsonConvert.SerializeObject(session) : null);
-                    Connected = response.Success;
-                }
+                _audioStation.Dispose();
+                _audioStation = null;
             }
-            catch (Exception ex)
+
+            if (string.IsNullOrWhiteSpace(Settings.Url))
+                throw new NullReferenceException("API url is null");
+
+            _audioStation = new AudioStationClient();
+            _synoClient = new SynoClient(new Uri(Settings.Url), true, _audioStation);
+
+            using (var sql = Sql())
             {
-                Connected = false;
-                _log.Error(ex);
+                // Login
+                SynoSession session = null;
+                if (password is null && sql.TryReadBlob(ByteArrayValues.AudioStationConnectorSession, out var encryptedSession))
+                {
+                    // Re-use session
+                    session = JsonSerialization.DeserializeFromBytes<SynoSession>(App.Encrypter.Decrypt(encryptedSession));
+                    await _synoClient.LoginWithPreviousSessionAsync(session, false);
+                }
+                else if (!(password is null))
+                {
+                    // Login with credentials
+                    session = await _synoClient.LoginAsync(Settings.Username, password).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Must enter credentials
+                    throw new System.Security.Authentication.AuthenticationException("Must enter crdentials.");
+                }
+
+                // Test connection
+                var response = await _audioStation.ListSongsAsync(1, 0, SynologyDotNet.AudioStation.Model.SongQueryAdditional.None).ConfigureAwait(false);
+                if (!response.Success)
+                    session = null;
+                sql.WriteBlob(ByteArrayValues.AudioStationConnectorSession, !(session is null) ? App.Encrypter.Encrypt(JsonSerialization.SerializeToBytes(session)) : null);
+                Connected = response.Success;
             }
             return Connected;
         }
@@ -131,7 +132,7 @@ namespace SynAudio.Library
             _log.Debug(nameof(Logout));
             Connected = false;
             using (var sql = Sql())
-                sql.WriteString(StringValues.AudioStationConnectorSession, null);
+                sql.WriteBlob(ByteArrayValues.AudioStationConnectorSession, null);
         }
 
         public void Dispose()

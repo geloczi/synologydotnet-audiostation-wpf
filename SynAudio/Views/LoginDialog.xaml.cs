@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using SynAudio.ViewModels;
+using SynAudio.Models;
 
 namespace SynAudio.Views
 {
@@ -8,14 +8,15 @@ namespace SynAudio.Views
     /// </summary>
     public partial class LoginDialog : Window
     {
-        public LoginDialogViewModel Result { get; set; }
+        public Credentials Result { get; }
 
-        public LoginDialog(LoginDialogViewModel model)
+        public LoginDialog(Credentials Credentials)
         {
             InitializeComponent();
-            this.DataContext = Result = model;
-            this.Closing += LoginDialog_Closing;
-            tbPassword.Password = model.Password;
+            DataContext = Result = Credentials;
+            Owner = Application.Current.MainWindow;
+            Closing += LoginDialog_Closing;
+            tbPassword.Password = Credentials.Password;
         }
 
         private void LoginDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
