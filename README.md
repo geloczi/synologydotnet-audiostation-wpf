@@ -1,14 +1,15 @@
 # SynAudio
 
 Synology AudioStation like desktop application.
-It is already in a stable working state, but it is under heavy development.  
+It is already in a stable working state, but it is under heavy development. Built on top of my [SynologyDotNet.AudioStation](https://github.com/geloczigeri/synologydotnet-audiostation) package.  
 
 ![plot](./assets/artists.png)  
 
-* Streaming from Synology NAS
-* WAV or MP3 stream support
-* Browse artist
-* Browse albums in an artist
+## What's working
+* Streaming from Synology NAS using the Audio Station shared library (personal music library support will be implemented later)
+* WAV or MP3 streaming support
+* Browse artists
+* Browse albums of an artist
 * Browse songs in an album or all albums of an artist.
 * Display covers
 * Rate song
@@ -17,18 +18,36 @@ It is already in a stable working state, but it is under heavy development.
 * NowPlaying
 * Drag&Drop songs into NowPlaying
 * Reorder songs list with Drag&Drop
-* Multiple tabs support
-* Local cache built from the Synology database, very fast browsing.
+* Hotkeys to control playback, rate a song
+* Media hotkeys support, even when the app is in the background.
+* Multiple tabs support (Ctrl + click a navigation item in the **My Music** section on the left)
+* Local cache built from the Synology database, very fast browsing
 * Automatic sync with the Synology database
-* Fast! (way faster than the original Audio Station)
+* Faster than the original Audio Station, since this is a desktop application
 
-Built on top of [SynologyDotNet.AudioStation](https://github.com/geloczigeri/synologydotnet-audiostation) package.
+### Initial synchronization
+The first sync will take some time depending on your library size. After the "Sync ..." message disappeared, please close and re-open your tabs.  
+Automatic GUI refreshes will be implemented soon.  
 
-## Initial synchronization
-The first sync will take some time depending on your library size. After the "Sync ..." message disappeared, please close and re-open your tabs. 
-
-## Partial sync
+### Partial sync
 Partial syncs are triggered in the background when you navigate in the library.
+
+### Hotkeys
+
+| Syntax | Description |
+| - | - |
+| Key combination | Action |
+| Alt + 0 | Clear song rating |
+| Alt + 1 | Rate song to 1 star |
+| Alt + 2 | Rate song to 2 stars |
+| Alt + 3 | Rate song to 3 stars |
+| Alt + 4 | Rate song to 4 stars |
+| Alt + 5 | Rate song to 5 stars |
+| Ctrl + Right | Seek 2 seconds forwards |
+| Ctrl + Left | Seek 2 seconds backwards |
+| Ctrl + Shift + Right | Seek 10 seconds forwards |
+| Ctrl + Shift + Left | Seek 10 seconds backwards |
+
 
 ## Coming soon
 
