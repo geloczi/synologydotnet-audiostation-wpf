@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="SynAudio.Controls.SongsDataGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+				 xmlns:app="clr-namespace:SynAudio"
+				 xmlns:helpers="clr-namespace:SynAudio.Utils"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+	<Grid>
+		<Grid.Resources>
+			<!-- The CollectionViewSource plays a very important role here. It makes possible to pass the items with the current selection (!) to
+				any CommandParameter. This is how the Play functionality works. You double click a sing, but not just the clicked song will be played,
+				but also the other songs will be added to the NowPlaying and the playback starts from the clicked song! -->
+			<CollectionViewSource x:Key="cvs1" Source="{Binding Path=., Mode=OneWay}"/>
+		</Grid.Resources>
+		<DataGrid x:Name="grid1"
+					 Style="{StaticResource MainContentDataGridStyle}" Background="Transparent" RowHeight="28"
+					 ItemsSource="{Binding Source={StaticResource cvs1}}"
+					 VirtualizingPanel.IsVirtualizing="True"
+					 SelectionMode="Extended" SelectionUnit="FullRow" 
+					 HeadersVisibility="{Binding Path=HeadersVisibility, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+					 IsReadOnly="{Binding Path=ReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+					 CanUserSortColumns="{Binding Path=CanUserSortColumns, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+					 AllowDrop="True" DragOver="grid1_DragOver" Drop="grid1_Drop"
+					 PreviewKeyDown="grid1_PreviewKeyDown"
+					 PreviewMouseLeftButtonDown="grid1_PreviewMouseLeftButtonDown"
+					 MouseDoubleClick="grid1_MouseDoubleClick">
+			<DataGrid.Resources>
+				<Style TargetType="TextBlock">
+					<Setter Property="Margin" Value="10" />
+				</Style>
+				<Style TargetType="{x:Type DataGridCell}">
+					<Style.Triggers>
+						<Trigger Property="IsSelected" Value="True">
+							<Setter Property="Background" Value="Transparent"/>
+							<Setter Property="Foreground" Value="Black"/>
+							<Setter Property="BorderThickness" Value="0"/>
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.Resources>
+			<DataGrid.ContextMenu>
+				<ContextMenu>
+					<MenuItem x:Name="menuPlay" Header="Play" Command="app:StaticCommands.PlayNow" CommandParameter="{Binding Source={StaticResource cvs1}}"/>
+					<MenuItem Header="Copy files" Command="app:StaticCommands.CopyToClipboard" CommandParameter="{Binding}" />
+					<MenuItem Header="Open containing folder" Command="app:StaticCommands.OpenContainingFolder" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItems}" />
+					<MenuItem Header="Delete from library" Command="app:StaticCommands.DeleteSelectedSongsFromLibrary" CommandParameter="{Binding}" />
+				</ContextMenu>
+			</DataGrid.ContextMenu>
+			<!--<DataGrid.InputBindings>
+				<MouseBinding MouseAction="LeftDoubleClick" 
+								  Command="{Binding Path=ItemDoubleClickCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
+								  CommandParameter="{Binding Source={StaticResource cvs1}}" />
+			</DataGrid.InputBindings>-->
+			<helpers:MyDataGridHelper.TextColumnStyle>
+				<Style TargetType="TextBlock">
+					<Setter Property="Margin" Value="5"/>
+				</Style>
+			</helpers:MyDataGridHelper.TextColumnStyle>
+			<DataGrid.RowStyle>
+				<Style TargetType="{x:Type DataGridRow}">
+					<EventSetter Event="PreviewMouseLeftButtonDown" Handler="Row_PreviewMouseLeftButtonDown"/>
+					<EventSetter Event="MouseLeftButtonUp" Handler="Row_MouseLeftButtonUp"/>
+					<EventSetter Event="PreviewMouseMove" Handler="Row_PreviewMouseMove"/>
+
+					<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<Setter Property="FontWeight" Value="Normal" />
+
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding IsPlaying}" Value="True">
+							<Setter Property="FontWeight" Value="Bold" />
+							<Setter Property="Background" Value="WhiteSmoke"/>
+						</DataTrigger>
+						<DataTrigger Binding="{Binding IsSelected}" Value="True">
+							<Setter Property="Background" Value="Cyan"/>
+							<Setter Property="Foreground" Value="Black"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</DataGrid.RowStyle>
+		</DataGrid>
+	</Grid>
+</UserControl>

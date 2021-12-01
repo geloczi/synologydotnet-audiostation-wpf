@@ -1,0 +1,338 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{57C568A6-1D73-49B3-AC12-8779E231845C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SynAudio</RootNamespace>
+    <AssemblyName>SynAudio</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>8.0</LangVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>appicon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Behaviors\TabContent.cs" />
+    <Compile Include="MediaPlayer\PlaybackStateType.cs" />
+    <Compile Include="Utils\BindingErrorTraceListener.cs" />
+    <Compile Include="Utils\RangeObservableCollection.cs" />
+    <Compile Include="DAL\SongCustomization.cs" />
+    <Compile Include="Commands\ForwardCommandBinding.cs" />
+    <Compile Include="Controls\AlbumsBrowser.xaml.cs">
+      <DependentUpon>AlbumsBrowser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ArtistsBrowser.xaml.cs">
+      <DependentUpon>ArtistsBrowser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FoldersBrowser.xaml.cs">
+      <DependentUpon>FoldersBrowser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RatingControl.xaml.cs">
+      <DependentUpon>RatingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RowDefinitionHelper.cs" />
+    <Compile Include="Controls\SongsDataGrid.xaml.cs">
+      <DependentUpon>SongsDataGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MediaPlayer\PlaybackStateChangedEventArgs.cs" />
+    <Compile Include="ValueConverters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="ValueConverters\BytesToFriendlySizeConverter.cs" />
+    <Compile Include="ValueConverters\ConverterBase.cs" />
+    <Compile Include="ValueConverters\NullImageConverter.cs" />
+    <Compile Include="ValueConverters\NumberToVisibilityConverter.cs" />
+    <Compile Include="ValueConverters\ObjectToVisibilityConverter.cs" />
+    <Compile Include="ValueConverters\StringToVisibilityConverter.cs" />
+    <Compile Include="ValueConverters\TimeSpanToDurationConverter.cs" />
+    <Compile Include="ValueConverters\TimeSpanToSecondsConverter.cs" />
+    <Compile Include="DAL\Int64Values.cs" />
+    <Compile Include="DAL\NowPlayingItem.cs" />
+    <Compile Include="DAL\StringValues.cs" />
+    <Compile Include="DAL\UserDataBackupModel.cs" />
+    <Compile Include="DAL\StringValue.cs" />
+    <Compile Include="DAL\Int64Value.cs" />
+    <Compile Include="Commands\AsyncCommand.cs" />
+    <Compile Include="Commands\IAsyncCommand.cs" />
+    <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Extensions\SqlCeExtensions.cs" />
+    <Compile Include="Utils\CursorChange.cs" />
+    <Compile Include="Utils\DragDropContainer.cs" />
+    <Compile Include="Utils\ErrorDialogErrorHandler.cs" />
+    <Compile Include="Utils\BitmapImageHelper.cs" />
+    <Compile Include="Utils\ImageHelper.cs" />
+    <Compile Include="Utils\MyDataGridHelper.cs" />
+    <Compile Include="Utils\TaskUtilities.cs" />
+    <Compile Include="Utils\VisualTreeHelper.cs" />
+    <Compile Include="Utils\WindowsHelper.cs" />
+    <Compile Include="Utils\WindowStateWatcher.cs" />
+    <Compile Include="Library\AudioLibrary.albums.cs" />
+    <Compile Include="Library\AudioLibrary.artists.cs" />
+    <Compile Include="Library\AudioLibrary.covers.cs" />
+    <Compile Include="Library\AudioLibrary.cs" />
+    <Compile Include="Library\AudioLibrary.folders.cs" />
+    <Compile Include="Library\AudioLibrary.songs.cs" />
+    <Compile Include="Library\AudioLibrary.synchronization.cs" />
+    <Compile Include="Library\Cache.cs" />
+    <Compile Include="Library\Exceptions\LibraryResponseException.cs" />
+    <Compile Include="Models\Config\ConnectionSettingsModel.cs" />
+    <Compile Include="Models\Config\RectangleD.cs" />
+    <Compile Include="Models\Config\SettingsModel.cs" />
+    <Compile Include="DAL\SongBackup.cs" />
+    <Compile Include="Models\FolderContentsModel.cs" />
+    <Compile Include="ViewModels\FolderViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="DAL\AlbumModel.cs" />
+    <Compile Include="DAL\ArtistModel.cs" />
+    <Compile Include="DAL\SongModel.cs" />
+    <Compile Include="Models\NavigationNodePosition.cs" />
+    <Compile Include="Models\PlayNowParameter.cs" />
+    <Compile Include="Models\SongsToPlayModel.cs" />
+    <Compile Include="ViewModels\NowPlayingViewModel.cs" />
+    <Compile Include="ViewModels\SongViewModel.cs" />
+    <Compile Include="StaticCommands.cs" />
+    <Compile Include="ViewModels\LoginDialogViewModel.cs" />
+    <Compile Include="ViewModels\TabContentViewModel.cs" />
+    <Compile Include="ViewModels\TabViewModel.cs" />
+    <Compile Include="ViewModels\NavigationItem.cs" />
+    <Compile Include="DataTemplateSelectors\MainContentTemplateSelector.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\StatusViewModel.cs" />
+    <Compile Include="Views\SettingsDialog.xaml.cs">
+      <DependentUpon>SettingsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\SettingsDialogViewModel.cs" />
+    <Page Include="Controls\AlbumsBrowser.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ArtistsBrowser.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FoldersBrowser.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\RatingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SongsDataGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataTemplates\FolderViewModelCollectionTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataTemplates\NowPlaying_SongViewModelCollectionTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Common.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataTemplates\AlbumModelCollectionTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DataTemplates\ArtistModelCollectionTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DataTemplates\SongViewModelCollectionTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LoginDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Encryption\Encrypter.cs" />
+    <Compile Include="Views\LoginDialog.xaml.cs">
+      <DependentUpon>LoginDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Views\SettingsDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MediaPlayer\MusicPlayer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Assets\appicon.pdn" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="appicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MusicPlayback\MusicPlayback.csproj">
+      <Project>{f14832b1-1757-47b6-9536-f31a0b13a289}</Project>
+      <Name>MusicPlayback</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SqlCeLibrary\SqlCeLibrary.csproj">
+      <Project>{4e7ad91d-0e6f-47b9-a360-b99e83e020c3}</Project>
+      <Name>SqlCeLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utils\Utils.csproj">
+      <Project>{91a4a6af-3873-4823-8f3a-3121c6ba7abb}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SqlServer.Compact">
+      <Version>4.0.8876.1</Version>
+    </PackageReference>
+    <PackageReference Include="MouseKeyHook">
+      <Version>5.6.0</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>4.7.12</Version>
+    </PackageReference>
+    <PackageReference Include="PropertyChanged.Fody" PrivateAssets="all">
+      <Version>3.4.0</Version>
+    </PackageReference>
+    <PackageReference Include="SynologyDotNet.AudioStation">
+      <Version>0.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="VirtualizingWrapPanel">
+      <Version>1.5.6</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\package_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Taskbar\Pause.png" />
+    <Resource Include="Resources\Taskbar\Play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Taskbar\Star.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Taskbar\Next.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Taskbar\Previous.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Taskbar\Backward.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Taskbar\Forward.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
+    xcopy /s /y "%25userprofile%25\.nuget\packages\microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\x86\*.*" "$(TargetDir)x86"
+    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+    xcopy /s /y "%25userprofile%25\.nuget\packages\microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+</Project>
