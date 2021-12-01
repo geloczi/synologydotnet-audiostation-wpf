@@ -34,9 +34,15 @@ Partial syncs are triggered in the background when you navigate in the library.
 
 ### Hotkeys
 
+#### Keyboard shortcuts
+These keys are working only **if the the application is focused**.  
+
 | Syntax | Description |
 | - | - |
 | Key combination | Action |
+| Ctrl + S | Stop |
+| Ctrl + P | Play |
+| Pause | Pause |
 | Alt + 0 | Clear song rating |
 | Alt + 1 | Rate song to 1 star |
 | Alt + 2 | Rate song to 2 stars |
@@ -47,7 +53,14 @@ Partial syncs are triggered in the background when you navigate in the library.
 | Ctrl + Left | Seek 2 seconds backwards |
 | Ctrl + Shift + Right | Seek 10 seconds forwards |
 | Ctrl + Shift + Left | Seek 10 seconds backwards |
+| Ctrl + Home | Seek to beginning |
 
+#### Media hotkeys
+These keys **always work**, even if the app is running **in the background**. Also works with **Bluetooth headsets**, so you can control the playback with your device.  
+* Play
+* Stop
+* NextTrack
+* PreviousTrack  
 
 ## Coming soon
 
