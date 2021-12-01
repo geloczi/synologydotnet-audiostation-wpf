@@ -22,6 +22,8 @@ It is already in a stable working state, but it is under heavy development.
 * Automatic sync with the Synology database
 * Fast! (way faster than the original Audio Station)
 
+Built on top of [SynologyDotNet.AudioStation](https://github.com/geloczigeri/synologydotnet-audiostation) package.
+
 ## Initial synchronization
 The first sync will take some time depending on your library size. After the "Sync ..." message disappeared, please close and re-open your tabs. 
 
