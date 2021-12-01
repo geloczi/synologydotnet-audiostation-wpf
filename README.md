@@ -1,6 +1,9 @@
 # SynAudio
 
-Synology AudioStation like desktop application. It is already in a stable working state, but it is under heavy development. The followings are already implemented:
+Synology AudioStation like desktop application.
+It is already in a stable working state, but it is under heavy development.  
+
+![plot](./assets/artists.png)  
 
 * Streaming from Synology NAS
 * WAV or MP3 stream support
