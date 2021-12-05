@@ -5,7 +5,6 @@
 		<OutputType>WinExe</OutputType>
 		<LangVersion>8.0</LangVersion>
 		<UseWPF>true</UseWPF>
-		<UseWindowsForms>true</UseWindowsForms>
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 		<ApplicationIcon>appicon.ico</ApplicationIcon>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
