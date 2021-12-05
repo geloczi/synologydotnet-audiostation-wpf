@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Gma.System.MouseKeyHook;
 using SynAudio.DAL;
 using SynAudio.Utils;
 using SynAudio.Models.Config;
@@ -19,7 +18,8 @@ namespace SynAudio
 
         private readonly WindowStateWatcher _stateWatcher;
         private readonly bool _userTriggeredWindowStateReset;
-        private IKeyboardMouseEvents m_GlobalHook;
+
+        private H.Hooks.LowLevelKeyboardHook GlobalKeyboardHook { get; }
         private MainWindowViewModel VM { get; }
         public SettingsModel Settings => App.Settings;
         public ErrorDialogErrorHandler ErrorHandler { get; } = new ErrorDialogErrorHandler();
@@ -61,36 +61,50 @@ namespace SynAudio
             Loaded += Window_Loaded;
             Closing += Window_Closing;
             PreviewKeyDown += Window_PreviewKeyDown;
+
+            GlobalKeyboardHook = new H.Hooks.LowLevelKeyboardHook();
+            GlobalKeyboardHook.Down += GlobalKeyboardHook_Down;
         }
 
-        private void GlobalHook_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void GlobalKeyboardHook_Down(object sender, H.Hooks.KeyboardEventArgs e)
         {
-            if (e.Modifiers == System.Windows.Forms.Keys.None)
+            try
             {
-                switch (e.KeyData)
+                foreach (var key in e.Keys.Values)
                 {
-                    case System.Windows.Forms.Keys.MediaPlayPause:
-                        if (VM.Player_PlayCommand.CanExecute(null))
-                            VM.Player_PlayCommand.Execute(null);
-                        else if (VM.Player_PauseCommand.CanExecute(null))
-                            VM.Player_PauseCommand.Execute(null);
-                        break;
+                    switch (key)
+                    {
+                        case H.Hooks.Key.MediaPlayPause:
+                            e.IsHandled = true;
+                            if (VM.Player_PlayCommand.CanExecute(null))
+                                VM.Player_PlayCommand.Execute(null);
+                            else if (VM.Player_PauseCommand.CanExecute(null))
+                                VM.Player_PauseCommand.Execute(null);
+                            break;
 
-                    case System.Windows.Forms.Keys.MediaStop:
-                        if (VM.Player_StopCommand.CanExecute(null))
-                            VM.Player_StopCommand.Execute(null);
-                        break;
+                        case H.Hooks.Key.MediaStop:
+                            e.IsHandled = true;
+                            if (VM.Player_StopCommand.CanExecute(null))
+                                VM.Player_StopCommand.Execute(null);
+                            break;
 
-                    case System.Windows.Forms.Keys.MediaPreviousTrack:
-                        if (VM.Player_PlayPrevCommand.CanExecute(null))
-                            VM.Player_PlayPrevCommand.Execute(null);
-                        break;
+                        case H.Hooks.Key.MediaPreviousTrack:
+                            e.IsHandled = true;
+                            if (VM.Player_PlayPrevCommand.CanExecute(null))
+                                VM.Player_PlayPrevCommand.Execute(null);
+                            break;
 
-                    case System.Windows.Forms.Keys.MediaNextTrack:
-                        if (VM.Player_PlayNextCommand.CanExecute(null))
-                            VM.Player_PlayNextCommand.Execute(null);
-                        break;
+                        case H.Hooks.Key.MediaNextTrack:
+                            e.IsHandled = true;
+                            if (VM.Player_PlayNextCommand.CanExecute(null))
+                                VM.Player_PlayNextCommand.Execute(null);
+                            break;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.HandleError(ex);
             }
         }
 
@@ -112,19 +126,18 @@ namespace SynAudio
             VM.PlaybackStarted += VM_PlaybackStarted;
             VM.PlaybackStopped += VM_PlaybackStopped;
             VM.NowPlaying.CurrentSongChanged += NowPlaying_CurrentSongChanged;
-            m_GlobalHook = Hook.GlobalEvents();
-            m_GlobalHook.KeyDown += GlobalHook_KeyDown;
+            GlobalKeyboardHook.Start();
 
-#if DEBUG
-            // Log focused element to help debug UI behaviour
-            void DebugWriteLineFocusedElement()
-            {
-                var focused = FocusManager.GetFocusedElement(Application.Current.MainWindow);
-                System.Diagnostics.Debug.WriteLine($"FocusedElement: {focused?.GetType().FullName}");
-            }
-            PreviewKeyUp += (sender, e) => DebugWriteLineFocusedElement();
-            PreviewMouseUp += (sender, e) => DebugWriteLineFocusedElement();
-#endif
+            //#if DEBUG
+            //            // Log focused element to help debug UI behaviour
+            //            void DebugWriteLineFocusedElement()
+            //            {
+            //                var focused = FocusManager.GetFocusedElement(Application.Current.MainWindow);
+            //                System.Diagnostics.Debug.WriteLine($"FocusedElement: {focused?.GetType().FullName}");
+            //            }
+            //            PreviewKeyUp += (sender, e) => DebugWriteLineFocusedElement();
+            //            PreviewMouseUp += (sender, e) => DebugWriteLineFocusedElement();
+            //#endif
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -132,11 +145,13 @@ namespace SynAudio
             try
             {
                 Closing -= Window_Closing;
+
+                GlobalKeyboardHook.Down -= GlobalKeyboardHook_Down;
+                GlobalKeyboardHook.Stop();
+                GlobalKeyboardHook.Dispose();
+
                 PreviewKeyDown -= Window_PreviewKeyDown;
                 VM.NowPlaying.CurrentSongChanged -= NowPlaying_CurrentSongChanged;
-                m_GlobalHook.KeyDown -= GlobalHook_KeyDown;
-                m_GlobalHook.Dispose();
-
                 VM.OnClose();
 
                 // Save settings
