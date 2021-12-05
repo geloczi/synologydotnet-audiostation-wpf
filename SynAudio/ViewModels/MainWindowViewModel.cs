@@ -10,7 +10,6 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using SqlCeLibrary;
-using SynAudio.Commands;
 using SynAudio.DAL;
 using SynAudio.DAL.Models;
 using SynAudio.Library;
@@ -21,6 +20,8 @@ using SynAudio.Models.Config;
 using SynAudio.Utils;
 using SynAudio.Views;
 using SynologyDotNet.AudioStation;
+using Utils;
+using Utils.Commands;
 
 namespace SynAudio.ViewModels
 {
@@ -320,29 +321,31 @@ namespace SynAudio.ViewModels
             Tabs.Remove(vm.TabItem);
         }
 
-        private void Tab_NavigationRequest(TabViewModel sender, NavigationItem e)
+        private void Tab_NavigationRequest(object sender, NavigationItem e)
         {
             if (e.IsSeparator)
                 return;
+            if (!(sender is TabViewModel tvm))
+                throw new ArgumentException(nameof(sender));
 
             lock (_syncRoot)
             {
                 switch (e.Action)
                 {
                     case ActionType.BrowseByArtists:
-                        sender.Navigate(ToObservableCollection(Library.GetArtists()), e);
+                        tvm.Navigate(ToObservableCollection(Library.GetArtists()), e);
                         break;
                     case ActionType.BrowseByFolders:
-                        sender.Navigate(FolderContentsModelToObservable(Library.GetFolderContents(e.EntityId)), e);
+                        tvm.Navigate(FolderContentsModelToObservable(Library.GetFolderContents(e.EntityId)), e);
                         break;
                     case ActionType.OpenArtistAlbums:
-                        sender.Navigate(ToObservableCollection(Library.GetAlbums(e.EntityId)), e);
+                        tvm.Navigate(ToObservableCollection(Library.GetAlbums(e.EntityId)), e);
                         break;
                     case ActionType.OpenArtistSongs:
-                        sender.Navigate(ToObservableCollection(Library.GetSongs(e.EntityId, 0).Select(x => new SongViewModel(x))), e);
+                        tvm.Navigate(ToObservableCollection(Library.GetSongs(e.EntityId, 0).Select(x => new SongViewModel(x))), e);
                         break;
                     case ActionType.OpenAlbumSongs:
-                        sender.Navigate(ToObservableCollection(Library.GetSongs(null, int.Parse(e.EntityId)).Select(x => new SongViewModel(x))), e);
+                        tvm.Navigate(ToObservableCollection(Library.GetSongs(null, int.Parse(e.EntityId)).Select(x => new SongViewModel(x))), e);
                         break;
 
                     default: throw new NotImplementedException(e.Action.ToString());
@@ -822,7 +825,7 @@ namespace SynAudio.ViewModels
             return result;
         }
 
-        private void Library_SongsUpdated(AudioLibrary sender, SongModel[] songs)
+        private void Library_SongsUpdated(object sender, SongModel[] songs)
         {
             var oldSongs = CollectSongModels();
             var st = TableInfo.Get<SongModel>();
@@ -865,12 +868,12 @@ namespace SynAudio.ViewModels
             }
         }
 
-        private void Library_ExceptionThrown(AudioLibrary sender, Exception exception, string message)
+        private void Library_ExceptionThrown(object sender, Exception exception)
         {
             if (exception is System.AggregateException aex && !(aex.InnerException is null))
                 exception = aex.InnerException;
 
-            ShowException(exception, message);
+            ShowException(exception);
 
             if (exception is LibraryResponseException lre)
             {
@@ -904,7 +907,7 @@ namespace SynAudio.ViewModels
             return (float)(value / 100.0);
         }
 
-        private void Library_ArtistsUpdated(AudioLibrary sender)
+        private void Library_ArtistsUpdated(object sender, EventArgs e)
         {
             _log.Debug(nameof(Library_ArtistsUpdated));
             // Collect artist models
@@ -928,7 +931,7 @@ namespace SynAudio.ViewModels
             //});
         }
 
-        private void Library_AlbumsUpdated(AudioLibrary sender)
+        private void Library_AlbumsUpdated(object sender, EventArgs e)
         {
             //// Albums
             //if (!(SelectedArtist is null))
@@ -965,7 +968,7 @@ namespace SynAudio.ViewModels
             }
         }
 
-        private void Library_SyncCompleted(AudioLibrary sender)
+        private void Library_SyncCompleted(object sender, EventArgs e)
         {
             //// Songs
             //if (!(SelectedAlbum is null))
@@ -987,7 +990,7 @@ namespace SynAudio.ViewModels
             //UpdateSongModels(NowPlaying.Songs);
         }
 
-        private void Library_SongUpdated(AudioLibrary sender, int songId)
+        private void Library_SongUpdated(object sender, int songId)
         {
             //Log.Debug($"{nameof(Library_SongUpdated)}, {songId}");
             //if (!CollectSongModels().TryGetValue(songId, out var oldSong))
@@ -1001,13 +1004,13 @@ namespace SynAudio.ViewModels
             //});
         }
 
-        private void Library_Updating(AudioLibrary sender)
+        private void Library_Updating(object sender, EventArgs e)
         {
             _log.Debug(nameof(Library_Updating));
             IsLibraryUpdating = true;
         }
 
-        private void Library_ArtistUpdated(ArtistModel artist)
+        private void Library_ArtistUpdated(object sender, ArtistModel artist)
         {
             _log.Debug(nameof(Library_ArtistUpdated));
             //if (Library.Connected)
@@ -1025,7 +1028,7 @@ namespace SynAudio.ViewModels
             //}
         }
 
-        private void Library_AlbumUpdated(AudioLibrary sender, AlbumModel album)
+        private void Library_AlbumUpdated(object sender, AlbumModel album)
         {
             //Log.Debug(nameof(Library_AlbumUpdated));
             //if (Library.Connected)
@@ -1043,7 +1046,7 @@ namespace SynAudio.ViewModels
             //}
         }
 
-        private void Library_Updated(AudioLibrary sender)
+        private void Library_Updated(object sender, EventArgs e)
         {
             _log.Debug(nameof(Library_Updated));
             IsLibraryUpdating = false;

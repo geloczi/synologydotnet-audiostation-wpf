@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace SynAudio.Commands
+namespace Utils.Commands
 {
     /// <summary>
     /// This class is used to forward a static command to the ViewModel command instance.

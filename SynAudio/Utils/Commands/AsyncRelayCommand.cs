@@ -2,27 +2,30 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace SynAudio.Commands
+namespace Utils.Commands
 {
-    public class AsyncCommand : IAsyncCommand
+    public class AsyncRelayCommand : IAsyncCommand
     {
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged;
 
         private bool _isExecuting;
         private readonly Func<Task> _execute;
         private readonly Func<bool> _canExecute;
 
-        public AsyncCommand(
-            Func<Task> execute,
-            Func<bool> canExecute = null)
+        public AsyncRelayCommand(Func<Task> execute)
+            : this(execute, () => true)
         {
-            _execute = execute;
-            _canExecute = canExecute;
+        }
+
+        public AsyncRelayCommand(Func<Task> execute, Func<bool> canExecute)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
         }
 
         public bool CanExecute()
         {
-            return !_isExecuting && (_canExecute?.Invoke() ?? true);
+            return !_isExecuting && _canExecute();
         }
 
         public async Task ExecuteAsync()
@@ -39,25 +42,23 @@ namespace SynAudio.Commands
                     _isExecuting = false;
                 }
             }
-
             RaiseCanExecuteChanged();
         }
 
         public void RaiseCanExecuteChanged()
         {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            if (CanExecuteChanged != null)
+                CanExecuteChanged(this, EventArgs.Empty);
         }
 
-        #region Explicit implementations
-        bool ICommand.CanExecute(object parameter)
+        bool ICommand.CanExecute(object? parameter)
         {
             return CanExecute();
         }
 
-        void ICommand.Execute(object parameter)
+        void ICommand.Execute(object? parameter)
         {
             _ = ExecuteAsync();
         }
-        #endregion
     }
 }

@@ -3,16 +3,15 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using SynAudio.Commands;
 using SynAudio.Utils;
+using Utils;
+using Utils.Commands;
 
 namespace SynAudio.ViewModels
 {
     public class TabViewModel : ViewModelBase
     {
-        public delegate void NavigationRequestEvent(TabViewModel sender, NavigationItem e);
-
-        public event NavigationRequestEvent NavigationRequest;
+        public event EventHandler<NavigationItem> NavigationRequest;
 
         public TabItem TabItem { get; }
         public TabContentViewModel Content { get; set; }
@@ -30,7 +29,7 @@ namespace SynAudio.ViewModels
             if (o is NavigationItem navigationItem)
             {
                 if (NavigationItems.Last() != navigationItem)
-                    NavigationRequest?.BeginInvoke(this, navigationItem, null, null);
+                    NavigationRequest.Fire(this, navigationItem);
             }
             else
                 throw new ArgumentException($"{nameof(o)} is not {nameof(NavigationItem)}");

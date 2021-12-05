@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using SynAudio.Utils;
 using SynAudio.ViewModels;
+using Utils;
 
 namespace SynAudio.Controls
 {

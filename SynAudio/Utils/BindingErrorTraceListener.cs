@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace SynAudio.Utils
+namespace Utils
 {
     public class BindingErrorTraceListener : TraceListener
     {

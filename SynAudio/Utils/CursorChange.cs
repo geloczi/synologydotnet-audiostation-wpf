@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 
-namespace SynAudio.Utils
+namespace Utils
 {
     /// <summary>
     /// Use this class ina using block to change the mouse cursor

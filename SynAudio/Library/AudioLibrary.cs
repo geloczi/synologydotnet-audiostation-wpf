@@ -21,12 +21,6 @@ namespace SynAudio.Library
     public partial class AudioLibrary : IDisposable
     {
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-        public delegate void LibraryEvent(AudioLibrary sender);
-        public delegate void LibraryExceptionEvent(AudioLibrary sender, Exception exception, string message);
-        public delegate void SongUpdatedEvent(AudioLibrary sender, int songId);
-        public delegate void SongsUpdatedEvent(AudioLibrary sender, SongModel[] songs);
-        public delegate void ArtistUpdatedEvent(AudioLibrary sender, ArtistModel artist);
-        public delegate void AlbumUpdatedEvent(AudioLibrary sender, AlbumModel album);
 
         #region [Fields]
         private const long DatabaseVersion = 3; //Increase by one after the schema changed
@@ -43,11 +37,10 @@ namespace SynAudio.Library
         #endregion
 
         #region [Events]
-        public event LibraryExceptionEvent ExceptionThrown;
-        public event LibraryEvent Updating, Updated, ArtistsUpdated, AlbumsUpdated, SyncCompleted;
-        public event AlbumUpdatedEvent AlbumCoverUpdated;
-        //public event SongUpdatedEvent SongAnalyzed;
-        public event SongsUpdatedEvent SongsUpdated;
+        public event EventHandler<Exception> ExceptionThrown;
+        public event EventHandler Updating, Updated, ArtistsUpdated, AlbumsUpdated, SyncCompleted;
+        public event EventHandler<AlbumModel> AlbumCoverUpdated;
+        public event EventHandler<SongModel[]> SongsUpdated;
         #endregion
 
         #region [Properties]
@@ -163,7 +156,7 @@ namespace SynAudio.Library
                 _log.Error(ex, message);
             else
                 _log.Error(ex);
-            ExceptionThrown?.BeginInvoke(this, ex, message, null, null);
+            ExceptionThrown.FireAsync(this, ex);
         }
         private static byte[] CompressImage(byte[] data, int quality)
         {

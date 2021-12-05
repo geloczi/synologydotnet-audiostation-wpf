@@ -22,7 +22,7 @@ namespace SynAudio.Library
                 var processor = new QueueProcessorTasks<AlbumModel>(async (t, album) =>
                 {
                     await DownloadAndSaveAlbumCover(sql, album);
-                    AlbumCoverUpdated.BeginInvoke(this, album, null, null);
+                    AlbumCoverUpdated.FireAsync(this, album);
                 }, 4);
 
                 List<AlbumModel> albums;
@@ -53,7 +53,7 @@ namespace SynAudio.Library
                     if (existingCover)
                     {
                         sql.Update(album, nameof(AlbumModel.CoverFileState));
-                        AlbumCoverUpdated.BeginInvoke(this, album, null, null);
+                        AlbumCoverUpdated.FireAsync(this, album);
                     }
                     else
                     {
@@ -81,7 +81,7 @@ namespace SynAudio.Library
                 if (artistCovers.Any())
                 {
                     sql.Update(artistCovers.ToArray(), new[] { nameof(ArtistModel.CoverAlbumId) });
-                    ArtistsUpdated?.BeginInvoke(this, null, null);
+                    ArtistsUpdated.FireAsync(this, EventArgs.Empty);
                 }
             }
         }

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace SynAudio.Commands
+namespace Utils.Commands
 {
     public interface IAsyncCommand : ICommand
     {

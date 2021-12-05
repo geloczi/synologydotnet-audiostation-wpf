@@ -3,12 +3,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Gma.System.MouseKeyHook;
-using SynAudio.Commands;
 using SynAudio.DAL;
 using SynAudio.Utils;
 using SynAudio.Models.Config;
 using SynAudio.ViewModels;
 using Utils;
+using Utils.Commands;
 
 namespace SynAudio
 {

@@ -51,7 +51,7 @@ namespace SynAudio.Library
                                 foreach (var song in dbSongs)
                                     song.LoadFromDto(dtos[song.Id]);
                                 sql.Update(dbSongs);
-                                SongsUpdated?.BeginInvoke(this, dbSongs, null, null);
+                                SongsUpdated.FireAsync(this, dbSongs);
                             }
                         }
                     }
@@ -64,7 +64,7 @@ namespace SynAudio.Library
             _log.Debug(nameof(SyncAsync));
             if (_updateCacheJob?.IsRunning != true && _restoreBackupJob?.IsRunning != true)
             {
-                Updating?.Invoke(this);
+                Updating.FireAsync(this, EventArgs.Empty);
                 _updateCacheJob = new BackgroundThreadWorker(SyncWorkMethod, nameof(SyncWorkMethod));
                 _updateCacheJob.Start(forceUpdate);
             }
@@ -101,7 +101,7 @@ namespace SynAudio.Library
                             sql.WriteInt64(Int64Values.LastSyncCompleted, 1);
                             sql.WriteInt64(Int64Values.LastSyncDateTimeUtc, DateTime.UtcNow.Ticks);
                         }
-                        Updated?.BeginInvoke(this, null, null);
+                        Updated.FireAsync(this, EventArgs.Empty);
                     }
 
                     // Cover download
@@ -340,9 +340,9 @@ namespace SynAudio.Library
                 // Delete orphaned albums
                 var albumTable = TableInfo.Get<AlbumModel>();
                 sql.ExecuteNonQuery($"DELETE FROM {albumTable} WHERE {albumTable[nameof(AlbumModel.Id)]} NOT IN (SELECT DISTINCT {songTable[nameof(SongModel.AlbumId)]} FROM {songTable})");
-                AlbumsUpdated?.BeginInvoke(this, null, null);
+                AlbumsUpdated.FireAsync(this, EventArgs.Empty);
             }
-            SyncCompleted?.BeginInvoke(this, null, null);
+            SyncCompleted.FireAsync(this, EventArgs.Empty);
             BuildArtists(token);
         }
 
@@ -367,7 +367,7 @@ namespace SynAudio.Library
 						LEFT JOIN {a.NameWithBrackets} a ON a.{a[nameof(ArtistModel.Name)]} = s.{s[nameof(SongModel.AlbumArtist)]}
 						WHERE LEN(s.{s[nameof(SongModel.AlbumArtist)]}) > 0 AND a.{a[nameof(ArtistModel.Name)]} IS NULL");
             }
-            ArtistsUpdated?.BeginInvoke(this, null, null);
+            ArtistsUpdated.FireAsync(this, EventArgs.Empty);
         }
     }
 }

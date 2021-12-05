@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
+using SynAudio.Utils;
 
-namespace SynAudio.Utils
+namespace Utils
 {
     public class ErrorDialogErrorHandler : IErrorHandler
     {

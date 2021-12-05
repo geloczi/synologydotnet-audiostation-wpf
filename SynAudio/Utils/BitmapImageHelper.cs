@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Windows.Media.Imaging;
 
-namespace SynAudio.Utils
+namespace Utils
 {
     public static class BitmapImageHelper
     {

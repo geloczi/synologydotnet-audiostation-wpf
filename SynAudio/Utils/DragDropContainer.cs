@@ -1,4 +1,4 @@
-﻿namespace SynAudio.Utils
+﻿namespace Utils
 {
     public class DragDropContainer
     {
