@@ -46,6 +46,7 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="NLog" Version="4.7.12" />
 		<PackageReference Include="PropertyChanged.Fody" PrivateAssets="all" Version="3.4.0" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
 		<PackageReference Include="SynologyDotNet.AudioStation" Version="0.3.0" />
 		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
 		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />

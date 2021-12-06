@@ -711,8 +711,8 @@ namespace SynAudio.ViewModels
 
                         // Sync after startup
                         // The connection test performed inside this method as well
-                        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) && Settings.UpdateLibraryOnStartup)
-                            Library.SyncDatabaseAsync(false);
+                        //if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) && Settings.UpdateLibraryOnStartup)
+                        Library.SyncDatabaseAsync(true);
                     }
                 }
                 catch (Exception ex)

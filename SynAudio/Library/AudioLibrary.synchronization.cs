@@ -266,10 +266,13 @@ namespace SynAudio.Library
                             if (cueFiles.Length > 0)
                                 _log.Warn("CUE sheet detected. These files are causing metadata loss, please delete them!" + Environment.NewLine + string.Join(Environment.NewLine, cueFiles));
 
-                            sql.Insert(toInsert);
-                            songsToCheckBackups.AddRange(toInsert
-                                .Where(a => !string.IsNullOrEmpty(a.Artist) && !string.IsNullOrEmpty(a.Album) && !string.IsNullOrEmpty(a.Title))
-                                .Select(a => (a.Id, a.Artist, a.Album, a.Title)));
+                            //sql.Insert(toInsert);
+                            //songsToCheckBackups.AddRange(toInsert
+                            //    .Where(a => !string.IsNullOrEmpty(a.Artist) && !string.IsNullOrEmpty(a.Album) && !string.IsNullOrEmpty(a.Title))
+                            //    .Select(a => (a.Id, a.Artist, a.Album, a.Title)));
+
+                            // Lite
+                            _lite.InsertAll(toInsert);
                         }
                         catch (Exception ex)
                         {

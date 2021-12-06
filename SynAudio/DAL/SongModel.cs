@@ -5,19 +5,25 @@ using SynAudio.ViewModels;
 namespace SynAudio.DAL
 {
     [Table("Song")]
+    [SQLite.Table("Song")]
     public class SongModel : ViewModelBase
     {
         #region DAL/ViewModel
+
         [Column, PrimaryKey(AutoIncrement = false)]
+        [SQLite.Column(nameof(Id))]
+        [SQLite.PrimaryKey]
         public string Id { get; set; }
 
         [Column]
+        [SQLite.Column(nameof(AlbumId))]
         public int AlbumId { get; set; }
 
         /// <summary>
         /// The artist of the song.
         /// </summary>
         [Column]
+        [SQLite.Column(nameof(Artist))]
         public string Artist { get; set; }
 
         /// <summary>
@@ -25,52 +31,107 @@ namespace SynAudio.DAL
         /// For example: a compilation CD or a movie soundtrack CD. 
         /// </summary>
         [Column]
+        [SQLite.Column(nameof(AlbumArtist))]
+        [SQLite.MaxLength(255)]
         public string AlbumArtist { get; set; }
 
         [Column]
+        [SQLite.Column(nameof(Album))]
+        [SQLite.MaxLength(255)]
         public string Album { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Title))]
+        [SQLite.MaxLength(255)]
         public string Title { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Rating))]
         public int Rating { get; set; }
+
         [Column(Size = "20")]
+        [SQLite.Column(nameof(Format))]
+        [SQLite.MaxLength(20)]
         public string Format { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Path))]
+        [SQLite.MaxLength(400)]
         public string Path { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Track))]
         public int? Track { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Year))]
         public int? Year { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Duration))]
         public TimeSpan Duration { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(FileSize))]
         public int FileSize { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(AudioBitrate))]
         public int AudioBitrate { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(AudioChannels))]
         public int AudioChannels { get; set; }
+
         [Column(Size = "20")]
+        [SQLite.Column(nameof(AudioCodec))]
+        [SQLite.MaxLength(20)]
         public string AudioCodec { get; set; }
+
         [Column(Size = "20")]
+        [SQLite.Column(nameof(AudioContainer))]
+        [SQLite.MaxLength(20)]
         public string AudioContainer { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(AudioFrequency))]
         public int AudioFrequency { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Comment))]
+        [SQLite.MaxLength(255)]
         public string Comment { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Composer))]
+        [SQLite.MaxLength(255)]
         public string Composer { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Disc))]
         public int Disc { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(Genre))]
+        [SQLite.MaxLength(255)]
         public string Genre { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(RgAlbumGain))]
         public double RgAlbumGain { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(RgAlbumPeak))]
         public double RgAlbumPeak { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(RgTrackGain))]
         public double RgTrackGain { get; set; }
+
         [Column]
+        [SQLite.Column(nameof(RgTrackPeak))]
         public double RgTrackPeak { get; set; }
+
         #endregion
 
         #region Internally used columns
