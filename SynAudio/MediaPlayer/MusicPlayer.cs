@@ -234,22 +234,23 @@ namespace SynAudio.MediaPlayer
                 {
                     try
                     {
+                        // Request stream with position=0 to find out the full stream length
+                        if (positionSeconds > 0 && _songStreamFullLength == -1)
+                        {
+                            _audioLibrary.StreamSongAsync(worker.Token, transcode, song.Id, 0, s =>
+                            {
+                                _songStreamFullLength = s.ContentLength;
+                            }).GetAwaiter().GetResult();
+                        }
+
+                        // Start streaming
                         _audioLibrary.StreamSongAsync(worker.Token, transcode, song.Id, positionSeconds, s =>
                         {
                             _songStream = new BlockingReadStream(s.Stream, s.ContentLength);
-
-                            // Get full stream length
                             if (positionSeconds == 0)
                             {
+                                // Full stream length is in the current stream
                                 _songStreamFullLength = s.ContentLength;
-                            }
-                            else if (_songStreamFullLength == -1)
-                            {
-                                // Make a request with position=0 to find out the full stream length
-                                _audioLibrary.StreamSongAsync(worker.Token, transcode, song.Id, 0, s2 =>
-                                {
-                                    _songStreamFullLength = s2.ContentLength;
-                                }).GetAwaiter().GetResult();
                             }
 
                             if (!worker.Token.IsCancellationRequested)
