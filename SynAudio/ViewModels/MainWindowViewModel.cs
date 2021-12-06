@@ -39,9 +39,11 @@ namespace SynAudio.ViewModels
         private int _volumeBeforeMuted = 100;
         private readonly object _syncRoot = new object();
         private readonly HashSet<string> _quickSyncedArtists = new HashSet<string>();
+        private TimeSpan _restoreSongPosition;
         #endregion
 
         #region [Properties]
+
         public SettingsModel Settings { get; }
         public ErrorDialogErrorHandler ErrorHandler { get; } = new ErrorDialogErrorHandler();
         public bool Connected { get; private set; }
@@ -66,6 +68,7 @@ namespace SynAudio.ViewModels
         }
 
         public bool IsLibraryUpdating { get; set; }
+        public bool LibraryLoaded { get; set; }
         public StatusViewModel Status { get; } = new StatusViewModel();
         public bool IsNowPlayingVisible { get; set; } = true;
         #endregion
@@ -483,7 +486,7 @@ namespace SynAudio.ViewModels
             _log.Debug($"{nameof(StartPlaypack)}, {song.Id}, Transcoding={Settings.Transcoding}");
             try
             {
-                Player.StartSongStreaming(song, Settings.Transcoding);
+                Player.StreamSong(song, Settings.Transcoding);
             }
             catch (Exception ex)
             {
@@ -619,8 +622,6 @@ namespace SynAudio.ViewModels
             }
         }
 
-        public bool LibraryLoaded { get; set; }
-
         public async Task Open()
         {
             _log.Debug(nameof(Open));
@@ -667,7 +668,9 @@ namespace SynAudio.ViewModels
                         try
                         {
                             state.Text = "Loading saved state...";
-                            NowPlaying.LoadState();
+                            NowPlaying.LoadState(out _restoreSongPosition);
+                            if (_restoreSongPosition != TimeSpan.Zero)
+                                Player.RestoreState(NowPlaying.CurrentSong, Settings.Transcoding, _restoreSongPosition);
                             _log.Debug("Loaded NowPlaying state");
 
                             // Sync songs on NowPlaying
@@ -856,14 +859,13 @@ namespace SynAudio.ViewModels
                     Library.SongsUpdated -= Library_SongsUpdated;
                 }
 
+                // Save NowPlaying state
+                NowPlaying.SaveState(Player?.Position);
                 if (Player != null)
                 {
                     Player.PlaybackStateChanged -= Player_PlaybackStateChanged;
                     Player.Dispose();
                 }
-
-                // Save NowPlaying state
-                NowPlaying.SaveState();
                 Library.Dispose();
             }
         }

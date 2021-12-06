@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using MusicPlayback;
 using MusicPlayback.Utils;
@@ -25,7 +26,7 @@ namespace SynAudio.MediaPlayer
         private SongModel _song;
         private BlockingReadStream _songStream;
         private long _songStreamFullLength;
-        private long _downloadStopwatchLastPosition = 0;
+        private long _downloadStopwatchLastPosition;
         private TranscodeMode _songTranscodeMode;
         #endregion
 
@@ -184,7 +185,7 @@ namespace SynAudio.MediaPlayer
             }
         }
 
-        public void StartSongStreaming(SongModel song, TranscodeMode transcode)
+        public void RestoreState(SongModel song, TranscodeMode transcode, TimeSpan position)
         {
             lock (_lock)
             {
@@ -192,8 +193,24 @@ namespace SynAudio.MediaPlayer
 
                 _song = song;
                 _songTranscodeMode = transcode;
-                SetPosition(TimeSpan.Zero);
                 Length = song.Duration;
+                SetPosition(position);
+                _songStreamFullLength = -1;
+                PlaybackState = PlaybackStateType.Paused;
+            }
+        }
+
+        public void StreamSong(SongModel song, TranscodeMode transcode)
+        {
+            lock (_lock)
+            {
+                Stop();
+
+                _song = song;
+                _songTranscodeMode = transcode;
+                Length = song.Duration;
+                SetPosition(TimeSpan.Zero);
+                _songStreamFullLength = -1;
                 StartSongStreamingInternal(song, transcode, 0);
             }
         }
@@ -220,12 +237,26 @@ namespace SynAudio.MediaPlayer
                         _audioLibrary.StreamSongAsync(worker.Token, transcode, song.Id, positionSeconds, s =>
                         {
                             _songStream = new BlockingReadStream(s.Stream, s.ContentLength);
+
+                            // Get full stream length
                             if (positionSeconds == 0)
                             {
-                                _songStreamFullLength = _songStream.Length;
+                                _songStreamFullLength = s.ContentLength;
                             }
-                            StartPolling();
-                            Player.ReadStreamIntoBuffer(_songStream, worker.Token);
+                            else if (_songStreamFullLength == -1)
+                            {
+                                // Make a request with position=0 to find out the full stream length
+                                _audioLibrary.StreamSongAsync(worker.Token, transcode, song.Id, 0, s2 =>
+                                {
+                                    _songStreamFullLength = s2.ContentLength;
+                                }).GetAwaiter().GetResult();
+                            }
+
+                            if (!worker.Token.IsCancellationRequested)
+                            {
+                                StartPolling();
+                                Player.ReadStreamIntoBuffer(_songStream, worker.Token);
+                            }
                         }).GetAwaiter().GetResult();
                     }
                     catch (Exception ex)
@@ -239,7 +270,10 @@ namespace SynAudio.MediaPlayer
 
         private void SetPosition(TimeSpan value)
         {
-            _position = value;
+            if (value > Length)
+                _position = TimeSpan.Zero;
+            else
+                _position = value;
             OnPropertyChanged(nameof(Position));
         }
 
