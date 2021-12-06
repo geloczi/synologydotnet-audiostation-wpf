@@ -184,8 +184,9 @@ namespace SynAudio.ViewModels
             }
         }
 
-        public void LoadState()
+        public void LoadState(out TimeSpan playbackPosition)
         {
+            playbackPosition = TimeSpan.Zero;
             lock (_syncRoot)
             {
                 Songs.Clear();
@@ -217,13 +218,15 @@ namespace SynAudio.ViewModels
                         }
                     }
 
+                    playbackPosition = TimeSpan.FromTicks(sql.ReadInt64(Int64Values.Playback_Position) ?? 0);
+
                     SetCurrentSongViewModel(Songs.FirstOrDefault(x => x.Song.Id == currentSongId));
                 }
             }
             OnPropertyChanged(nameof(Shuffle));
         }
 
-        public void SaveState()
+        public void SaveState(TimeSpan? playbackPosition)
         {
             lock (_syncRoot)
             {
@@ -240,6 +243,7 @@ namespace SynAudio.ViewModels
                         SongId = v.Song.Id,
                         OriginalPosition = _originalSongList.Count > 0 ? _originalSongList.IndexOf(v) : -1
                     }).ToArray());
+                    sql.WriteInt64(Int64Values.Playback_Position, playbackPosition.HasValue ? playbackPosition.Value.Ticks : 0);
                     tran.Commit();
                 }
             }

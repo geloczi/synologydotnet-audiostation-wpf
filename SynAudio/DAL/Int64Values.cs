@@ -8,6 +8,7 @@
         LastSyncDateTimeUtc,
         DatabaseVersion,
         NowPlaying_Repeat,
-        NowPlaying_Shuffle
+        NowPlaying_Shuffle,
+        Playback_Position
     }
 }
