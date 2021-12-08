@@ -1,27 +1,34 @@
-﻿using SqlCeLibrary;
+﻿using SQLite;
 
 namespace SynAudio.DAL
 {
     [Table("ByteArray")]
     public class ByteArrayValue
     {
-        [Column, PrimaryKey]
+        [Column(nameof(Key))]
+        [PrimaryKey]
+        [MaxLength(255)]
         public string Key { get; set; }
-        [Column]
+
+        [Column(nameof(Value))]
         public byte[] Value { get; set; }
 
-        public static byte[] Read(SqlCe sql, string key) => sql.SelectFirstByPrimaryKeys<ByteArrayValue>(key)?.Value;
-        public static bool TryRead(SqlCe sql, string key, out byte[] value)
+        public static byte[] Read(SQLiteConnection sql, string key)
         {
-            var v = sql.SelectFirstByPrimaryKeys<ByteArrayValue>(key);
-            value = v?.Value;
+            var obj = sql.Table<ByteArrayValue>().FirstOrDefault(x => x.Key == key);
+            return obj?.Value;
+        }
+
+        public static bool TryRead(SQLiteConnection sql, string key, out byte[] value)
+        {
+            var obj = sql.Table<ByteArrayValue>().FirstOrDefault(x => x.Key == key);
+            value = obj?.Value;
             return !(value is null);
         }
-        public static void Write(SqlCe sql, string key, byte[] value)
+
+        public static void Write(SQLiteConnection sql, string key, byte[] value)
         {
-            sql.DeleteSingleByPrimaryKey<ByteArrayValue>(key);
-            if (value?.Length > 0 == true)
-                sql.Insert(new ByteArrayValue() { Key = key, Value = value });
+            sql.InsertOrReplace(new ByteArrayValue { Key = key, Value = value });
         }
     }
 }

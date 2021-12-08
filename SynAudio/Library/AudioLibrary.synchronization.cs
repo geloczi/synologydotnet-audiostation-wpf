@@ -14,49 +14,50 @@ namespace SynAudio.Library
     {
         public async Task SyncSongsAsync(string artist, string album = null)
         {
-            if (string.IsNullOrEmpty(artist))
-                throw new ArgumentException(nameof(artist));
+            //TODO: partial sync
+            //if (string.IsNullOrEmpty(artist))
+            //    throw new ArgumentException(nameof(artist));
 
-            var s = TableInfo.Get<SongModel>();
-            var filter = new List<string>();
-            var parameters = new List<object>();
-            var queryFilter = new List<(SongQueryParameters, object)>();
+            //var s = TableInfo.Get<SongModel>();
+            //var filter = new List<string>();
+            //var parameters = new List<object>();
+            //var queryFilter = new List<(SongQueryParameters, object)>();
 
-            filter.Add($"{s[nameof(SongModel.Artist)]} = @{parameters.Count}");
-            parameters.Add(artist);
-            queryFilter.Add((SongQueryParameters.artist, artist));
+            //filter.Add($"{s[nameof(SongModel.Artist)]} = @{parameters.Count}");
+            //parameters.Add(artist);
+            //queryFilter.Add((SongQueryParameters.artist, artist));
 
-            // Kept for the future, so filtering by album is possible too
-            if (!string.IsNullOrEmpty(album))
-            {
-                filter.Add($"{s[nameof(SongModel.Album)]} = @{parameters.Count}");
-                parameters.Add(album);
-                queryFilter.Add((SongQueryParameters.album, album));
-            }
+            //// Kept for the future, so filtering by album is possible too
+            //if (!string.IsNullOrEmpty(album))
+            //{
+            //    filter.Add($"{s[nameof(SongModel.Album)]} = @{parameters.Count}");
+            //    parameters.Add(album);
+            //    queryFilter.Add((SongQueryParameters.album, album));
+            //}
 
-            using (var sql = Sql())
-            {
-                var dbSongs = sql.Select<SongModel>($"WHERE {string.Join(" AND ", filter)}", parameters.ToArray());
-                if (dbSongs.Length > 0)
-                {
-                    using (var state = _status.Create($"Sync {dbSongs.Length} songs..."))
-                    {
-                        var response = await _audioStation.ListSongsAsync(10000, 0, SongQueryAdditional.All, queryFilter.ToArray()).ConfigureAwait(false);
-                        if (response.Success && response?.Data.Songs?.Length > 0)
-                        {
-                            var dtos = response.Data.Songs.Select(x => (Id: x.ID, Dto: x)).ToDictionary(k => k.Id, v => v.Dto);
-                            dbSongs = dbSongs.Where(x => dtos.ContainsKey(x.Id)).ToArray();
-                            if (dbSongs.Length > 0)
-                            {
-                                foreach (var song in dbSongs)
-                                    song.LoadFromDto(dtos[song.Id]);
-                                sql.Update(dbSongs);
-                                SongsUpdated.FireAsync(this, dbSongs);
-                            }
-                        }
-                    }
-                }
-            }
+            //using (var sql = Sql())
+            //{
+            //    var dbSongs = sql.Select<SongModel>($"WHERE {string.Join(" AND ", filter)}", parameters.ToArray());
+            //    if (dbSongs.Length > 0)
+            //    {
+            //        using (var state = _status.Create($"Sync {dbSongs.Length} songs..."))
+            //        {
+            //            var response = await _audioStation.ListSongsAsync(10000, 0, SongQueryAdditional.All, queryFilter.ToArray()).ConfigureAwait(false);
+            //            if (response.Success && response?.Data.Songs?.Length > 0)
+            //            {
+            //                var dtos = response.Data.Songs.Select(x => (Id: x.ID, Dto: x)).ToDictionary(k => k.Id, v => v.Dto);
+            //                dbSongs = dbSongs.Where(x => dtos.ContainsKey(x.Id)).ToArray();
+            //                if (dbSongs.Length > 0)
+            //                {
+            //                    foreach (var song in dbSongs)
+            //                        song.LoadFromDto(dtos[song.Id]);
+            //                    sql.Update(dbSongs);
+            //                    SongsUpdated.FireAsync(this, dbSongs);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         public void SyncDatabaseAsync(bool forceUpdate)
@@ -75,7 +76,6 @@ namespace SynAudio.Library
             _log.Debug(nameof(SyncWorkMethod));
             try
             {
-                using (var sql = Sql())
                 using (var state = _status.Create("Checking for updates..."))
                 {
                     //// Cover download
@@ -83,14 +83,15 @@ namespace SynAudio.Library
                     //SyncCoversAsync(p.Token, true).Wait();
 
                     // Library synchronization
-                    var manualSync = (bool)p.Data;
-                    if (manualSync || IsMusicSyncNecessary(sql).Result)
+                    //var manualSync = (bool)p.Data;
+                    bool manualSync = true; //TODO
+                    if (manualSync || IsMusicSyncNecessary().Result)
                     {
                         state.Text = "Syncing...";
                         // Reset sync related status
-                        sql.WriteInt64(Int64Values.LastCoverDownloadCompleted, 0);
-                        sql.WriteInt64(Int64Values.LastSyncCompleted, 0);
-                        sql.WriteInt64(Int64Values.LastSongAnalysisCompleted, 0);
+                        DB.WriteInt64(Int64Values.LastCoverDownloadCompleted, 0);
+                        DB.WriteInt64(Int64Values.LastSyncCompleted, 0);
+                        DB.WriteInt64(Int64Values.LastSongAnalysisCompleted, 0);
 
                         // Music sync
                         SyncAsync(p.Token).Wait();
@@ -98,23 +99,23 @@ namespace SynAudio.Library
                         // Finished music sync
                         if (!p.Token.IsCancellationRequested)
                         {
-                            sql.WriteInt64(Int64Values.LastSyncCompleted, 1);
-                            sql.WriteInt64(Int64Values.LastSyncDateTimeUtc, DateTime.UtcNow.Ticks);
+                            DB.WriteInt64(Int64Values.LastSyncCompleted, 1);
+                            DB.WriteInt64(Int64Values.LastSyncDateTimeUtc, DateTime.UtcNow.Ticks);
                         }
                         Updated.FireAsync(this, EventArgs.Empty);
                     }
 
                     // Cover download
-                    if (!p.Token.IsCancellationRequested && sql.ReadInt64(Int64Values.LastCoverDownloadCompleted) != 1)
+                    if (!p.Token.IsCancellationRequested && DB.ReadInt64(Int64Values.LastCoverDownloadCompleted) != 1)
                     {
                         state.Text = "Downloading covers...";
                         SyncCoversAsync(p.Token, manualSync).Wait();
                         if (!p.Token.IsCancellationRequested)
-                            sql.WriteInt64(Int64Values.LastCoverDownloadCompleted, 1);
+                            DB.WriteInt64(Int64Values.LastCoverDownloadCompleted, 1);
                     }
 
                     // Song analysis
-                    if (!p.Token.IsCancellationRequested && sql.ReadInt64(Int64Values.LastSongAnalysisCompleted) != 1)
+                    if (!p.Token.IsCancellationRequested && DB.ReadInt64(Int64Values.LastSongAnalysisCompleted) != 1)
                     {
                         //Todo
                         //if (Api.CanUseTagging)
@@ -141,19 +142,19 @@ namespace SynAudio.Library
             }
         }
 
-        private async Task<bool> IsMusicSyncNecessary(SqlCe sql)
+        private async Task<bool> IsMusicSyncNecessary()
         {
-            // Was the last sync successful?
-            if (sql.ReadInt64(Int64Values.LastSyncCompleted) != 1)
-                return true;
+            //// Was the last sync successful?
+            //if (DB.ReadInt64(Int64Values.LastSyncCompleted) != 1)
+            //    return true;
 
-            // Compare song count with API
-            var songTable = TableInfo.Get<SongModel>();
-            var countInDb = (int)sql.ExecuteScalar($"SELECT COUNT(*) FROM {songTable.NameWithBrackets}");
-            var response = await _audioStation.ListSongsAsync(1, 0, SongQueryAdditional.None).ConfigureAwait(false); // It is enough to query just 1 song, because the response includes the total count
-            GuardResponse(response);
-            if (response.Data.Total != countInDb)
-                return true;
+            //// Compare song count with API
+            //var songTable = TableInfo.Get<SongModel>();
+            //var countInDb = (int)sql.ExecuteScalar($"SELECT COUNT(*) FROM {songTable.NameWithBrackets}");
+            //var response = await _audioStation.ListSongsAsync(1, 0, SongQueryAdditional.None).ConfigureAwait(false); // It is enough to query just 1 song, because the response includes the total count
+            //GuardResponse(response);
+            //if (response.Data.Total != countInDb)
+            //    return true;
 
             // Commented out, because my goal is to avoid regular full-syncs and use small partial syncs while the user is navigating in the library
             //// If the last sync was 24 hours ago
@@ -161,192 +162,209 @@ namespace SynAudio.Library
             //if (!lastSyncTicks.HasValue || (DateTime.UtcNow - DateTime.FromBinary(lastSyncTicks.Value) > TimeSpan.FromHours(24)))
             //	return true;
 
-            return false;
+            return true;
         }
 
         private async Task SyncAsync(CancellationToken token)
         {
             _log.Debug(nameof(SyncAsync));
-            var songTable = TableInfo.Get<SongModel>();
+
             var songIDsFromApi = new HashSet<string>();
-            var songsToCheckBackups = new List<(string ID, string Artist, string Album, string Title)>();
-            var albums = CreateMultiComparerStringDictionary<AlbumModel>();
+            var albumModelByArtistAlbumYear = new Dictionary<string, Dictionary<string, Dictionary<int, AlbumModel>>>();
+            //var songsToCheckBackups = new List<(string ID, string Artist, string Album, string Title)>();
+            //var albums = CreateMultiComparerStringDictionary<AlbumModel>();
 
-            using (var sql = Sql())
+            //foreach (var album in sql.Select<AlbumModel>())
+            //    albums.Add(AlbumModel.ConstructSimpleKey(album), album);
+
+            int downloaded = 0;
+            int offset = 0;
+            int total = -1;
+            var insertDate = DateTime.Now;
+
+            // Get all hashcodes for DB songs
+            var dbSongHashCodes = new Dictionary<string, string>();
+            foreach (var song in DB.Table<SongModel>().Select(x => new { x.Id, x.Hash }))
+                dbSongHashCodes[song.Id] = song.Hash;
+
+            // Artists
+            var dbArtists = new HashSet<string>();
+            foreach (var artist in DB.Table<ArtistModel>())
+                dbArtists.Add(artist.Name);
+
+            do
             {
-                foreach (var album in sql.Select<AlbumModel>())
-                    albums.Add(AlbumModel.ConstructSimpleKey(album), album);
+                // Download songs
+                var response = await _audioStation.ListSongsAsync(ApiPageSize, offset, SongQueryAdditional.All).ConfigureAwait(false);
+                if (!response.Success)
+                    break;
+                if (total == -1)
+                    total = response.Data.Total;
+                downloaded += response.Data.Songs.Length;
 
-                int downloaded = 0;
-                int offset = 0;
-                int total = -1;
-                var insertDate = DateTime.Now;
-
-                // Get all hashcodes for DB songs
-                var dbSongHashCodes = new Dictionary<string, int>();
-                sql.ExecuteReader($"SELECT {songTable[nameof(SongModel.Id)]}, {songTable[nameof(SongModel.HashCode)]} FROM {songTable}",
-                    (r) => dbSongHashCodes.Add(r.GetString(0), r.GetInt32(1))
-                );
-
-                do
+                // Construct SongModels
+                var songModels = new Dictionary<string, SongModel>();
+                foreach (var dto in response.Data.Songs)
                 {
-                    var response = await _audioStation.ListSongsAsync(ApiPageSize, offset, SongQueryAdditional.All).ConfigureAwait(false);
-                    if (!response.Success)
-                        break;
-
-                    if (total == -1)
-                        total = response.Data.Total;
-                    downloaded += response.Data.Songs.Length;
-
-                    var songModels = new Dictionary<string, SongModel>();
-                    foreach (var dto in response.Data.Songs)
+                    var song = new SongModel()
                     {
-                        var song = new SongModel()
-                        {
-                            InsertDate = insertDate
-                        };
-                        song.LoadFromDto(dto);
-                        if (songIDsFromApi.Add(song.Id)) //Just for extra safety, to avoid duplicates. This might happen if you copy song files to the NAS while synchronization is in progress
-                        {
-                            songModels.Add(song.Id, song);
-                            songIDsFromApi.Add(song.Id);
+                        InsertDate = insertDate
+                    };
+                    song.LoadFromDto(dto);
 
-                            // Map to an album
-                            if (!string.IsNullOrEmpty(song.Album))
+                    if (songIDsFromApi.Add(song.Id)) //Just for extra safety, to avoid duplicates. This might happen if you copy song files to the NAS while synchronization is in progress
+                    {
+                        songModels.Add(song.Id, song);
+                        songIDsFromApi.Add(song.Id);
+
+                        // Album
+                        if (!string.IsNullOrEmpty(song.Album))
+                        {
+                            if (!albumModelByArtistAlbumYear.TryGetValue(song.AlbumArtist, out var byArtist))
                             {
-                                var albumKey = AlbumModel.ConstructSimpleKey(song.AlbumArtist, song.Album, song.Year);
-                                if (!albums.TryGetValue(albumKey, out var album))
+                                byArtist = new Dictionary<string, Dictionary<int, AlbumModel>>();
+                                albumModelByArtistAlbumYear[song.AlbumArtist] = byArtist;
+                            }
+                            if (!byArtist.TryGetValue(song.Album, out var byAlbum))
+                            {
+                                byAlbum = new Dictionary<int, AlbumModel>();
+                                byArtist[song.Album] = byAlbum;
+                            }
+                            if (!byAlbum.TryGetValue(song.Year, out var albumModel))
+                            {
+                                albumModel = new AlbumModel()
                                 {
-                                    // Insert new album
-                                    album = new AlbumModel()
-                                    {
-                                        InsertDate = insertDate,
-                                        Artist = song.AlbumArtist,
-                                        Name = song.Album,
-                                        Year = song.Year.HasValue ? song.Year.Value : 0
-                                    };
-                                    sql.Insert(album);
-                                    albums.Add(albumKey, album);
-                                }
-                                song.AlbumId = album.Id;
+                                    InsertDate = insertDate,
+                                    Artist = song.AlbumArtist,
+                                    Name = song.Album,
+                                    Year = song.Year
+                                };
+                                byAlbum[song.Year] = albumModel;
+                                DB.Insert(albumModel);
                             }
+                            song.AlbumId = albumModel.Id;
                         }
-                    }
 
-                    // Update Song
-                    var toUpdate = songModels
-                        .Where(x => dbSongHashCodes.TryGetValue(x.Key, out var dbHashCode) && x.Value.HashCode != dbHashCode)
-                        .Select(x => x.Value)
-                        .ToArray();
-                    _log.Debug($"Songs to update: {toUpdate.Length}");
-                    if (toUpdate.Length > 0)
-                    {
-                        using (var tran = sql.BeginTransaction())
+                        // Artist
+                        if (!string.IsNullOrEmpty(song.Artist) && dbArtists.Add(song.Artist))
                         {
-                            foreach (var batch in SqlCe.PageCollection(toUpdate, DatabaseBatchSize))
+                            DB.Insert(new ArtistModel()
                             {
-                                if (token.IsCancellationRequested)
-                                    return;
-                                sql.Update(batch);
-                            }
-                            tran.Commit();
+                                Name = song.Artist
+                            });
                         }
                     }
-
-                    // Insert Song
-                    if (token.IsCancellationRequested)
-                        return;
-                    var toInsert = songModels.Where(a => !dbSongHashCodes.ContainsKey(a.Key)).Select(a => a.Value).ToArray();
-                    if (toInsert.Any())
-                    {
-                        _log.Debug($"Songs to insert: {toInsert.Length}");
-                        try
-                        {
-                            var cueFiles = toInsert.Where(x => x.Path.EndsWith(".cue", StringComparison.OrdinalIgnoreCase)).Select(x => x.Path).ToArray();
-                            if (cueFiles.Length > 0)
-                                _log.Warn("CUE sheet detected. These files are causing metadata loss, please delete them!" + Environment.NewLine + string.Join(Environment.NewLine, cueFiles));
-
-                            //sql.Insert(toInsert);
-                            //songsToCheckBackups.AddRange(toInsert
-                            //    .Where(a => !string.IsNullOrEmpty(a.Artist) && !string.IsNullOrEmpty(a.Album) && !string.IsNullOrEmpty(a.Title))
-                            //    .Select(a => (a.Id, a.Artist, a.Album, a.Title)));
-
-                            // Lite
-                            _lite.InsertAll(toInsert);
-                        }
-                        catch (Exception ex)
-                        {
-                            OnException(ex, $"Failed to insert {toInsert.Length} songs");
-                        }
-                    }
-
-                    offset += ApiPageSize;
                 }
-                while (!token.IsCancellationRequested && downloaded < total);
 
-                // Delete songs
-                var songIDsToDelete = dbSongHashCodes.Keys.Except(songIDsFromApi).ToArray();
-                if (songIDsToDelete.Length > 0)
+
+                // Update Song
+                var toUpdate = songModels
+                    .Where(x => dbSongHashCodes.TryGetValue(x.Key, out var dbHashCode) && x.Value.Hash != dbHashCode)
+                    .Select(x => x.Value)
+                    .ToArray();
+                _log.Debug($"Songs to update: {toUpdate.Length}");
+                if (toUpdate.Length > 0)
                 {
-                    // Backup rating before deletion
-                    var songDataToBackup = sql.Select<SongModel>($"WHERE {songTable[nameof(SongModel.Rating)]} <> 0"
-                        + $" AND LEN({songTable[nameof(SongModel.Artist)]}) > 0"
-                        + $" AND LEN({songTable[nameof(SongModel.Album)]}) > 0"
-                        + $" AND LEN({songTable[nameof(SongModel.Title)]}) > 0"
-                        + $" AND {songTable[nameof(SongModel.Id)]} IN ({string.Join(",", songIDsToDelete.Select(x => "'" + x + "'"))})");
-                    foreach (var song in songDataToBackup)
-                    {
-                        var b = new SongBackup()
-                        {
-                            Artist = song.Artist.Trim(),
-                            Album = song.Album.Trim(),
-                            Title = song.Title.Trim(),
-                            Path = song.Path,
-                            Rating = song.Rating
-                        };
-                        sql.DeleteSingleByPrimaryKey<SongBackup>(b.Artist, b.Album, b.Title);
-                        sql.Insert(b);
-                    }
-
-                    _log.Debug($"Songs to delete: {songIDsToDelete.Length}");
-                    sql.DeleteMultipleByPrimaryKey<SongModel>(songIDsToDelete.Select(x => new object[] { x }).ToArray());
+                    DB.UpdateAll(toUpdate);
                 }
 
-                // Try restore data from backups
-                foreach (var item in songsToCheckBackups)
+                // Insert Song
+                if (token.IsCancellationRequested)
+                    return;
+                var toInsert = songModels.Where(a => !dbSongHashCodes.ContainsKey(a.Key)).Select(a => a.Value).ToArray();
+                if (toInsert.Length > 0)
                 {
-                    var backup = sql.Select<SongBackup>($"WHERE {songTable[nameof(SongBackup.Artist)]} = @0 AND {songTable[nameof(SongBackup.Album)]} = @1 AND {songTable[nameof(SongBackup.Title)]} = @2",
-                        item.Artist.Trim(), item.Album.Trim(), item.Title.Trim()).FirstOrDefault();
-                    if (backup is null)
-                        continue;
-                    var song = sql.Select<SongModel>($"WHERE {songTable[nameof(SongModel.Id)]} = @0", item.ID).First();
-                    if (song.Rating == 0)
+                    _log.Debug($"Songs to insert: {toInsert.Length}");
+                    try
                     {
-                        if (_audioStation.RateSongAsync(song.Id, song.Rating).Result.Success)
-                        {
-                            song.Rating = backup.Rating;
-                            sql.Update(song);
-                            sql.DeleteSingle(backup);
-                            _log.Debug($"Restored backup for \"{song.Id}\"");
-                        }
-                        else
-                        {
-                            _log.Error($"Could not restore backup for \"{song.Id}\"");
-                        }
+                        var cueFiles = toInsert.Where(x => x.Path.EndsWith(".cue", StringComparison.OrdinalIgnoreCase)).Select(x => x.Path).ToArray();
+                        if (cueFiles.Length > 0)
+                            _log.Warn("CUE sheet detected. These files are causing metadata loss, please delete them!" + Environment.NewLine + string.Join(Environment.NewLine, cueFiles));
+
+                        DB.InsertAll(toInsert);
+                        //songsToCheckBackups.AddRange(toInsert
+                        //    .Where(a => !string.IsNullOrEmpty(a.Artist) && !string.IsNullOrEmpty(a.Album) && !string.IsNullOrEmpty(a.Title))
+                        //    .Select(a => (a.Id, a.Artist, a.Album, a.Title)));
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        sql.DeleteSingle(backup);
+                        OnException(ex, $"Failed to insert {toInsert.Length} songs");
                     }
                 }
-
-                // Delete orphaned albums
-                var albumTable = TableInfo.Get<AlbumModel>();
-                sql.ExecuteNonQuery($"DELETE FROM {albumTable} WHERE {albumTable[nameof(AlbumModel.Id)]} NOT IN (SELECT DISTINCT {songTable[nameof(SongModel.AlbumId)]} FROM {songTable})");
-                AlbumsUpdated.FireAsync(this, EventArgs.Empty);
+                offset += ApiPageSize;
             }
+            while (!token.IsCancellationRequested && downloaded < total);
+
+            // Delete songs
+            var songIDsToDelete = dbSongHashCodes.Keys.Except(songIDsFromApi).ToArray();
+            if (songIDsToDelete.Length > 0)
+            {
+                DB.RunInTransaction(() =>
+                {
+                    foreach (var id in songIDsToDelete)
+                        DB.Delete<SongModel>(id);
+                });
+
+                //    // Backup rating before deletion
+                //    var songDataToBackup = sql.Select<SongModel>($"WHERE {songTable[nameof(SongModel.Rating)]} <> 0"
+                //        + $" AND LEN({songTable[nameof(SongModel.Artist)]}) > 0"
+                //        + $" AND LEN({songTable[nameof(SongModel.Album)]}) > 0"
+                //        + $" AND LEN({songTable[nameof(SongModel.Title)]}) > 0"
+                //        + $" AND {songTable[nameof(SongModel.Id)]} IN ({string.Join(",", songIDsToDelete.Select(x => "'" + x + "'"))})");
+                //    foreach (var song in songDataToBackup)
+                //    {
+                //        var b = new SongBackup()
+                //        {
+                //            Artist = song.Artist.Trim(),
+                //            Album = song.Album.Trim(),
+                //            Title = song.Title.Trim(),
+                //            Path = song.Path,
+                //            Rating = song.Rating
+                //        };
+                //        sql.DeleteSingleByPrimaryKey<SongBackup>(b.Artist, b.Album, b.Title);
+                //        sql.Insert(b);
+                //    }
+
+                //    _log.Debug($"Songs to delete: {songIDsToDelete.Length}");
+                //    sql.DeleteMultipleByPrimaryKey<SongModel>(songIDsToDelete.Select(x => new object[] { x }).ToArray());
+            }
+
+            //// Try restore data from backups
+            //foreach (var item in songsToCheckBackups)
+            //{
+            //    var backup = sql.Select<SongBackup>($"WHERE {songTable[nameof(SongBackup.Artist)]} = @0 AND {songTable[nameof(SongBackup.Album)]} = @1 AND {songTable[nameof(SongBackup.Title)]} = @2",
+            //        item.Artist.Trim(), item.Album.Trim(), item.Title.Trim()).FirstOrDefault();
+            //    if (backup is null)
+            //        continue;
+            //    var song = sql.Select<SongModel>($"WHERE {songTable[nameof(SongModel.Id)]} = @0", item.ID).First();
+            //    if (song.Rating == 0)
+            //    {
+            //        if (_audioStation.RateSongAsync(song.Id, song.Rating).Result.Success)
+            //        {
+            //            song.Rating = backup.Rating;
+            //            sql.Update(song);
+            //            sql.DeleteSingle(backup);
+            //            _log.Debug($"Restored backup for \"{song.Id}\"");
+            //        }
+            //        else
+            //        {
+            //            _log.Error($"Could not restore backup for \"{song.Id}\"");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        sql.DeleteSingle(backup);
+            //    }
+            //}
+
+            //// Delete orphaned albums
+            //var albumTable = TableInfo.Get<AlbumModel>();
+            //sql.ExecuteNonQuery($"DELETE FROM {albumTable} WHERE {albumTable[nameof(AlbumModel.Id)]} NOT IN (SELECT DISTINCT {songTable[nameof(SongModel.AlbumId)]} FROM {songTable})");
+            //AlbumsUpdated.FireAsync(this, EventArgs.Empty);
+
+
             SyncCompleted.FireAsync(this, EventArgs.Empty);
-            BuildArtists(token);
+            //BuildArtists(token);
         }
 
         /// <summary>
@@ -355,22 +373,23 @@ namespace SynAudio.Library
         /// <param name="token"></param>
         private void BuildArtists(CancellationToken token)
         {
-            var a = TableInfo.Get<ArtistModel>();
-            var s = TableInfo.Get<SongModel>();
-            using (var sql = Sql())
-            {
-                // Deleted
-                //if (syncCompleted)
-                sql.ExecuteNonQuery($"DELETE FROM {a.NameWithBrackets} WHERE {a[nameof(ArtistModel.Name)]} NOT IN (SELECT DISTINCT {s[nameof(SongModel.Artist)]} FROM {s.NameWithBrackets})");
-                // New
-                if (!token.IsCancellationRequested)
-                    sql.ExecuteNonQuery(
-                        $@"INSERT INTO {a.NameWithBrackets}({a[nameof(ArtistModel.Name)]})
-						SELECT DISTINCT s.{s[nameof(SongModel.AlbumArtist)]} FROM {s.NameWithBrackets} s
-						LEFT JOIN {a.NameWithBrackets} a ON a.{a[nameof(ArtistModel.Name)]} = s.{s[nameof(SongModel.AlbumArtist)]}
-						WHERE LEN(s.{s[nameof(SongModel.AlbumArtist)]}) > 0 AND a.{a[nameof(ArtistModel.Name)]} IS NULL");
-            }
-            ArtistsUpdated.FireAsync(this, EventArgs.Empty);
+            //TODO
+            //      var a = TableInfo.Get<ArtistModel>();
+            //      var s = TableInfo.Get<SongModel>();
+            //      using (var sql = Sql())
+            //      {
+            //          // Deleted
+            //          //if (syncCompleted)
+            //          sql.ExecuteNonQuery($"DELETE FROM {a.NameWithBrackets} WHERE {a[nameof(ArtistModel.Name)]} NOT IN (SELECT DISTINCT {s[nameof(SongModel.Artist)]} FROM {s.NameWithBrackets})");
+            //          // New
+            //          if (!token.IsCancellationRequested)
+            //              sql.ExecuteNonQuery(
+            //                  $@"INSERT INTO {a.NameWithBrackets}({a[nameof(ArtistModel.Name)]})
+            //SELECT DISTINCT s.{s[nameof(SongModel.AlbumArtist)]} FROM {s.NameWithBrackets} s
+            //LEFT JOIN {a.NameWithBrackets} a ON a.{a[nameof(ArtistModel.Name)]} = s.{s[nameof(SongModel.AlbumArtist)]}
+            //WHERE LEN(s.{s[nameof(SongModel.AlbumArtist)]}) > 0 AND a.{a[nameof(ArtistModel.Name)]} IS NULL");
+            //      }
+            //      ArtistsUpdated.FireAsync(this, EventArgs.Empty);
         }
     }
 }

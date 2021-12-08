@@ -12,6 +12,7 @@ using SynAudio.Utils;
 using SynAudio.Models.Config;
 using Utils;
 using Utils.ObjectStorage;
+using SQLite;
 
 namespace SynAudio
 {
@@ -48,10 +49,12 @@ namespace SynAudio
         #endregion
 
         #region [Properties]
+
+        internal static SQLiteConnection DB { get; private set; }
         internal static Random Rnd { get; } = new Random();
         internal static SettingsModel Settings { get; private set; }
         internal static bool MusicFolderAvailableOnLan { get; set; }
-        public static string LibraryDatabaseFile => Path.Combine(UserDataFolder, "library.sdf");
+
         #endregion
 
         #region [Imports]
@@ -90,7 +93,7 @@ namespace SynAudio
             return false;
         }
 
-        internal static SqlCeLibrary.SqlCe GetSql() => new SqlCeLibrary.SqlCe(LibraryDatabaseFile, false);
+        //internal static SqlCeLibrary.SqlCe GetSql() => new SqlCeLibrary.SqlCe(LibraryDatabaseFile, false);
 
         internal static void SaveSettings()
         {
@@ -132,7 +135,7 @@ namespace SynAudio
                 }
             }
 
-            // Application can start
+            // Application can start, ensure directories
             if (!Directory.Exists(UserDataFolder))
                 Directory.CreateDirectory(UserDataFolder);
             if (!Directory.Exists(DAL.AlbumModel.CoversDirectory))
@@ -178,7 +181,10 @@ namespace SynAudio
                 PresentationTraceSources.DataBindingSource.Listeners.Add(new BindingErrorTraceListener());
                 DispatcherUnhandledException += App_DispatcherUnhandledException;
 
-                // Show main form
+                // Prepare database
+                EnsureDatabase();
+
+                // Start GUI
                 new MainWindow().Show();
             }
             catch (Exception ex)
@@ -187,6 +193,24 @@ namespace SynAudio
 #if DEBUG
                 Debugger.Break();
 #endif
+            }
+        }
+
+        private static void EnsureDatabase()
+        {
+            var dbFile = Path.Combine(UserDataFolder, "db.sqlite3");
+            bool isEmptyDb = !File.Exists(dbFile);
+            DB = new SQLiteConnection(dbFile, true);
+            if (isEmptyDb)
+            {
+                DB.CreateTable<DAL.ArtistModel>();
+                DB.CreateTable<DAL.AlbumModel>();
+                DB.CreateTable<DAL.ByteArrayValue>();
+                DB.CreateTable<DAL.Int64Value>();
+                DB.CreateTable<DAL.NowPlayingItem>();
+                DB.CreateTable<DAL.SongBackup>();
+                DB.CreateTable<DAL.SongModel>();
+                DB.CreateTable<DAL.StringValue>();
             }
         }
 
@@ -202,6 +226,8 @@ namespace SynAudio
         {
             _log.Info(nameof(OnExit));
             SaveSettings();
+            DB.Close();
+            DB.Dispose();
             NLog.LogManager.Shutdown();
             if (_mutex != null)
                 _mutex.ReleaseMutex();

@@ -32,12 +32,10 @@ namespace SynAudio.Library
         private SynoClient _synoClient;
         private BackgroundThreadWorker _updateCacheJob;
         private BackgroundThreadWorker _restoreBackupJob;
-        private readonly string _sqlFile;
         private readonly ViewModels.StatusViewModel _status;
         private readonly StringMultiComparer _stringComparer = new StringMultiComparer(StringComparison.OrdinalIgnoreCase, StringComparison.InvariantCultureIgnoreCase);
         private readonly string _sessionFile = Path.Combine(App.UserDataFolder, "session.dat");
-        private readonly string _liteFile = Path.Combine(App.UserDataFolder, "db.sqlite3");
-        private readonly SQLiteConnection _lite;
+        //private readonly string _liteFile = Path.Combine(App.UserDataFolder, "library.sqlite3");
         #endregion
 
         #region [Events]
@@ -49,45 +47,20 @@ namespace SynAudio.Library
 
         #region [Properties]
 
-        public static string LibraryDatabaseFile { get; } = Path.Combine(App.UserDataFolder, "library.sdf");
         public SettingsModel Settings { get; }
         public bool IsUpdatingInBackground => _updateCacheJob?.IsRunning == true;
         public bool Connected { get; private set; }
 
+        protected static SQLiteConnection DB => App.DB;
+
         #endregion
 
-        #region [Public Methods]
-
-        //public class TestModel
-        //{
-        //    [SQLite.PrimaryKey]
-        //    [SQLite.Column(nameof(Id))]
-        //    public int Id { get; set; }
-
-        //    [SQLite.Column(nameof(Title))]
-        //    public string Title { get; set; }
-        //}
+        #region Constructor
 
         public AudioLibrary(SettingsModel settings, ViewModels.StatusViewModel status)
         {
             Settings = settings;
-            _sqlFile = Path.Combine(LibraryDatabaseFile);
             _status = status;
-
-            // Test
-            if (File.Exists(_sqlFile))
-                File.Delete(_sqlFile);
-            if (File.Exists(_liteFile))
-                File.Delete(_liteFile);
-
-            // SQLite
-            bool isNewDb = !File.Exists(_liteFile);
-            _lite = new SQLiteConnection(_liteFile, true);
-
-            if (isNewDb)
-            {
-                _lite.CreateTable<SongModel>();
-            }
 
             //// Database initialization
             //long? dbVersion = null;
@@ -106,6 +79,22 @@ namespace SynAudio.Library
             //        sql.WriteInt64(Int64Values.DatabaseVersion, DatabaseVersion);
             //}
         }
+
+        #endregion Constructor
+
+        #region [Public Methods]
+
+        //public class TestModel
+        //{
+        //    [SQLite.PrimaryKey]
+        //    [SQLite.Column(nameof(Id))]
+        //    public int Id { get; set; }
+
+        //    [SQLite.Column(nameof(Title))]
+        //    public string Title { get; set; }
+        //}
+
+
 
         private bool TryGetSavedSession(out SynoSession session)
         {
@@ -148,38 +137,36 @@ namespace SynAudio.Library
             _audioStation = new AudioStationClient();
             _synoClient = new SynoClient(new Uri(Settings.Url), true, _audioStation);
 
-            using (var sql = Sql())
+            // Login
+            string sessionFile = Path.Combine(App.UserDataFolder, "session.dat");
+            SynoSession session = null;
+            if (password is null && TryGetSavedSession(out session))
             {
-                // Login
-                string sessionFile = Path.Combine(App.UserDataFolder, "session.dat");
-                SynoSession session = null;
-                if (password is null && TryGetSavedSession(out session))
-                {
-                    // Re-use session
-                    await _synoClient.LoginWithPreviousSessionAsync(session, false);
-                }
-                else if (!(password is null))
-                {
-                    // Login with credentials
-                    session = await _synoClient.LoginAsync(Settings.Username, password).ConfigureAwait(false);
-                }
-                else
-                {
-                    // Must enter credentials
-                    throw new System.Security.Authentication.AuthenticationException("Must enter crdentials.");
-                }
-
-                // Test connection
-                var response = await _audioStation.ListSongsAsync(1, 0, SynologyDotNet.AudioStation.Model.SongQueryAdditional.None).ConfigureAwait(false);
-                if (!response.Success)
-                {
-                    session = null;
-                }
-                SaveSession(session);
-
-                //sql.WriteBlob(ByteArrayValues.AudioStationConnectorSession, !(session is null) ? App.Encrypter.Encrypt(JsonSerialization.SerializeToBytes(session)) : null);
-                Connected = response.Success;
+                // Re-use session
+                await _synoClient.LoginWithPreviousSessionAsync(session, false);
             }
+            else if (!(password is null))
+            {
+                // Login with credentials
+                session = await _synoClient.LoginAsync(Settings.Username, password).ConfigureAwait(false);
+            }
+            else
+            {
+                // Must enter credentials
+                throw new System.Security.Authentication.AuthenticationException("Must enter crdentials.");
+            }
+
+            // Test connection
+            var response = await _audioStation.ListSongsAsync(1, 0, SynologyDotNet.AudioStation.Model.SongQueryAdditional.None).ConfigureAwait(false);
+            if (!response.Success)
+            {
+                session = null;
+            }
+            SaveSession(session);
+
+            //sql.WriteBlob(ByteArrayValues.AudioStationConnectorSession, !(session is null) ? App.Encrypter.Encrypt(JsonSerialization.SerializeToBytes(session)) : null);
+            Connected = response.Success;
+
             return Connected;
         }
 
@@ -187,8 +174,7 @@ namespace SynAudio.Library
         {
             _log.Debug(nameof(Logout));
             Connected = false;
-            using (var sql = Sql())
-                sql.WriteBlob(ByteArrayValues.AudioStationConnectorSession, null);
+            DB.WriteBlob(ByteArrayValues.AudioStationConnectorSession, null);
         }
 
         public void Dispose()
@@ -202,14 +188,11 @@ namespace SynAudio.Library
             Connected = false;
             _audioStation.Dispose();
             _synoClient.Dispose();
-            _lite.Close();
-            _lite.Dispose();
         }
 
         #endregion
 
         #region [Private Methods]
-        private static SqlCe Sql() => App.GetSql();
         private MultiComparerStringHashSet CreateMultiComparerStringHashSet() => new MultiComparerStringHashSet(StringComparer.OrdinalIgnoreCase, StringComparer.InvariantCultureIgnoreCase);
         private MultiComparerStringDictionary<T> CreateMultiComparerStringDictionary<T>() => new MultiComparerStringDictionary<T>(StringComparer.OrdinalIgnoreCase, StringComparer.InvariantCultureIgnoreCase);
         private string EscapeSqlLikeString(string s) => s.Replace("%", "[%]");

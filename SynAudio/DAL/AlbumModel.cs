@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using SqlCeLibrary;
+using SQLite;
 using SynAudio.ViewModels;
 using SynologyDotNet.AudioStation.Model;
 
@@ -11,24 +11,36 @@ namespace SynAudio.DAL
     {
         public static readonly string CoversDirectory = Path.Combine(App.UserDataFolder, "albumcovers");
 
-        [Column, PrimaryKey(AutoIncrement = true)]
+        [Column(nameof(Id))]
+        [PrimaryKey]
+        [AutoIncrement]
         public int Id { get; set; }
 
-        [Column, CompareIgnore]
+        [Column(nameof(InsertDate))]
+        [NotNull]
         public DateTime InsertDate { get; set; }
 
-        [Column]
+        [Column(nameof(Artist))]
+        [NotNull]
         public string Artist { get; set; }
-        [Column]
+
+        [Column(nameof(Name))]
+        [NotNull]
         public string Name { get; set; }
-        [Column(Default = "0")]
+
+        [Column(nameof(Rating))]
+        [NotNull]
         public int Rating { get; set; }
-        [Column]
+
+        [Column(nameof(Year))]
+        [NotNull]
         public int Year { get; set; }
+
         /// <summary>
         /// 0: NotSet, 1: Exists, -1: DoesNotExist
         /// </summary>
-        [Column]
+        [Column(nameof(CoverFileState))]
+        [NotNull]
         public int CoverFileState { get; set; }
 
         public override string ToString() => Name ?? base.ToString();

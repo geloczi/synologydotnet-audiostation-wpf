@@ -532,71 +532,72 @@ namespace SynAudio.ViewModels
             Application.Current.Shutdown();
         }
 
-        public void BackupUserData()
-        {
-            try
-            {
-                var sfd = new SaveFileDialog()
-                {
-                    AddExtension = true,
-                    FileName = $"SynAudio_backup_{DateTime.Now:yyyyMMdd_HHmmss}.bak"
-                };
-                if (sfd.ShowDialog() == true)
-                {
-                    var package = Library.BackupUserData();
-                    File.WriteAllText(sfd.FileName, JsonConvert.SerializeObject(package));
-                    MessageBox.Show("OK");
-                }
-            }
-            catch (Exception ex)
-            {
-                LogAndShowException(ex);
-            }
-        }
+        //public void BackupUserData()
+        //{
+        //    try
+        //    {
+        //        var sfd = new SaveFileDialog()
+        //        {
+        //            AddExtension = true,
+        //            FileName = $"SynAudio_backup_{DateTime.Now:yyyyMMdd_HHmmss}.bak"
+        //        };
+        //        if (sfd.ShowDialog() == true)
+        //        {
+        //            //var package = Library.BackupUserData();
+        //            //File.WriteAllText(sfd.FileName, JsonConvert.SerializeObject(package));
+        //            //MessageBox.Show("OK");
+        //            throw new NotImplementedException("TODO");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogAndShowException(ex);
+        //    }
+        //}
 
-        public void RestoreUserData()
-        {
-            if (Library.IsUpdatingInBackground)
-            {
-                MessageBox.Show("Can't restore backup while synchronization is running.", "", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            try
-            {
-                var ofd = new OpenFileDialog()
-                {
-                    Filter = "Backup files|*.bak"
-                };
-                if (ofd.ShowDialog() == true)
-                {
-                    UserDataBackupModel package = null;
-                    try
-                    {
-                        package = JsonConvert.DeserializeObject<UserDataBackupModel>(File.ReadAllText(ofd.FileName));
-                        if (!(package?.SongBackups?.Length > 0))
-                            throw new Exception("The backup file is invalid.");
-                    }
-                    catch (Exception ex)
-                    {
-                        package = null;
-                        _log.Warn(ex, $"Error while deserializing {nameof(UserDataBackupModel)}");
-                    }
-                    if (package is null)
-                    {
-                        MessageBox.Show("The backup file is invalid.", "Invalid file", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Restore procedure started in the background.", "", MessageBoxButton.OK, MessageBoxImage.Information);
-                        Library.RestoreUserData(package);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogAndShowException(ex);
-            }
-        }
+        //public void RestoreUserData()
+        //{
+        //    if (Library.IsUpdatingInBackground)
+        //    {
+        //        MessageBox.Show("Can't restore backup while synchronization is running.", "", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        return;
+        //    }
+        //    try
+        //    {
+        //        var ofd = new OpenFileDialog()
+        //        {
+        //            Filter = "Backup files|*.bak"
+        //        };
+        //        if (ofd.ShowDialog() == true)
+        //        {
+        //            UserDataBackupModel package = null;
+        //            try
+        //            {
+        //                package = JsonConvert.DeserializeObject<UserDataBackupModel>(File.ReadAllText(ofd.FileName));
+        //                if (!(package?.SongBackups?.Length > 0))
+        //                    throw new Exception("The backup file is invalid.");
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                package = null;
+        //                _log.Warn(ex, $"Error while deserializing {nameof(UserDataBackupModel)}");
+        //            }
+        //            if (package is null)
+        //            {
+        //                MessageBox.Show("The backup file is invalid.", "Invalid file", MessageBoxButton.OK, MessageBoxImage.Error);
+        //            }
+        //            else
+        //            {
+        //                MessageBox.Show("Restore procedure started in the background.", "", MessageBoxButton.OK, MessageBoxImage.Information);
+        //                Library.RestoreUserData(package);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogAndShowException(ex);
+        //    }
+        //}
 
         private bool TryGetSongFileFromNetworkPath(SongModel song, out string songFilePath)
         {
@@ -830,14 +831,14 @@ namespace SynAudio.ViewModels
 
         private void Library_SongsUpdated(object sender, SongModel[] songs)
         {
-            var oldSongs = CollectSongModels();
-            var st = TableInfo.Get<SongModel>();
-            var updatedSongDict = songs.ToDictionary(k => k.Id, v => v);
-            foreach (var oldSong in oldSongs)
-            {
-                if (updatedSongDict.TryGetValue(oldSong.Id, out var newSong))
-                    SongModel.Copy(newSong, oldSong);
-            }
+            //var oldSongs = CollectSongModels();
+            //var st = TableInfo.Get<SongModel>();
+            //var updatedSongDict = songs.ToDictionary(k => k.Id, v => v);
+            //foreach (var oldSong in oldSongs)
+            //{
+            //    if (updatedSongDict.TryGetValue(oldSong.Id, out var newSong))
+            //        SongModel.Copy(newSong, oldSong);
+            //}
         }
 
         public void OnClose()
@@ -946,29 +947,29 @@ namespace SynAudio.ViewModels
             //}
         }
 
-        private void UpdateSongModels(ICollection<SongModel> collection)
-        {
-            if (collection.Count > 0)
-            {
-                var oldSongs = collection.ToDictionary(a => a.Id, a => a);
-                var newSongs = Library.GetSongs(oldSongs.Keys.ToArray());
-                var songTableInfo = TableInfo.Get<SongModel>();
+        //private void UpdateSongModels(ICollection<SongModel> collection)
+        //{
+        //    if (collection.Count > 0)
+        //    {
+        //        var oldSongs = collection.ToDictionary(a => a.Id, a => a);
+        //        var newSongs = Library.GetSongs(oldSongs.Keys.ToArray());
+        //        var songTableInfo = TableInfo.Get<SongModel>();
 
-                // Update song data
-                foreach (var newSong in newSongs)
-                {
-                    if (oldSongs.TryGetValue(newSong.Id, out var oldSong))
-                    {
-                        songTableInfo.CopyDifferentProperties(newSong, oldSong);
-                        oldSong.LoadCustomizationFromCommentTag();
-                    }
-                }
+        //        // Update song data
+        //        foreach (var newSong in newSongs)
+        //        {
+        //            if (oldSongs.TryGetValue(newSong.Id, out var oldSong))
+        //            {
+        //                songTableInfo.CopyDifferentProperties(newSong, oldSong);
+        //                oldSong.LoadCustomizationFromCommentTag();
+        //            }
+        //        }
 
-                // Remove deleted songs
-                foreach (var song in oldSongs.Where(x => !newSongs.Any(y => y.Id == x.Key)).Select(x => x.Value))
-                    collection.Remove(song);
-            }
-        }
+        //        // Remove deleted songs
+        //        foreach (var song in oldSongs.Where(x => !newSongs.Any(y => y.Id == x.Key)).Select(x => x.Value))
+        //            collection.Remove(song);
+        //    }
+        //}
 
         private void Library_SyncCompleted(object sender, EventArgs e)
         {

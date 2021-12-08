@@ -25,12 +25,14 @@ namespace SynAudio.Views
 
         private void btnBackupUserData_Click(object sender, RoutedEventArgs e)
         {
-            VM.Main.BackupUserData();
+            MessageBox.Show("TODO");
+            //VM.Main.BackupUserData();
         }
 
         private void btnRestoreUserData_Click(object sender, RoutedEventArgs e)
         {
-            VM.Main.RestoreUserData();
+            MessageBox.Show("TODO");
+            //VM.Main.RestoreUserData();
         }
     }
 

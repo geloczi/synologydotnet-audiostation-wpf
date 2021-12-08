@@ -1,27 +1,34 @@
-﻿using SqlCeLibrary;
+﻿using SQLite;
 
 namespace SynAudio.DAL
 {
     [Table("Int64Value")]
     class Int64Value
     {
-        [Column, PrimaryKey]
+        [Column(nameof(Key))]
+        [PrimaryKey]
+        [MaxLength(255)]
         public string Key { get; set; }
-        [Column, NotNull]
+
+        [Column(nameof(Value))]
         public long Value { get; set; }
 
-        public static long? Read(SqlCe sql, string key) => sql.SelectFirstByPrimaryKeys<Int64Value>(key)?.Value;
-        public static bool TryRead(SqlCe sql, string key, out long value)
+        public static long Read(SQLiteConnection sql, string key)
         {
-            var v = sql.SelectFirstByPrimaryKeys<Int64Value>(key);
-            value = v is null ? 0 : v.Value;
-            return v is null;
+            var obj = sql.Table<Int64Value>().FirstOrDefault(x => x.Key == key);
+            return obj?.Value ?? 0;
         }
-        public static void Write(SqlCe sql, string key, long? value)
+
+        public static bool TryRead(SQLiteConnection sql, string key, out long value)
         {
-            sql.DeleteSingleByPrimaryKey<Int64Value>(key);
-            if (value.HasValue)
-                sql.Insert(new Int64Value() { Key = key, Value = value.Value });
+            var obj = sql.Table<Int64Value>().FirstOrDefault(x => x.Key == key);
+            value = obj?.Value ?? 0;
+            return !(obj is null);
+        }
+
+        public static void Write(SQLiteConnection sql, string key, long value)
+        {
+            sql.InsertOrReplace(new Int64Value { Key = key, Value = value });
         }
     }
 }

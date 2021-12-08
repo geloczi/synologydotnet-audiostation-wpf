@@ -1,23 +1,34 @@
-﻿using SqlCeLibrary;
+﻿using SQLite;
 
 namespace SynAudio.DAL
 {
     [Table("StringValue")]
     class StringValue
     {
-        [Column, PrimaryKey]
+        [Column(nameof(Key))]
+        [PrimaryKey]
+        [MaxLength(255)]
         public string Key { get; set; }
 
-        [Column(Size = "1000"), NotNull]
+        [Column(nameof(Value))]
         public string Value { get; set; }
 
-        public static string Read(SqlCe sql, string key) => sql.SelectFirstByPrimaryKeys<StringValue>(key)?.Value;
-        public static bool TryRead(SqlCe sql, string key, out string value) => !((value = sql.SelectFirstByPrimaryKeys<StringValue>(key)?.Value) is null);
-        public static void Write(SqlCe sql, string key, string value)
+        public static string Read(SQLiteConnection sql, string key)
         {
-            sql.DeleteSingleByPrimaryKey<StringValue>(key);
-            if (!(value is null))
-                sql.Insert(new StringValue() { Key = key, Value = value });
+            var obj = sql.Table<StringValue>().FirstOrDefault(x => x.Key == key);
+            return obj?.Value;
+        }
+
+        public static bool TryRead(SQLiteConnection sql, string key, out string value)
+        {
+            var obj = sql.Table<StringValue>().FirstOrDefault(x => x.Key == key);
+            value = obj?.Value;
+            return !(value is null);
+        }
+
+        public static void Write(SQLiteConnection sql, string key, string value)
+        {
+            sql.InsertOrReplace(new StringValue { Key = key, Value = value });
         }
     }
 }

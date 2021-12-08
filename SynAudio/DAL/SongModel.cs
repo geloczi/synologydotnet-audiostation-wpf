@@ -1,151 +1,156 @@
 ﻿using System;
-using SqlCeLibrary;
+using SQLite;
 using SynAudio.ViewModels;
 
 namespace SynAudio.DAL
 {
+
     [Table("Song")]
-    [SQLite.Table("Song")]
     public class SongModel : ViewModelBase
     {
         #region DAL/ViewModel
 
-        [Column, PrimaryKey(AutoIncrement = false)]
-        [SQLite.Column(nameof(Id))]
-        [SQLite.PrimaryKey]
+        [Column(nameof(Id))]
+        [PrimaryKey]
+        [MaxLength(50)]
         public string Id { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(AlbumId))]
+        [Column(nameof(AlbumId))]
+        [NotNull]
         public int AlbumId { get; set; }
 
         /// <summary>
         /// The artist of the song.
         /// </summary>
-        [Column]
-        [SQLite.Column(nameof(Artist))]
+        [Column(nameof(Artist))]
+        [NotNull]
         public string Artist { get; set; }
 
         /// <summary>
         /// The artist of the album. This can be "VA" (Various artists) if the album contains different songs from various artists. 
         /// For example: a compilation CD or a movie soundtrack CD. 
         /// </summary>
-        [Column]
-        [SQLite.Column(nameof(AlbumArtist))]
-        [SQLite.MaxLength(255)]
+        [Column(nameof(AlbumArtist))]
+        [NotNull]
+        [MaxLength(255)]
         public string AlbumArtist { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Album))]
-        [SQLite.MaxLength(255)]
+        [Column(nameof(Album))]
+        [NotNull]
+        [MaxLength(255)]
         public string Album { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Title))]
-        [SQLite.MaxLength(255)]
+        [Column(nameof(Title))]
+        [NotNull]
+        [MaxLength(255)]
         public string Title { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Rating))]
+        [Column(nameof(Rating))]
+        [NotNull]
         public int Rating { get; set; }
 
-        [Column(Size = "20")]
-        [SQLite.Column(nameof(Format))]
-        [SQLite.MaxLength(20)]
+        [Column(nameof(Format))]
+        [NotNull]
+        [MaxLength(20)]
         public string Format { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Path))]
-        [SQLite.MaxLength(400)]
+        [Column(nameof(Path))]
+        [NotNull]
+        [MaxLength(500)]
         public string Path { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Track))]
+        [Column(nameof(Track))]
+        [NotNull]
         public int? Track { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Year))]
-        public int? Year { get; set; }
+        [Column(nameof(Year))]
+        [NotNull]
+        public int Year { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Duration))]
+        [Column(nameof(Duration))]
+        [NotNull]
         public TimeSpan Duration { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(FileSize))]
+        [Column(nameof(FileSize))]
+        [NotNull]
         public int FileSize { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(AudioBitrate))]
+        [Column(nameof(AudioBitrate))]
+        [NotNull]
         public int AudioBitrate { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(AudioChannels))]
+        [Column(nameof(AudioChannels))]
+        [NotNull]
         public int AudioChannels { get; set; }
 
-        [Column(Size = "20")]
-        [SQLite.Column(nameof(AudioCodec))]
-        [SQLite.MaxLength(20)]
+        [Column(nameof(AudioCodec))]
+        [NotNull]
+        [MaxLength(20)]
         public string AudioCodec { get; set; }
 
-        [Column(Size = "20")]
-        [SQLite.Column(nameof(AudioContainer))]
-        [SQLite.MaxLength(20)]
+        [Column(nameof(AudioContainer))]
+        [NotNull]
+        [MaxLength(20)]
         public string AudioContainer { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(AudioFrequency))]
+        [Column(nameof(AudioFrequency))]
+        [NotNull]
         public int AudioFrequency { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Comment))]
-        [SQLite.MaxLength(255)]
+        [Column(nameof(Comment))]
+        [NotNull]
+        [MaxLength(255)]
         public string Comment { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Composer))]
-        [SQLite.MaxLength(255)]
+        [Column(nameof(Composer))]
+        [NotNull]
+        [MaxLength(255)]
         public string Composer { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Disc))]
+        [Column(nameof(Disc))]
+        [NotNull]
         public int Disc { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(Genre))]
-        [SQLite.MaxLength(255)]
+        [Column(nameof(Genre))]
+        [NotNull]
+        [MaxLength(255)]
         public string Genre { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(RgAlbumGain))]
+        [Column(nameof(RgAlbumGain))]
+        [NotNull]
         public double RgAlbumGain { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(RgAlbumPeak))]
+        [Column(nameof(RgAlbumPeak))]
+        [NotNull]
         public double RgAlbumPeak { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(RgTrackGain))]
+        [Column(nameof(RgTrackGain))]
+        [NotNull]
         public double RgTrackGain { get; set; }
 
-        [Column]
-        [SQLite.Column(nameof(RgTrackPeak))]
+        [Column(nameof(RgTrackPeak))]
+        [NotNull]
         public double RgTrackPeak { get; set; }
 
         #endregion
 
         #region Internally used columns
-        [Column, CompareIgnore]
+
+        [Column(nameof(InsertDate))]
+        [NotNull]
         public DateTime InsertDate { get; set; }
 
-        [Column, CompareIgnore, Nullable]
+        [Column(nameof(LastPlayDate))]
         public DateTime? LastPlayDate { get; set; }
 
-        [Column, CompareIgnore]
+        [Column(nameof(PlayCount))]
+        [NotNull]
         public int PlayCount { get; set; }
 
-        [Column, CompareIgnore]
-        public int HashCode { get; set; }
+        [Column(nameof(Hash))]
+        [NotNull]
+        [MaxLength(40)]
+        public string Hash { get; set; }
         #endregion
 
         #region OnlyViewModel
@@ -157,46 +162,6 @@ namespace SynAudio.DAL
 
         public SongModel()
         {
-        }
-
-        public void UpdateHashCode()
-        {
-            // A variation of Bernstein hash
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 31 + (Id?.GetHashCode() ?? 0);
-                hash = hash * 31 + (Artist?.GetHashCode() ?? 0);
-                hash = hash * 31 + (AlbumArtist?.GetHashCode() ?? 0);
-                hash = hash * 31 + (Album?.GetHashCode() ?? 0);
-                hash = hash * 31 + (Comment?.GetHashCode() ?? 0);
-                hash = hash * 31 + (Composer?.GetHashCode() ?? 0);
-                hash = hash * 31 + Disc.GetHashCode();
-                hash = hash * 31 + (Genre?.GetHashCode() ?? 0);
-                hash = hash * 31 + RgAlbumGain.GetHashCode();
-                hash = hash * 31 + RgAlbumPeak.GetHashCode();
-                hash = hash * 31 + RgTrackGain.GetHashCode();
-                hash = hash * 31 + RgTrackPeak.GetHashCode();
-                hash = hash * 31 + (Title?.GetHashCode() ?? 0);
-                hash = hash * 31 + Rating.GetHashCode();
-                hash = hash * 31 + (Format?.GetHashCode() ?? 0);
-                hash = hash * 31 + (Path?.GetHashCode() ?? 0);
-                hash = hash * 31 + Track.GetHashCode();
-                hash = hash * 31 + Year.GetHashCode();
-                hash = hash * 31 + AudioBitrate.GetHashCode();
-                hash = hash * 31 + AudioChannels.GetHashCode();
-                hash = hash * 31 + AudioCodec.GetHashCode();
-                hash = hash * 31 + AudioContainer.GetHashCode();
-                hash = hash * 31 + Duration.GetHashCode();
-                hash = hash * 31 + FileSize.GetHashCode();
-                hash = hash * 31 + AudioFrequency.GetHashCode();
-                HashCode = hash;
-            }
-        }
-
-        public SongModel(SynologyDotNet.AudioStation.Model.Song dto)
-        {
-            LoadFromDto(dto);
         }
 
         public override string ToString() => Title ?? base.ToString();
@@ -229,7 +194,7 @@ namespace SynAudio.DAL
             FileSize = dto.Additional.Audio.FileSize;
             AudioFrequency = dto.Additional.Audio.Frequency;
 
-            UpdateHashCode();
+            Hash = Utils.DeterministicHash.HashObject(dto);
         }
 
         /// <summary>
@@ -245,24 +210,36 @@ namespace SynAudio.DAL
             return custom;
         }
 
-        //public SongModel Clone()
-        //{
-        //	var result = new SongModel();
-        //	TableInfo.Get<SongModel>().CopyAllProperties(this, result);
-        //	result.LoadCustomizationFromCommentTag();
-        //	return result;
-        //}
-
         public static void Copy(SongModel from, SongModel to)
         {
-            TableInfo.Get<SongModel>().CopyAllProperties(from, to);
-            to.LoadCustomizationFromCommentTag();
-        }
-
-        public static void CopyDifferentProperties(SongModel from, SongModel to)
-        {
-            TableInfo.Get<SongModel>().CopyDifferentProperties(from, to);
-            to.LoadCustomizationFromCommentTag();
+            to.Album = from.Album;
+            to.AlbumArtist = from.AlbumArtist;
+            to.AlbumId = from.AlbumId;
+            to.Artist = from.Artist;
+            to.AudioBitrate = from.AudioBitrate;
+            to.AudioChannels = from.AudioChannels;
+            to.AudioCodec = from.AudioCodec;
+            to.AudioContainer = from.AudioContainer;
+            to.AudioFrequency = from.AudioFrequency;
+            to.Comment = from.Comment;
+            to.Composer = from.Composer;
+            to.Disc = from.Disc;
+            to.Duration = from.Duration;
+            to.FileSize = from.FileSize;
+            to.Format = from.Format;
+            to.Genre = from.Genre;
+            to.InsertDate = from.InsertDate;
+            to.LastPlayDate = from.LastPlayDate;
+            to.Path = from.Path;
+            to.PlayCount = from.PlayCount;
+            to.Rating = from.Rating;
+            to.RgAlbumGain = from.RgAlbumGain;
+            to.RgAlbumPeak = from.RgAlbumPeak;
+            to.RgTrackGain = from.RgTrackGain;
+            to.RgTrackPeak = from.RgTrackPeak;
+            to.Title = from.Title;
+            to.Track = from.Track;
+            to.Year = from.Year;
         }
     }
 }

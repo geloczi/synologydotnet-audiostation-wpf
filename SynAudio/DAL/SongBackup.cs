@@ -1,4 +1,4 @@
-﻿using SqlCeLibrary;
+﻿using SQLite;
 
 namespace SynAudio.DAL
 {
@@ -6,21 +6,30 @@ namespace SynAudio.DAL
     public class SongBackup
     {
         #region [Song metadata]
-        // Here are the metadata fields which can identify a particual song
-        [Column, PrimaryKey]
+
+        [Column(nameof(Id))]
+        [PrimaryKey]
+        [AutoIncrement]
+        public int Id { get; set; }
+
+        [Column(nameof(Artist))]
         public string Artist { get; set; }
-        [Column, PrimaryKey]
+
+        [Column(nameof(Album))]
         public string Album { get; set; }
-        [Column, PrimaryKey]
+
+        [Column(nameof(Title))]
         public string Title { get; set; }
 
-        [Column]
-        public string Path { get; set; } // Use the Path first to try to match a song. This may fail if the user replaced the song (re-encode, move, rename, ...)
+        [Column(nameof(Path))]
+        public string Path { get; set; }
         #endregion
 
         #region [User related]
-        [Column]
+
+        [Column(nameof(Rating))]
         public int Rating { get; set; }
+
         #endregion
 
         public SongBackup() { }
