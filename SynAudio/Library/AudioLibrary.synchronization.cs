@@ -77,9 +77,9 @@ namespace SynAudio.Library
             {
                 using (var state = _status.Create("Checking for updates..."))
                 {
-                    //// Cover download
-                    //state.Text = "Downloading covers...";
-                    //SyncCoversAsync(p.Token, true).Wait();
+                    // Cover download
+                    state.Text = "Downloading covers...";
+                    SyncCoversAsync(p.Token, true).Wait();
 
                     // Library synchronization
                     //var manualSync = (bool)p.Data;

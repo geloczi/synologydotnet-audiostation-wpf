@@ -37,11 +37,11 @@ namespace SynAudio.DAL
         public int Year { get; set; }
 
         /// <summary>
-        /// 0: NotSet, 1: Exists, -1: DoesNotExist
+        /// Cover file state
         /// </summary>
-        [Column(nameof(CoverFileState))]
+        [Column(nameof(CoverFile))]
         [NotNull]
-        public int CoverFileState { get; set; }
+        public ResourceState CoverFile { get; set; }
 
         public override string ToString() => Name ?? base.ToString();
 
@@ -53,15 +53,15 @@ namespace SynAudio.DAL
             Artist = GetFirstCleanString(dto.DisplayArtist, dto.AlbumArtist, dto.Artist);
         }
 
-        public string Cover => CoverFileState == 1 ? GetCoverFileFullPath() : null;
+        public string Cover => CoverFile ==  ResourceState.Exists ? GetCoverFileFullPath() : null;
 
         public string GetCoverFileFullPath() => GetCoverFileFullPath(Id);
 
         public bool TryToFindCoverFile()
         {
             var file = GetCoverFileFullPath();
-            CoverFileState = File.Exists(file) ? 1 : -1;
-            return CoverFileState == 1;
+            CoverFile = File.Exists(file) ? ResourceState.Exists : ResourceState.DoesNotExist;
+            return CoverFile == ResourceState.Exists;
         }
 
         public string DisplayName => string.IsNullOrEmpty(Name) ? "Unknown" : TruncateString(Name, 26, "..");
@@ -73,7 +73,7 @@ namespace SynAudio.DAL
         public void SaveCover(byte[] bytes)
         {
             File.WriteAllBytes(GetCoverFileFullPath(), bytes);
-            CoverFileState = 1;
+            CoverFile = ResourceState.Exists;
         }
 
         public void DeleteCover()
@@ -86,7 +86,7 @@ namespace SynAudio.DAL
                     File.Delete(path);
                 }
                 catch { }
-                CoverFileState = -1;
+                CoverFile = ResourceState.DoesNotExist;
             }
         }
     }

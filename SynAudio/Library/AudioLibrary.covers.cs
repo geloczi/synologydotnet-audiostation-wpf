@@ -13,72 +13,75 @@ namespace SynAudio.Library
     {
         private async Task SyncCoversAsync(CancellationToken token, bool force)
         {
-            //       // Download album covers
-            //       var alb = TableInfo.Get<AlbumModel>();
-            //       var processor = new QueueProcessorTasks<AlbumModel>(async (t, album) =>
-            //       {
-            //           await DownloadAndSaveAlbumCover(sql, album);
-            //           AlbumCoverUpdated.FireAsync(this, album);
-            //       }, 4);
+            List<AlbumModel> albums;
+            if (force)
+            {
+                albums = new List<AlbumModel>();
+                foreach (var album in Db.Table<AlbumModel>())
+                {
+                    if (album.CoverFile != ResourceState.Exists)
+                    {
+                        // Albums without cover (with retry download)
+                        albums.Add(album);
+                    }
+                    else
+                    {
+                        // If the cover file does not exist
+                        var path = album.GetCoverFileFullPath();
+                        if (!File.Exists(path))
+                            albums.Add(album);
+                    }
+                }
+            }
+            else
+            {
+                // Get albums without cover (haven't tried to download yet)
+                albums = Db.Table<AlbumModel>().Where(x => x.CoverFile == ResourceState.NotSet).ToList();
+            }
 
-            //       List<AlbumModel> albums;
-            //       if (force)
-            //       {
-            //           // Get albums without cover (with retry)
-            //           albums = sql.Select<AlbumModel>($"WHERE {alb[nameof(AlbumModel.CoverFileState)]} <> 1 ORDER BY {alb[nameof(AlbumModel.InsertDate)]} DESC, {alb[nameof(AlbumModel.Name)]} ASC").ToList();
-            //           // Get albums without the cover file (missing file)
-            //           foreach (var album in sql.Select<AlbumModel>($"WHERE {alb[nameof(AlbumModel.CoverFileState)]} = 1 ORDER BY {alb[nameof(AlbumModel.InsertDate)]} DESC, {alb[nameof(AlbumModel.Name)]}"))
-            //           {
-            //               var path = album.GetCoverFileFullPath();
-            //               if (!File.Exists(path))
-            //               {
-            //                   albums.Add(album);
-            //                   _log.Warn($"Missing cover file: {Path.GetFileName(path)}");
-            //               }
-            //           }
-            //       }
-            //       else
-            //       {
-            //           // Get albums without cover (did not try download yet)
-            //           albums = sql.Select<AlbumModel>($"WHERE {alb[nameof(AlbumModel.CoverFileState)]} = 0 ORDER BY {alb[nameof(AlbumModel.InsertDate)]} DESC, {alb[nameof(AlbumModel.Name)]}").ToList();
-            //       }
+            // Sort albums
+            albums = albums.OrderByDescending(x => x.InsertDate).ThenBy(x => x.Name).ToList();
 
-            //       foreach (var album in albums)
-            //       {
-            //           var existingCover = album.TryToFindCoverFile();
-            //           if (existingCover)
-            //           {
-            //               sql.Update(album, nameof(AlbumModel.CoverFileState));
-            //               AlbumCoverUpdated.FireAsync(this, album);
-            //           }
-            //           else
-            //           {
-            //               processor.Enqueue(album);
-            //           }
-            //       }
-            //       await processor.WaitAsync();
+            var processor = new QueueProcessorTasks<AlbumModel>(async (t, album) =>
+            {
+                await DownloadAndSaveAlbumCover(album);
+                AlbumCoverUpdated.FireAsync(this, album);
+            }, 4);
 
-            //       // Generate Artist covers from Album covers
-            //       // The artist cover will be the newest album's cover inside that artist
-            //       var art = TableInfo.Get<ArtistModel>();
-            //       var artistCovers = sql.SelectCustom<ArtistModel>(
-            //           $@"SELECT 
-            //	a.{art[nameof(ArtistModel.Name)]}, 
-            //	coveralb.{alb[nameof(AlbumModel.Id)]} AS {art[nameof(ArtistModel.CoverAlbumId)]}
-            //FROM {art.NameWithBrackets} a
-            //OUTER APPLY (
-            //	SELECT TOP 1 alb.{alb[nameof(AlbumModel.Id)]} 
-            //	FROM {alb.NameWithBrackets} alb
-            //	WHERE alb.{alb[nameof(AlbumModel.Artist)]} = a.Name AND alb.{alb[nameof(AlbumModel.CoverFileState)]} = 1
-            //	ORDER BY alb.Year DESC
-            //) coveralb
-            //WHERE coveralb.{alb[nameof(AlbumModel.Id)]} <> COALESCE(a.{art[nameof(ArtistModel.CoverAlbumId)]}, -1)
-            //ORDER BY a.{art[nameof(ArtistModel.Name)]}");
-            //       if (artistCovers.Any())
-            //       {
-            //           sql.Update(artistCovers.ToArray(), new[] { nameof(ArtistModel.CoverAlbumId) });
-            //           ArtistsUpdated.FireAsync(this, EventArgs.Empty);
-            //       }
+            foreach (var album in albums)
+            {
+                if (album.TryToFindCoverFile())
+                {
+                    // Cover file re-link
+                    Db.Update(album);
+                    AlbumCoverUpdated.FireAsync(this, album);
+                }
+                else
+                {
+                    // Has to be downloaded
+                    processor.Enqueue(album);
+                }
+            }
+            await processor.WaitAsync();
+
+            // Generate Artist covers from Album covers
+            // The artist cover will be the newest album's cover inside that artist
+            var artists = Db.Table<ArtistModel>().ToArray();
+            foreach (var artist in artists)
+            {
+                var latestAlbumByYear = Db.Table<AlbumModel>().Where(x => x.Artist == artist.Name).OrderByDescending(x => x.Year).FirstOrDefault();
+                if (latestAlbumByYear is null)
+                {
+                    artist.CoverAlbumId = null;
+                }
+                else
+                {
+                    artist.CoverAlbumId = latestAlbumByYear.Id;
+                }
+                Db.Update(artist);
+            }
+
+            ArtistsUpdated.FireAsync(this, EventArgs.Empty);
         }
 
         private async Task DownloadAndSaveAlbumCover(AlbumModel album)
