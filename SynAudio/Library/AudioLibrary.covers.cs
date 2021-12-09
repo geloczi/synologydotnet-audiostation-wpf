@@ -103,42 +103,8 @@ namespace SynAudio.Library
 
         public string GetAlbumCover(int id)
         {
-            //TODO
-            //using (var sql = Sql())
-            //{
-            //    var a = TableInfo.Get<AlbumModel>();
-            //    var stateObj = sql.ExecuteScalar($"SELECT TOP 1 {a[nameof(AlbumModel.CoverFileState)]} FROM {a} a WHERE a.{a[nameof(AlbumModel.Id)]} = @0", id);
-            //    if (stateObj is int state && state == 1)
-            //        return AlbumModel.GetCoverFileFullPath(id);
-            //}
-            return null;
+            var album = Db.Table<AlbumModel>().First(x => x.Id == id);
+            return album.Cover;
         }
-
-        //private static bool ProcessCoverDownloadResult(ByteArrayData data, out byte[] thumbImage, out byte[] largeImage)
-        //{
-        //	thumbImage = largeImage = null;
-        //	if (data?.Data?.Length > 0)
-        //	{
-        //		using (var img = ImageHelper.ImageFromByteArray(data.Data))
-        //		{
-        //			// Large (no upper limit for image dimensions, just compress it to JPG)
-        //			using (var ms = new MemoryStream())
-        //			{
-        //				ImageHelper.SaveJpg(img, 90, ms);
-        //				largeImage = ms.ToArray();
-        //			}
-
-        //			// Thumb
-        //			using (var resized = ImageHelper.FitImageIn(img, new System.Drawing.Size(300, 300), System.Drawing.Drawing2D.PixelOffsetMode.HighQuality))
-        //			using (var ms = new MemoryStream())
-        //			{
-        //				ImageHelper.SaveJpg(resized, 80, ms);
-        //				thumbImage = ms.ToArray();
-        //			}
-        //		}
-        //		return true;
-        //	}
-        //	return false;
-        //}
     }
 }
