@@ -169,14 +169,6 @@ namespace SynAudio.Library
         {
             _log.Debug(nameof(SyncAsync));
 
-            var songIDsFromApi = new HashSet<string>();
-            var albumModelByArtistAlbumYear = new Dictionary<string, Dictionary<string, Dictionary<int, AlbumModel>>>();
-            //var songsToCheckBackups = new List<(string ID, string Artist, string Album, string Title)>();
-            //var albums = CreateMultiComparerStringDictionary<AlbumModel>();
-
-            //foreach (var album in sql.Select<AlbumModel>())
-            //    albums.Add(AlbumModel.ConstructSimpleKey(album), album);
-
             int downloaded = 0;
             int offset = 0;
             int total = -1;
@@ -191,6 +183,10 @@ namespace SynAudio.Library
             var dbArtists = new HashSet<string>();
             foreach (var artist in DB.Table<ArtistModel>())
                 dbArtists.Add(artist.Name);
+
+            var songIDsFromApi = new HashSet<string>();
+            var albumModelByArtistAlbumYear = new Dictionary<string, Dictionary<string, Dictionary<int, AlbumModel>>>();
+            var songsToCheckBackups = new List<(string Id, string Artist, string Album, string Title)>();
 
             do
             {
@@ -281,7 +277,22 @@ namespace SynAudio.Library
                         if (cueFiles.Length > 0)
                             _log.Warn("CUE sheet detected. These files are causing metadata loss, please delete them!" + Environment.NewLine + string.Join(Environment.NewLine, cueFiles));
 
+                        //// Try to find a matching backups
+                        //foreach (var song in toInsert)
+                        //{
+                        //    var backup = DB.Table<SongBackup>().FirstOrDefault(x => x.Artist == song.Artist && x.Album == song.Album && song.Title == song.Title);
+                        //    if (!(backup is null))
+                        //    {
+                        //        if (_audioStation.RateSongAsync(song.Id, song.Rating).Result.Success)
+                        //        {
+                        //            song.Rating = backup.Rating;
+                        //            DB.Delete(backup);
+                        //        }
+                        //    }
+                        //}
+
                         DB.InsertAll(toInsert);
+
                         //songsToCheckBackups.AddRange(toInsert
                         //    .Where(a => !string.IsNullOrEmpty(a.Artist) && !string.IsNullOrEmpty(a.Album) && !string.IsNullOrEmpty(a.Title))
                         //    .Select(a => (a.Id, a.Artist, a.Album, a.Title)));
@@ -302,58 +313,39 @@ namespace SynAudio.Library
                 DB.RunInTransaction(() =>
                 {
                     foreach (var id in songIDsToDelete)
-                        DB.Delete<SongModel>(id);
+                    {
+                        // Backup
+                        var song = DB.Table<SongModel>().First(x => x.Id == id);
+                        var b = new SongBackup(song);
+                        DB.InsertOrReplace(b);
+
+                        // Then delete
+                        DB.Delete(song);
+                    }
                 });
-
-                //    // Backup rating before deletion
-                //    var songDataToBackup = sql.Select<SongModel>($"WHERE {songTable[nameof(SongModel.Rating)]} <> 0"
-                //        + $" AND LEN({songTable[nameof(SongModel.Artist)]}) > 0"
-                //        + $" AND LEN({songTable[nameof(SongModel.Album)]}) > 0"
-                //        + $" AND LEN({songTable[nameof(SongModel.Title)]}) > 0"
-                //        + $" AND {songTable[nameof(SongModel.Id)]} IN ({string.Join(",", songIDsToDelete.Select(x => "'" + x + "'"))})");
-                //    foreach (var song in songDataToBackup)
-                //    {
-                //        var b = new SongBackup()
-                //        {
-                //            Artist = song.Artist.Trim(),
-                //            Album = song.Album.Trim(),
-                //            Title = song.Title.Trim(),
-                //            Path = song.Path,
-                //            Rating = song.Rating
-                //        };
-                //        sql.DeleteSingleByPrimaryKey<SongBackup>(b.Artist, b.Album, b.Title);
-                //        sql.Insert(b);
-                //    }
-
-                //    _log.Debug($"Songs to delete: {songIDsToDelete.Length}");
-                //    sql.DeleteMultipleByPrimaryKey<SongModel>(songIDsToDelete.Select(x => new object[] { x }).ToArray());
             }
 
             //// Try restore data from backups
             //foreach (var item in songsToCheckBackups)
             //{
-            //    var backup = sql.Select<SongBackup>($"WHERE {songTable[nameof(SongBackup.Artist)]} = @0 AND {songTable[nameof(SongBackup.Album)]} = @1 AND {songTable[nameof(SongBackup.Title)]} = @2",
-            //        item.Artist.Trim(), item.Album.Trim(), item.Title.Trim()).FirstOrDefault();
+            //    // Try to find a matching backup
+            //    var backup = DB.Table<SongBackup>().FirstOrDefault(x => x.Artist == item.Artist && x.Album == item.Album && x.Title == item.Title);
             //    if (backup is null)
             //        continue;
-            //    var song = sql.Select<SongModel>($"WHERE {songTable[nameof(SongModel.Id)]} = @0", item.ID).First();
+            //    var song = DB.Table<SongModel>().FirstOrDefault(x => x.Id == item.Id);
+
             //    if (song.Rating == 0)
             //    {
+
             //        if (_audioStation.RateSongAsync(song.Id, song.Rating).Result.Success)
             //        {
             //            song.Rating = backup.Rating;
-            //            sql.Update(song);
-            //            sql.DeleteSingle(backup);
-            //            _log.Debug($"Restored backup for \"{song.Id}\"");
-            //        }
-            //        else
-            //        {
-            //            _log.Error($"Could not restore backup for \"{song.Id}\"");
+            //            DB.Update(song);
             //        }
             //    }
             //    else
             //    {
-            //        sql.DeleteSingle(backup);
+            //        DB.Delete(backup);
             //    }
             //}
 

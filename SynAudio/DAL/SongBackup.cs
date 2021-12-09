@@ -9,8 +9,8 @@ namespace SynAudio.DAL
 
         [Column(nameof(Id))]
         [PrimaryKey]
-        [AutoIncrement]
-        public int Id { get; set; }
+        [MaxLength(40)]
+        public string Id { get; set; }
 
         [Column(nameof(Artist))]
         public string Artist { get; set; }
@@ -35,11 +35,13 @@ namespace SynAudio.DAL
         public SongBackup() { }
         public SongBackup(SongModel song)
         {
-            Artist = !string.IsNullOrEmpty(song.Artist) ? song.Artist : song.AlbumArtist;
-            Album = song.Album;
-            Title = song.Title;
+            Artist = (!string.IsNullOrEmpty(song.Artist) ? song.Artist : song.AlbumArtist).Trim();
+            Album = song.Album.Trim();
+            Title = song.Title.Trim();
             Path = song.Path;
             Rating = song.Rating;
+
+            Id = Utils.DeterministicHash.HashObject(new { Artist, Album, Title });
         }
 
         public override string ToString() => $"{Artist}, {Album}, {Title}";
