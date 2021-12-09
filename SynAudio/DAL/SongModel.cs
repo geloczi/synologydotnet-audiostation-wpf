@@ -147,10 +147,10 @@ namespace SynAudio.DAL
         [NotNull]
         public int PlayCount { get; set; }
 
-        [Column(nameof(Hash))]
+        [Column(nameof(Md5Hash))]
         [NotNull]
-        [MaxLength(40)]
-        public string Hash { get; set; }
+        [MaxLength(32)]
+        public string Md5Hash { get; set; }
         #endregion
 
         #region OnlyViewModel
@@ -194,7 +194,7 @@ namespace SynAudio.DAL
             FileSize = dto.Additional.Audio.FileSize;
             AudioFrequency = dto.Additional.Audio.Frequency;
 
-            Hash = Utils.DeterministicHash.HashObject(dto);
+            Md5Hash = Utils.Md5Hash.FromObject(dto);
         }
 
         /// <summary>

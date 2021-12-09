@@ -9,7 +9,7 @@ namespace SynAudio.DAL
 
         [Column(nameof(Id))]
         [PrimaryKey]
-        [MaxLength(40)]
+        [MaxLength(32)]
         public string Id { get; set; }
 
         [Column(nameof(Artist))]
@@ -41,7 +41,7 @@ namespace SynAudio.DAL
             Path = song.Path;
             Rating = song.Rating;
 
-            Id = Utils.DeterministicHash.HashObject(new { Artist, Album, Title });
+            Id = Utils.Md5Hash.FromObject(new { Artist, Album, Title });
         }
 
         public override string ToString() => $"{Artist}, {Album}, {Title}";

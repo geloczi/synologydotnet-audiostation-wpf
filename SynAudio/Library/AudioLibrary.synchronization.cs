@@ -176,8 +176,8 @@ namespace SynAudio.Library
 
             // Get all hashcodes for DB songs
             var dbSongHashCodes = new Dictionary<string, string>();
-            foreach (var song in DB.Table<SongModel>().Select(x => new { x.Id, x.Hash }))
-                dbSongHashCodes[song.Id] = song.Hash;
+            foreach (var song in DB.Table<SongModel>().Select(x => new { x.Id, x.Md5Hash }))
+                dbSongHashCodes[song.Id] = song.Md5Hash;
 
             // Artists
             var dbArtists = new HashSet<string>();
@@ -255,7 +255,7 @@ namespace SynAudio.Library
 
                 // Update Song
                 var toUpdate = songModels
-                    .Where(x => dbSongHashCodes.TryGetValue(x.Key, out var dbHashCode) && x.Value.Hash != dbHashCode)
+                    .Where(x => dbSongHashCodes.TryGetValue(x.Key, out var dbHashCode) && x.Value.Md5Hash != dbHashCode)
                     .Select(x => x.Value)
                     .ToArray();
                 _log.Debug($"Songs to update: {toUpdate.Length}");
