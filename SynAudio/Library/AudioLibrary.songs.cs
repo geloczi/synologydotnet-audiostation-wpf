@@ -21,7 +21,7 @@ namespace SynAudio.Library
         public SongModel[] GetSongs(string artist, int albumId)
         {
             _log.Debug($"{nameof(GetSongs)}, {nameof(albumId)}={albumId}");
-            var songs = DB.Table<SongModel>();
+            var songs = Db.Table<SongModel>();
             if (!(artist is null))
                 songs = songs.Where(x => x.Artist == artist || x.AlbumArtist == artist);
             if (albumId >= 0)
@@ -32,7 +32,7 @@ namespace SynAudio.Library
 
         public SongModel[] GetSongs(string[] ids)
         {
-            var songs = DB.Query<SongModel>($"WHERE {nameof(SongModel.Id)} IN ({string.Join(",", ids.Select(x => "'" + x + "'"))})");
+            var songs = Db.Query<SongModel>($"WHERE {nameof(SongModel.Id)} IN ({string.Join(",", ids.Select(x => "'" + x + "'"))})");
             return songs.ToArray();
         }
 
@@ -119,7 +119,7 @@ namespace SynAudio.Library
             using (var state = _status.Create("Rate song..."))
             {
                 await _audioStation.RateSongAsync(song.Id, rating).ConfigureAwait(false);
-                DB.Update(song);
+                Db.Update(song);
                 //using (var sql = Sql())
                 //    sql.Update(song, new[] { nameof(SongModel.Rating) });
             }
@@ -151,11 +151,11 @@ namespace SynAudio.Library
 
         public void DeleteSongsFromCache(IEnumerable<SongModel> songs)
         {
-            DB.RunInTransaction(() =>
+            Db.RunInTransaction(() =>
             {
                 foreach (var song in songs)
                 {
-                    DB.Delete(song);
+                    Db.Delete(song);
                 }
             });
             //sql.DeleteMultipleByPrimaryKey<SongModel>(songs.Select(x => new object[] { x.Id }).ToArray());

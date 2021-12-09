@@ -18,7 +18,7 @@ namespace SynAudio.Library
             //    result.Add(new ArtistModel() { Name = string.Empty });
             //result.AddRange(sql.Select<ArtistModel>());
 
-            result.AddRange(DB.Table<ArtistModel>().ToArray());
+            result.AddRange(Db.Table<ArtistModel>().ToArray());
             return result.ToArray();
         }
     }

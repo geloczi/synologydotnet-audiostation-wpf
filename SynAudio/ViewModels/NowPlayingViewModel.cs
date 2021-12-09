@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using PropertyChanged;
-using SqlCeLibrary;
 using SynAudio.DAL;
 using SynAudio.Utils;
 
@@ -226,12 +225,12 @@ namespace SynAudio.ViewModels
         {
             lock (_syncRoot)
             {
-                App.DB.RunInTransaction(() =>
+                App.Db.RunInTransaction(() =>
                 {
-                    App.DB.WriteInt64(Int64Values.NowPlaying_Repeat, Repeat ? 1 : 0);
-                    App.DB.WriteInt64(Int64Values.NowPlaying_Shuffle, Shuffle ? 1 : 0);
-                    App.DB.WriteString(StringValues.NowPlaying_CurrentSongId, CurrentSong?.Id);
-                    App.DB.DeleteAll<NowPlayingItem>();
+                    App.DbSettings.WriteInt64(Int64Values.NowPlaying_Repeat, Repeat ? 1 : 0);
+                    App.DbSettings.WriteInt64(Int64Values.NowPlaying_Shuffle, Shuffle ? 1 : 0);
+                    App.DbSettings.WriteString(StringValues.NowPlaying_CurrentSongId, CurrentSong?.Id);
+                    App.Db.DeleteAll<NowPlayingItem>();
                     //TODO
                     //App.DB.Insert(Songs.Select((v, i) => new NowPlayingItem()
                     //{
@@ -239,7 +238,7 @@ namespace SynAudio.ViewModels
                     //    SongId = v.Song.Id,
                     //    OriginalPosition = _originalSongList.Count > 0 ? _originalSongList.IndexOf(v) : -1
                     //}).ToArray());
-                    App.DB.WriteInt64(Int64Values.Playback_Position, playbackPosition.HasValue ? playbackPosition.Value.Ticks : 0);
+                    App.DbSettings.WriteInt64(Int64Values.Playback_Position, playbackPosition.HasValue ? playbackPosition.Value.Ticks : 0);
                 });
             }
         }

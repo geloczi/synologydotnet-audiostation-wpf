@@ -8,7 +8,7 @@ namespace SynAudio.Library
         public AlbumModel GetAlbum(int id)
         {
             _log.Debug($"{nameof(GetAlbum)}, {id}");
-            var obj = DB.FindWithQuery<AlbumModel>($"WHERE {nameof(AlbumModel.Id)} = @0", id);
+            var obj = Db.FindWithQuery<AlbumModel>($"WHERE {nameof(AlbumModel.Id)} = @0", id);
             return obj;
         }
 
@@ -43,9 +43,9 @@ namespace SynAudio.Library
             //result.AddRange(sql.Select<AlbumModel>($"WHERE {nameof(AlbumModel.Artist)} = @0 ORDER BY {nameof(AlbumModel.Year)}, {nameof(AlbumModel.Name)}", artist));
 
             if (string.IsNullOrEmpty(artist))
-                return DB.Table<AlbumModel>().ToArray();
+                return Db.Table<AlbumModel>().ToArray();
             else
-                return DB.Table<AlbumModel>().Where(x => x.Artist == artist).ToArray();
+                return Db.Table<AlbumModel>().Where(x => x.Artist == artist).ToArray();
         }
     }
 }

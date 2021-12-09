@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SqlCeLibrary;
 using SynAudio.DAL;
 using Utils;
 
@@ -91,7 +90,7 @@ namespace SynAudio.Library
                     album.SaveCover(data.Data);
                 else
                     album.DeleteCover();
-                DB.Update(album);
+                Db.Update(album);
             }
             catch (Exception ex)
             {

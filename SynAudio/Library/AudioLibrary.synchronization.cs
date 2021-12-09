@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SqlCeLibrary;
 using SynAudio.DAL;
 using SynologyDotNet.AudioStation.Model;
 using Utils;
@@ -89,9 +88,9 @@ namespace SynAudio.Library
                     {
                         state.Text = "Syncing...";
                         // Reset sync related status
-                        DB.WriteInt64(Int64Values.LastCoverDownloadCompleted, 0);
-                        DB.WriteInt64(Int64Values.LastSyncCompleted, 0);
-                        DB.WriteInt64(Int64Values.LastSongAnalysisCompleted, 0);
+                        DbSettings.WriteInt64(Int64Values.LastCoverDownloadCompleted, 0);
+                        DbSettings.WriteInt64(Int64Values.LastSyncCompleted, 0);
+                        DbSettings.WriteInt64(Int64Values.LastSongAnalysisCompleted, 0);
 
                         // Music sync
                         SyncAsync(p.Token).Wait();
@@ -99,23 +98,23 @@ namespace SynAudio.Library
                         // Finished music sync
                         if (!p.Token.IsCancellationRequested)
                         {
-                            DB.WriteInt64(Int64Values.LastSyncCompleted, 1);
-                            DB.WriteInt64(Int64Values.LastSyncDateTimeUtc, DateTime.UtcNow.Ticks);
+                            DbSettings.WriteInt64(Int64Values.LastSyncCompleted, 1);
+                            DbSettings.WriteInt64(Int64Values.LastSyncDateTimeUtc, DateTime.UtcNow.Ticks);
                         }
                         Updated.FireAsync(this, EventArgs.Empty);
                     }
 
                     // Cover download
-                    if (!p.Token.IsCancellationRequested && DB.ReadInt64(Int64Values.LastCoverDownloadCompleted) != 1)
+                    if (!p.Token.IsCancellationRequested && DbSettings.ReadInt64(Int64Values.LastCoverDownloadCompleted) != 1)
                     {
                         state.Text = "Downloading covers...";
                         SyncCoversAsync(p.Token, manualSync).Wait();
                         if (!p.Token.IsCancellationRequested)
-                            DB.WriteInt64(Int64Values.LastCoverDownloadCompleted, 1);
+                            DbSettings.WriteInt64(Int64Values.LastCoverDownloadCompleted, 1);
                     }
 
                     // Song analysis
-                    if (!p.Token.IsCancellationRequested && DB.ReadInt64(Int64Values.LastSongAnalysisCompleted) != 1)
+                    if (!p.Token.IsCancellationRequested && DbSettings.ReadInt64(Int64Values.LastSongAnalysisCompleted) != 1)
                     {
                         //Todo
                         //if (Api.CanUseTagging)
@@ -176,12 +175,12 @@ namespace SynAudio.Library
 
             // Get all hashcodes for DB songs
             var dbSongHashCodes = new Dictionary<string, string>();
-            foreach (var song in DB.Table<SongModel>().Select(x => new { x.Id, x.Md5Hash }))
+            foreach (var song in Db.Table<SongModel>().Select(x => new { x.Id, x.Md5Hash }))
                 dbSongHashCodes[song.Id] = song.Md5Hash;
 
             // Artists
             var dbArtists = new HashSet<string>();
-            foreach (var artist in DB.Table<ArtistModel>())
+            foreach (var artist in Db.Table<ArtistModel>())
                 dbArtists.Add(artist.Name);
 
             var songIDsFromApi = new HashSet<string>();
@@ -236,7 +235,7 @@ namespace SynAudio.Library
                                     Year = song.Year
                                 };
                                 byAlbum[song.Year] = albumModel;
-                                DB.Insert(albumModel);
+                                Db.Insert(albumModel);
                             }
                             song.AlbumId = albumModel.Id;
                         }
@@ -244,7 +243,7 @@ namespace SynAudio.Library
                         // Artist
                         if (!string.IsNullOrEmpty(song.Artist) && dbArtists.Add(song.Artist))
                         {
-                            DB.Insert(new ArtistModel()
+                            Db.Insert(new ArtistModel()
                             {
                                 Name = song.Artist
                             });
@@ -261,7 +260,7 @@ namespace SynAudio.Library
                 _log.Debug($"Songs to update: {toUpdate.Length}");
                 if (toUpdate.Length > 0)
                 {
-                    DB.UpdateAll(toUpdate);
+                    Db.UpdateAll(toUpdate);
                 }
 
                 // Insert Song
@@ -291,7 +290,7 @@ namespace SynAudio.Library
                         //    }
                         //}
 
-                        DB.InsertAll(toInsert);
+                        Db.InsertAll(toInsert);
 
                         //songsToCheckBackups.AddRange(toInsert
                         //    .Where(a => !string.IsNullOrEmpty(a.Artist) && !string.IsNullOrEmpty(a.Album) && !string.IsNullOrEmpty(a.Title))
@@ -310,17 +309,17 @@ namespace SynAudio.Library
             var songIDsToDelete = dbSongHashCodes.Keys.Except(songIDsFromApi).ToArray();
             if (songIDsToDelete.Length > 0)
             {
-                DB.RunInTransaction(() =>
+                Db.RunInTransaction(() =>
                 {
                     foreach (var id in songIDsToDelete)
                     {
                         // Backup
-                        var song = DB.Table<SongModel>().First(x => x.Id == id);
+                        var song = Db.Table<SongModel>().First(x => x.Id == id);
                         var b = new SongBackup(song);
-                        DB.InsertOrReplace(b);
+                        Db.InsertOrReplace(b);
 
                         // Then delete
-                        DB.Delete(song);
+                        Db.Delete(song);
                     }
                 });
             }
@@ -357,13 +356,13 @@ namespace SynAudio.Library
 
         private void DeleteOrphanedAlbums()
         {
-            var cmd = DB.CreateCommand($"DELETE FROM Album WHERE {nameof(AlbumModel.Id)} NOT IN (SELECT DISTINCT {nameof(SongModel.AlbumId)} FROM Song)");
+            var cmd = Db.CreateCommand($"DELETE FROM Album WHERE {nameof(AlbumModel.Id)} NOT IN (SELECT DISTINCT {nameof(SongModel.AlbumId)} FROM Song)");
             cmd.ExecuteNonQuery();
         }
 
         private void DeleteOrphanedArtists()
         {
-            var cmd = DB.CreateCommand($"DELETE FROM Artist WHERE {nameof(ArtistModel.Name)} NOT IN (SELECT DISTINCT {nameof(SongModel.Artist)} FROM Song)");
+            var cmd = Db.CreateCommand($"DELETE FROM Artist WHERE {nameof(ArtistModel.Name)} NOT IN (SELECT DISTINCT {nameof(SongModel.Artist)} FROM Song)");
             cmd.ExecuteNonQuery();
         }
     }

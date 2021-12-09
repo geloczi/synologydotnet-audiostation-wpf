@@ -1,15 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SqlCeLibrary;
 using SQLite;
 using SynAudio.DAL;
 using SynAudio.Library.Exceptions;
-using SynAudio.Models;
 using SynAudio.Models.Config;
-using SynAudio.Utils;
 using SynCommon.Serialization;
 using SynologyDotNet;
 using SynologyDotNet.AudioStation;
@@ -51,7 +46,8 @@ namespace SynAudio.Library
         public bool IsUpdatingInBackground => _updateCacheJob?.IsRunning == true;
         public bool Connected { get; private set; }
 
-        protected static SQLiteConnection DB => App.DB;
+        protected static SQLiteConnection Db => App.Db;
+        protected static ISettingsRepository DbSettings => (ISettingsRepository)App.DbSettings;
 
         #endregion
 
@@ -174,7 +170,7 @@ namespace SynAudio.Library
         {
             _log.Debug(nameof(Logout));
             Connected = false;
-            DB.WriteBlob(ByteArrayValues.AudioStationConnectorSession, null);
+            DbSettings.WriteBlob(ByteArrayValues.AudioStationConnectorSession, null);
         }
 
         public void Dispose()

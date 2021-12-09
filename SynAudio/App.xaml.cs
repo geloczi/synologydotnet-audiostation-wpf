@@ -50,9 +50,10 @@ namespace SynAudio
 
         #region [Properties]
 
-        internal static SQLiteConnection DB { get; private set; }
+        internal static SQLiteConnection Db { get; private set; }
+        internal static SqlLiteSettingsRepository DbSettings { get; private set; }
         internal static Random Rnd { get; } = new Random();
-        internal static SettingsModel Settings { get; private set; }
+        internal static SettingsModel Config { get; private set; }
         internal static bool MusicFolderAvailableOnLan { get; set; }
 
         #endregion
@@ -97,7 +98,7 @@ namespace SynAudio
 
         internal static void SaveSettings()
         {
-            Storage.Save(nameof(Settings), Settings);
+            Storage.Save("config", Config);
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -171,9 +172,9 @@ namespace SynAudio
                 base.OnStartup(e);
 
                 // Try to load settings, fallback to defaults (empty)
-                if (!Storage.TryLoad<SettingsModel>(nameof(Settings), out var settings))
+                if (!Storage.TryLoad<SettingsModel>("config", out var settings))
                     settings = new SettingsModel();
-                Settings = settings;
+                Config = settings;
 
                 // Catch binding errors
                 PresentationTraceSources.Refresh();
@@ -200,18 +201,19 @@ namespace SynAudio
         {
             var dbFile = Path.Combine(UserDataFolder, "db.sqlite3");
             bool isEmptyDb = !File.Exists(dbFile);
-            DB = new SQLiteConnection(dbFile, true);
+            Db = new SQLiteConnection(dbFile, true);
             if (isEmptyDb)
             {
-                DB.CreateTable<DAL.ArtistModel>();
-                DB.CreateTable<DAL.AlbumModel>();
-                DB.CreateTable<DAL.ByteArrayValue>();
-                DB.CreateTable<DAL.Int64Value>();
-                DB.CreateTable<DAL.NowPlayingItem>();
-                DB.CreateTable<DAL.SongBackup>();
-                DB.CreateTable<DAL.SongModel>();
-                DB.CreateTable<DAL.StringValue>();
+                Db.CreateTable<DAL.ArtistModel>();
+                Db.CreateTable<DAL.AlbumModel>();
+                Db.CreateTable<DAL.ByteArrayValue>();
+                Db.CreateTable<DAL.Int64Value>();
+                Db.CreateTable<DAL.NowPlayingItem>();
+                Db.CreateTable<DAL.SongBackup>();
+                Db.CreateTable<DAL.SongModel>();
+                Db.CreateTable<DAL.StringValue>();
             }
+            DbSettings = new SqlLiteSettingsRepository(Db);
         }
 
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -226,8 +228,8 @@ namespace SynAudio
         {
             _log.Info(nameof(OnExit));
             SaveSettings();
-            DB.Close();
-            DB.Dispose();
+            Db.Close();
+            Db.Dispose();
             NLog.LogManager.Shutdown();
             if (_mutex != null)
                 _mutex.ReleaseMutex();
