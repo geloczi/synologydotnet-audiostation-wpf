@@ -349,39 +349,22 @@ namespace SynAudio.Library
             //    }
             //}
 
-            //// Delete orphaned albums
-            //var albumTable = TableInfo.Get<AlbumModel>();
-            //sql.ExecuteNonQuery($"DELETE FROM {albumTable} WHERE {albumTable[nameof(AlbumModel.Id)]} NOT IN (SELECT DISTINCT {songTable[nameof(SongModel.AlbumId)]} FROM {songTable})");
-            //AlbumsUpdated.FireAsync(this, EventArgs.Empty);
-
+            DeleteOrphanedAlbums();
+            DeleteOrphanedArtists();
 
             SyncCompleted.FireAsync(this, EventArgs.Empty);
-            //BuildArtists(token);
         }
 
-        /// <summary>
-        /// Generates artist records from songs in the DB.
-        /// </summary>
-        /// <param name="token"></param>
-        private void BuildArtists(CancellationToken token)
+        private void DeleteOrphanedAlbums()
         {
-            //TODO
-            //      var a = TableInfo.Get<ArtistModel>();
-            //      var s = TableInfo.Get<SongModel>();
-            //      using (var sql = Sql())
-            //      {
-            //          // Deleted
-            //          //if (syncCompleted)
-            //          sql.ExecuteNonQuery($"DELETE FROM {a.NameWithBrackets} WHERE {a[nameof(ArtistModel.Name)]} NOT IN (SELECT DISTINCT {s[nameof(SongModel.Artist)]} FROM {s.NameWithBrackets})");
-            //          // New
-            //          if (!token.IsCancellationRequested)
-            //              sql.ExecuteNonQuery(
-            //                  $@"INSERT INTO {a.NameWithBrackets}({a[nameof(ArtistModel.Name)]})
-            //SELECT DISTINCT s.{s[nameof(SongModel.AlbumArtist)]} FROM {s.NameWithBrackets} s
-            //LEFT JOIN {a.NameWithBrackets} a ON a.{a[nameof(ArtistModel.Name)]} = s.{s[nameof(SongModel.AlbumArtist)]}
-            //WHERE LEN(s.{s[nameof(SongModel.AlbumArtist)]}) > 0 AND a.{a[nameof(ArtistModel.Name)]} IS NULL");
-            //      }
-            //      ArtistsUpdated.FireAsync(this, EventArgs.Empty);
+            var cmd = DB.CreateCommand($"DELETE FROM Album WHERE {nameof(AlbumModel.Id)} NOT IN (SELECT DISTINCT {nameof(SongModel.AlbumId)} FROM Song)");
+            cmd.ExecuteNonQuery();
+        }
+
+        private void DeleteOrphanedArtists()
+        {
+            var cmd = DB.CreateCommand($"DELETE FROM Artist WHERE {nameof(ArtistModel.Name)} NOT IN (SELECT DISTINCT {nameof(SongModel.Artist)} FROM Song)");
+            cmd.ExecuteNonQuery();
         }
     }
 }
