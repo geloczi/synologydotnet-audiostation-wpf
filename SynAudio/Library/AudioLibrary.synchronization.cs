@@ -11,52 +11,41 @@ namespace SynAudio.Library
 {
     public partial class AudioLibrary
     {
-        public async Task SyncSongsAsync(string artist, string album = null)
+        public async Task PartialSyncSongsAsync(string artist, string album = null)
         {
-            //TODO: partial sync
-            //if (string.IsNullOrEmpty(artist))
-            //    throw new ArgumentException(nameof(artist));
+            if (string.IsNullOrEmpty(artist))
+                throw new ArgumentException(nameof(artist));
 
-            //var s = TableInfo.Get<SongModel>();
-            //var filter = new List<string>();
-            //var parameters = new List<object>();
-            //var queryFilter = new List<(SongQueryParameters, object)>();
+            // Filter by Artist
+            var query = Db.Table<SongModel>().Where(x => x.Artist == artist);
+            var queryFilter = new List<(SongQueryParameters, object)>();
+            queryFilter.Add((SongQueryParameters.artist, artist));
 
-            //filter.Add($"{s[nameof(SongModel.Artist)]} = @{parameters.Count}");
-            //parameters.Add(artist);
-            //queryFilter.Add((SongQueryParameters.artist, artist));
+            // Filter by Album
+            if (!string.IsNullOrEmpty(album))
+            {
+                query = query.Where(x => x.Album == album);
+                queryFilter.Add((SongQueryParameters.album, album));
+            }
 
-            //// Kept for the future, so filtering by album is possible too
-            //if (!string.IsNullOrEmpty(album))
-            //{
-            //    filter.Add($"{s[nameof(SongModel.Album)]} = @{parameters.Count}");
-            //    parameters.Add(album);
-            //    queryFilter.Add((SongQueryParameters.album, album));
-            //}
-
-            //using (var sql = Sql())
-            //{
-            //    var dbSongs = sql.Select<SongModel>($"WHERE {string.Join(" AND ", filter)}", parameters.ToArray());
-            //    if (dbSongs.Length > 0)
-            //    {
-            //        using (var state = _status.Create($"Sync {dbSongs.Length} songs..."))
-            //        {
-            //            var response = await _audioStation.ListSongsAsync(10000, 0, SongQueryAdditional.All, queryFilter.ToArray()).ConfigureAwait(false);
-            //            if (response.Success && response?.Data.Songs?.Length > 0)
-            //            {
-            //                var dtos = response.Data.Songs.Select(x => (Id: x.ID, Dto: x)).ToDictionary(k => k.Id, v => v.Dto);
-            //                dbSongs = dbSongs.Where(x => dtos.ContainsKey(x.Id)).ToArray();
-            //                if (dbSongs.Length > 0)
-            //                {
-            //                    foreach (var song in dbSongs)
-            //                        song.LoadFromDto(dtos[song.Id]);
-            //                    sql.Update(dbSongs);
-            //                    SongsUpdated.FireAsync(this, dbSongs);
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+            // Query and update
+            var dbSongs = query.ToArray();
+            using (var state = _status.Create($"Sync {dbSongs.Length} songs..."))
+            {
+                var response = await _audioStation.ListSongsAsync(10000, 0, SongQueryAdditional.All, queryFilter.ToArray()).ConfigureAwait(false);
+                if (response.Success && response?.Data.Songs?.Length > 0)
+                {
+                    var dtos = response.Data.Songs.Select(x => (Id: x.ID, Dto: x)).ToDictionary(k => k.Id, v => v.Dto);
+                    dbSongs = dbSongs.Where(x => dtos.ContainsKey(x.Id)).ToArray();
+                    if (dbSongs.Length > 0)
+                    {
+                        foreach (var song in dbSongs)
+                            song.LoadFromDto(dtos[song.Id]);
+                        Db.UpdateAll(dbSongs);
+                        SongsUpdated.FireAsync(this, dbSongs);
+                    }
+                }
+            }
         }
 
         public void SyncDatabaseAsync(bool forceUpdate)

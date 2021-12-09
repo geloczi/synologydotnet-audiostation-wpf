@@ -363,7 +363,7 @@ namespace SynAudio.ViewModels
                         case ArtistModel artist:
                             CurrentTabVM.Navigate(ToObservableCollection(Library.GetAlbums(artist.Name)), new NavigationItem(ActionType.OpenArtistAlbums, artist.DisplayName, artist.Name));
                             if (!string.IsNullOrEmpty(artist.Name) && _quickSyncedArtists.Add(artist.Name))
-                                Task.Run(async () => await Library.SyncSongsAsync(artist.Name)).FireAndForgetSafe();
+                                Task.Run(async () => await Library.PartialSyncSongsAsync(artist.Name)).FireAndForgetSafe();
                             break;
 
                         case AlbumModel album:
@@ -670,39 +670,12 @@ namespace SynAudio.ViewModels
                                 Player.RestoreState(NowPlaying.CurrentSong, Settings.Transcoding, _restoreSongPosition);
                             _log.Debug("Loaded NowPlaying state");
 
-                            // Sync songs on NowPlaying
-                            if (NowPlaying.Songs.Any())
-                            {
-                                var artistAlbumsToSync = new Dictionary<string, List<string>>();
-                                foreach (var song in NowPlaying.Songs.Select(x => x.Song))
-                                {
-                                    if (!artistAlbumsToSync.ContainsKey(song.Artist))
-                                        artistAlbumsToSync.Add(song.Artist, new List<string>(new[] { song.Album }));
-                                    else if (!artistAlbumsToSync[song.Artist].Contains(song.Album))
-                                        artistAlbumsToSync[song.Artist].Add(song.Album);
-                                }
-
-                                Task.Run(async () =>
-                                {
-                                    if (artistAlbumsToSync.Count == 1)
-                                    {
-                                        // Sync entire artist
-                                        await Library.SyncSongsAsync(artistAlbumsToSync.Keys.First());
-                                    }
-                                    else
-                                    {
-                                        // Sync artist-album pairs
-                                        foreach (var item in artistAlbumsToSync)
-                                        {
-                                            var artist = item.Key;
-                                            foreach (var album in item.Value)
-                                            {
-                                                await Library.SyncSongsAsync(artist, album);
-                                            }
-                                        }
-                                    }
-                                }).FireAndForgetSafe(ErrorHandler);
-                            }
+                            //TODO
+                            //// Sync songs on NowPlaying
+                            //if (NowPlaying.Songs.Any())
+                            //{
+                            //    // Sync rating of the songs on NowPLaying
+                            //}
                         }
                         catch (Exception ex)
                         {
