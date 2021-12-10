@@ -79,7 +79,6 @@ namespace SynAudio.Library
                         // Reset sync related status
                         DbSettings.WriteInt64(Int64Values.LastCoverDownloadCompleted, 0);
                         DbSettings.WriteInt64(Int64Values.LastSyncCompleted, 0);
-                        DbSettings.WriteInt64(Int64Values.LastSongAnalysisCompleted, 0);
 
                         // Music sync
                         SyncAsync(p.Token).Wait();
@@ -100,23 +99,6 @@ namespace SynAudio.Library
                         SyncCoversAsync(p.Token, manualSync).Wait();
                         if (!p.Token.IsCancellationRequested)
                             DbSettings.WriteInt64(Int64Values.LastCoverDownloadCompleted, 1);
-                    }
-
-                    // Song analysis
-                    if (!p.Token.IsCancellationRequested && DbSettings.ReadInt64(Int64Values.LastSongAnalysisCompleted) != 1)
-                    {
-                        //Todo
-                        //if (Api.CanUseTagging)
-                        //{
-                        //	AnalyzeSongs(p.Token);
-                        //	if (!p.Token.IsCancellationRequested)
-                        //		Int64Value.Write(sql, Int64Values.LastSongAnalysisCompleted, 1);
-                        //}
-                        //else
-                        //{
-                        //	Log.Warn("Cannot analyze songs, because the application portal for AudioStation is disabled. Please enable application portal for AudioStation using the default alias.");
-                        //	// Todo: put a warning onto the UI to notify the user about this usage limitation.
-                        //}
                     }
                 }
             }

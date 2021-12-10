@@ -3,7 +3,6 @@
     public enum Int64Values
     {
         LastSyncCompleted,
-        LastSongAnalysisCompleted,
         LastCoverDownloadCompleted,
         LastSyncDateTimeUtc,
         DatabaseVersion,
