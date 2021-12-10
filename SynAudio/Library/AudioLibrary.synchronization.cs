@@ -66,15 +66,12 @@ namespace SynAudio.Library
             {
                 using (var state = _status.Create("Checking for updates..."))
                 {
-                    // Cover download
-                    state.Text = "Downloading covers...";
-                    SyncCoversAsync(p.Token, true).Wait();
-
                     // Library synchronization
                     var manualSync = (bool)p.Data;
                     if (manualSync || IsMusicSyncNecessary().Result)
                     {
                         state.Text = "Syncing...";
+
                         // Reset sync related status
                         DbSettings.WriteInt64(Int64Values.LastCoverDownloadCompleted, 0);
                         DbSettings.WriteInt64(Int64Values.LastSyncCompleted, 0);
@@ -113,25 +110,23 @@ namespace SynAudio.Library
 
         private async Task<bool> IsMusicSyncNecessary()
         {
-            //// Was the last sync successful?
-            //if (DB.ReadInt64(Int64Values.LastSyncCompleted) != 1)
-            //    return true;
+            // Was the last sync successful?
+            if (DbSettings.ReadInt64(Int64Values.LastSyncCompleted) != 1)
+                return true;
 
-            //// Compare song count with API
-            //var songTable = TableInfo.Get<SongModel>();
-            //var countInDb = (int)sql.ExecuteScalar($"SELECT COUNT(*) FROM {songTable.NameWithBrackets}");
-            //var response = await _audioStation.ListSongsAsync(1, 0, SongQueryAdditional.None).ConfigureAwait(false); // It is enough to query just 1 song, because the response includes the total count
-            //GuardResponse(response);
-            //if (response.Data.Total != countInDb)
-            //    return true;
+            // Compare song count with API
+            var countInDb = Db.Table<SongModel>().Count();
+            var response = await _audioStation.ListSongsAsync(1, 0, SongQueryAdditional.None).ConfigureAwait(false); // It is enough to query just 1 song, because the response includes the total count
+            GuardResponse(response);
+            if (response.Data.Total != countInDb)
+                return true;
 
             // Commented out, because my goal is to avoid regular full-syncs and use small partial syncs while the user is navigating in the library
             //// If the last sync was 24 hours ago
             //var lastSyncTicks = Int64Value.Read(sql, Int64Values.LastSyncDateTimeUtc);
             //if (!lastSyncTicks.HasValue || (DateTime.UtcNow - DateTime.FromBinary(lastSyncTicks.Value) > TimeSpan.FromHours(24)))
-            //	return true;
-
-            return true;
+            //    return true;
+            return false;
         }
 
         private async Task SyncAsync(CancellationToken token)
