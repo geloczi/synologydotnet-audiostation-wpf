@@ -46,8 +46,6 @@
 		<PackageReference Include="PropertyChanged.Fody" PrivateAssets="all" Version="3.4.0" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
 		<PackageReference Include="SynologyDotNet.AudioStation" Version="0.3.0" />
-		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
 		<PackageReference Include="VirtualizingWrapPanel" Version="1.5.6" />
 	</ItemGroup>
 
