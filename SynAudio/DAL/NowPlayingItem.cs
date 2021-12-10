@@ -5,11 +5,6 @@ namespace SynAudio.DAL
     [Table("NowPlayingItem")]
     public class NowPlayingItem
     {
-        [Column(nameof(Id))]
-        [PrimaryKey]
-        [AutoIncrement]
-        public int Id { get; set; }
-
         [Column(nameof(Position))]
         [NotNull]
         public int Position { get; set; }

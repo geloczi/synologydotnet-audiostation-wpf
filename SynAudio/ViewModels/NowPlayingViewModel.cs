@@ -186,38 +186,40 @@ namespace SynAudio.ViewModels
         public void LoadState(out TimeSpan playbackPosition)
         {
             playbackPosition = TimeSpan.Zero;
-            //TODO
-            //lock (_syncRoot)
-            //{
-            //    Songs.Clear();
-            //    _originalSongList.Clear();
+            lock (_syncRoot)
+            {
+                Songs.Clear();
+                _originalSongList.Clear();
 
-            //    // Load settings from database
-            //    var currentSongId = sql.ReadString(StringValues.NowPlaying_CurrentSongId);
-            //    Repeat = sql.ReadInt64(Int64Values.NowPlaying_Repeat) > 0;
-            //    _shuffle = sql.ReadInt64(Int64Values.NowPlaying_Shuffle) > 0;
+                // Load settings from database
+                var currentSongId = App.DbSettings.ReadString(StringValues.NowPlaying_CurrentSongId);
+                Repeat = App.DbSettings.ReadInt64(Int64Values.NowPlaying_Repeat) > 0;
+                _shuffle = App.DbSettings.ReadInt64(Int64Values.NowPlaying_Shuffle) > 0;
 
-            //    // Get playlist items with existing songs
-            //    var playlistItems = sql.Select<NowPlayingItem>($"INNER JOIN {s} ON {s[nameof(SongModel.Id)]} = {npi[nameof(NowPlayingItem.SongId)]}");
+                // Get songs for the playlist
+                var playlistSongs = (from s in App.Db.Table<SongModel>()
+                             join npi in App.Db.Table<NowPlayingItem>() on s.Id equals npi.SongId
+                             select s).ToArray();
 
-            //    // Get songs for the playlist
-            //    var playlistSongs = sql.Select<SongModel>($"INNER JOIN {npi} ON {npi[nameof(NowPlayingItem.SongId)]} = {s[nameof(SongModel.Id)]}");
+                var playlistItems = App.Db.Table<NowPlayingItem>().ToArray()
+                    .Where(npi => playlistSongs.Any(s => s.Id == npi.SongId))
+                    .ToArray();
 
-            //    if (playlistSongs.Length > 0)
-            //    {
-            //        Songs.AddRange(playlistSongs.Select(x => new SongViewModel(x)));
+                if (playlistSongs.Length > 0)
+                {
+                    Songs.AddRange(playlistSongs.Select(x => new SongViewModel(x)));
 
-            //        // Shuffle restore
-            //        if (playlistItems[0].OriginalPosition >= 0)
-            //        {
-            //            _originalSongList.AddRange(playlistItems.OrderBy(x => x.OriginalPosition).Select(x => Songs.First(song => song.Song.Id == x.SongId)));
-            //        }
-            //    }
+                    // Shuffle restore
+                    if (playlistItems[0].OriginalPosition >= 0)
+                    {
+                        _originalSongList.AddRange(playlistItems.OrderBy(x => x.OriginalPosition).Select(x => Songs.First(song => song.Song.Id == x.SongId)));
+                    }
+                }
 
-            //    playbackPosition = TimeSpan.FromTicks(sql.ReadInt64(Int64Values.Playback_Position) ?? 0);
+                playbackPosition = TimeSpan.FromTicks(App.DbSettings.ReadInt64(Int64Values.Playback_Position) ?? 0);
 
-            //    SetCurrentSongViewModel(Songs.FirstOrDefault(x => x.Song.Id == currentSongId));
-            //}
+                SetCurrentSongViewModel(Songs.FirstOrDefault(x => x.Song.Id == currentSongId));
+            }
             OnPropertyChanged(nameof(Shuffle));
         }
 
@@ -231,13 +233,12 @@ namespace SynAudio.ViewModels
                     App.DbSettings.WriteInt64(Int64Values.NowPlaying_Shuffle, Shuffle ? 1 : 0);
                     App.DbSettings.WriteString(StringValues.NowPlaying_CurrentSongId, CurrentSong?.Id);
                     App.Db.DeleteAll<NowPlayingItem>();
-                    //TODO
-                    //App.DB.Insert(Songs.Select((v, i) => new NowPlayingItem()
-                    //{
-                    //    Position = i,
-                    //    SongId = v.Song.Id,
-                    //    OriginalPosition = _originalSongList.Count > 0 ? _originalSongList.IndexOf(v) : -1
-                    //}).ToArray());
+                    App.Db.InsertAll(Songs.Select((v, i) => new NowPlayingItem()
+                    {
+                        Position = i,
+                        SongId = v.Song.Id,
+                        OriginalPosition = _originalSongList.Count > 0 ? _originalSongList.IndexOf(v) : -1
+                    }).ToArray());
                     App.DbSettings.WriteInt64(Int64Values.Playback_Position, playbackPosition.HasValue ? playbackPosition.Value.Ticks : 0);
                 });
             }

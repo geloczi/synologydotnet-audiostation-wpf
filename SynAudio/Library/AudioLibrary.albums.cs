@@ -43,9 +43,11 @@ namespace SynAudio.Library
             //result.AddRange(sql.Select<AlbumModel>($"WHERE {nameof(AlbumModel.Artist)} = @0 ORDER BY {nameof(AlbumModel.Year)}, {nameof(AlbumModel.Name)}", artist));
 
             if (string.IsNullOrEmpty(artist))
-                return Db.Table<AlbumModel>().ToArray();
+                result.AddRange(Db.Table<AlbumModel>().ToArray());
             else
-                return Db.Table<AlbumModel>().Where(x => x.Artist == artist).ToArray();
+                result.AddRange(Db.Table<AlbumModel>().Where(x => x.Artist == artist).ToArray());
+
+            return result.ToArray();
         }
     }
 }
