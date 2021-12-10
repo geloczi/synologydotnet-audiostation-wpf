@@ -5,17 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using SynAudio.DAL;
 using SynologyDotNet.AudioStation;
-using Utils;
 
 namespace SynAudio.Library
 {
     public partial class AudioLibrary
     {
-        private const long StreamChunkSizeInBytes = 65536;
-        private readonly object _streamLock = new object();
-        private BackgroundThreadWorker _streamWorker;
-        public MusicPlayback.IAudioStreamPlayer Player; //Todo: Move this out from here
-
         public SongModel[] GetSongs(string artist) => GetSongs(artist, -1);
 
         public SongModel[] GetSongs(string artist, int albumId)
@@ -125,25 +119,6 @@ namespace SynAudio.Library
                 Db.Update(song);
                 //using (var sql = Sql())
                 //    sql.Update(song, new[] { nameof(SongModel.Rating) });
-            }
-        }
-
-        public void CleanUpStreaming()
-        {
-            lock (_streamLock)
-            {
-                if (!(Player is null))
-                {
-                    Player.Dispose();
-                    Player = null;
-                }
-
-                if (!(_streamWorker is null))
-                {
-                    _streamWorker.Cancel();
-                    _streamWorker.Wait();
-                    _streamWorker = null;
-                }
             }
         }
 

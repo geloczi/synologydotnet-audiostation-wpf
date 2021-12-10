@@ -57,40 +57,11 @@ namespace SynAudio.Library
         {
             Settings = settings;
             _status = status;
-
-            //// Database initialization
-            //long? dbVersion = null;
-            //using (var sql = Sql())
-            //{
-            //    if (sql.NewFileCreated)
-            //        sql.WriteInt64(Int64Values.DatabaseVersion, DatabaseVersion);
-            //    else
-            //        dbVersion = sql.ReadInt64(Int64Values.DatabaseVersion) ?? -1;
-            //}
-            //// Re-generate the database file, if the version has been updated
-            //if (dbVersion.HasValue && dbVersion.Value < DatabaseVersion)
-            //{
-            //    File.Delete(_sqlFile);
-            //    using (var sql = Sql())
-            //        sql.WriteInt64(Int64Values.DatabaseVersion, DatabaseVersion);
-            //}
         }
 
         #endregion Constructor
 
         #region [Public Methods]
-
-        //public class TestModel
-        //{
-        //    [SQLite.PrimaryKey]
-        //    [SQLite.Column(nameof(Id))]
-        //    public int Id { get; set; }
-
-        //    [SQLite.Column(nameof(Title))]
-        //    public string Title { get; set; }
-        //}
-
-
 
         private bool TryGetSavedSession(out SynoSession session)
         {
@@ -178,7 +149,6 @@ namespace SynAudio.Library
             if (_disposed)
                 return;
             _disposed = true;
-            CleanUpStreaming();
             _restoreBackupJob?.Cancel();
             _updateCacheJob?.Cancel();
             Connected = false;
