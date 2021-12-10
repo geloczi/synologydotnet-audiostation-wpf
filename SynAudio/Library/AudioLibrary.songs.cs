@@ -22,12 +22,15 @@ namespace SynAudio.Library
         {
             _log.Debug($"{nameof(GetSongs)}, {nameof(albumId)}={albumId}");
             var songs = Db.Table<SongModel>();
-            if (!(artist is null))
-                songs = songs.Where(x => x.Artist == artist || x.AlbumArtist == artist);
-            if (albumId >= 0)
-                songs.Where(x => x.AlbumId == albumId);
-            var result = songs.ToArray();
-            return result;
+
+            if (!(artist is null) && albumId > 0)
+                return songs.Where(x => (x.Artist == artist || x.AlbumArtist == artist) && x.AlbumId == albumId).ToArray();
+            if (!(artist is null) && albumId <= 0)
+                return songs.Where(x => x.Artist == artist || x.AlbumArtist == artist).ToArray();
+            else if (artist is null)
+                return songs.Where(x => x.AlbumId == albumId).ToArray();
+
+            return new SongModel[0];
         }
 
         public SongModel[] GetSongs(string[] ids)
