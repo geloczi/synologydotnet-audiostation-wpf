@@ -69,7 +69,7 @@ namespace SynAudio.Library
             var artists = Db.Table<ArtistModel>().ToArray();
             foreach (var artist in artists)
             {
-                var latestAlbumByYear = Db.Table<AlbumModel>().Where(x => x.Artist == artist.Name).OrderByDescending(x => x.Year).FirstOrDefault();
+                var latestAlbumByYear = Db.Table<AlbumModel>().Where(x => x.Artist == artist.Name && x.CoverFile == ResourceState.Exists).OrderByDescending(x => x.Year).FirstOrDefault();
                 if (latestAlbumByYear is null)
                 {
                     artist.CoverAlbumId = null;

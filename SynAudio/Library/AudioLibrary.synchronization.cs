@@ -71,8 +71,7 @@ namespace SynAudio.Library
                     SyncCoversAsync(p.Token, true).Wait();
 
                     // Library synchronization
-                    //var manualSync = (bool)p.Data;
-                    bool manualSync = true; //TODO
+                    var manualSync = (bool)p.Data;
                     if (manualSync || IsMusicSyncNecessary().Result)
                     {
                         state.Text = "Syncing...";
