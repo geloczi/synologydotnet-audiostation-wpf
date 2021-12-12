@@ -161,7 +161,7 @@ namespace SynAudio.MediaPlayer
                 CleanUpPlayback();
                 _song = null;
                 _songStream = null;
-                Position = TimeSpan.Zero;
+                SetPosition(TimeSpan.Zero);
                 Length = TimeSpan.Zero;
             }
             PlaybackState = PlaybackStateType.Stopped;

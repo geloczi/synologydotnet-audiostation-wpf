@@ -830,12 +830,15 @@ namespace SynAudio.ViewModels
                 }
 
                 // Save NowPlaying state
-                NowPlaying.SaveState(Player?.Position);
+                TimeSpan positionToSave = TimeSpan.Zero;
                 if (Player != null)
                 {
+                    if (Player.Length > TimeSpan.Zero && Player.Position > TimeSpan.Zero)
+                        positionToSave = Player.Position;
                     Player.PlaybackStateChanged -= Player_PlaybackStateChanged;
                     Player.Dispose();
                 }
+                NowPlaying.SaveState(positionToSave);
                 Library.Dispose();
             }
         }

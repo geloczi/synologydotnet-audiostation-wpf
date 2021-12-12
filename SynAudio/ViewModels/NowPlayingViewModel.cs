@@ -185,7 +185,6 @@ namespace SynAudio.ViewModels
 
         public void LoadState(out TimeSpan playbackPosition)
         {
-            playbackPosition = TimeSpan.Zero;
             lock (_syncRoot)
             {
                 Songs.Clear();
@@ -198,8 +197,8 @@ namespace SynAudio.ViewModels
 
                 // Get songs for the playlist
                 var playlistSongs = (from s in App.Db.Table<SongModel>()
-                             join npi in App.Db.Table<NowPlayingItem>() on s.Id equals npi.SongId
-                             select s).ToArray();
+                                     join npi in App.Db.Table<NowPlayingItem>() on s.Id equals npi.SongId
+                                     select s).ToArray();
 
                 var playlistItems = App.Db.Table<NowPlayingItem>().ToArray()
                     .Where(npi => playlistSongs.Any(s => s.Id == npi.SongId))
@@ -223,7 +222,7 @@ namespace SynAudio.ViewModels
             OnPropertyChanged(nameof(Shuffle));
         }
 
-        public void SaveState(TimeSpan? playbackPosition)
+        public void SaveState(TimeSpan playbackPosition)
         {
             lock (_syncRoot)
             {
@@ -239,7 +238,7 @@ namespace SynAudio.ViewModels
                         SongId = v.Song.Id,
                         OriginalPosition = _originalSongList.Count > 0 ? _originalSongList.IndexOf(v) : -1
                     }).ToArray());
-                    App.DbSettings.WriteInt64(Int64Values.Playback_Position, playbackPosition.HasValue ? playbackPosition.Value.Ticks : 0);
+                    App.DbSettings.WriteInt64(Int64Values.Playback_Position, playbackPosition.Ticks);
                 });
             }
         }
