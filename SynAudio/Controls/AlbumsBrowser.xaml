@@ -3,61 +3,67 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d" 
-				 xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
              xmlns:app="clr-namespace:SynAudio"
-				 xmlns:converters="clr-namespace:ValueConverters"
-				 xmlns:viewmodels="clr-namespace:SynAudio.ViewModels"
-				 d:DataContext="{d:DesignInstance viewmodels:TabContentViewModel, IsDesignTimeCreatable=True}"
+             xmlns:converters="clr-namespace:ValueConverters"
+             xmlns:viewmodels="clr-namespace:SynAudio.ViewModels"
+             d:DataContext="{d:DesignInstance viewmodels:TabContentViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
-	<UserControl.Resources>
-		<converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
-		<converters:NullImageConverter x:Key="NullImageConverter"/>
-		<CollectionViewSource x:Key="cvs1" Source="{Binding Content, Mode=OneWay}">
-			<CollectionViewSource.SortDescriptions>
-				<scm:SortDescription PropertyName="Year"/>
-			</CollectionViewSource.SortDescriptions>
-		</CollectionViewSource>
-		<DataTemplate x:Key="ItemTemplate">
-			<Border Style="{StaticResource ItemContainerBorder}">
-				<Border.InputBindings>
-					<MouseBinding Gesture="LeftDoubleClick" Command="app:StaticCommands.BrowseLibraryItem" CommandParameter="{Binding}"/>
-				</Border.InputBindings>
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition></RowDefinition>
-						<RowDefinition Height="40"></RowDefinition>
-					</Grid.RowDefinitions>
-					<!-- Cover -->
-					<Grid>
-						<Viewbox Visibility="{Binding Cover, Mode=OneTime, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=True}">
-							<Path Fill="LightSeaGreen" Data="M11,14C12,14 13.05,14.16 14.2,14.44C13.39,15.31 13,16.33 13,17.5C13,18.39 13.25,19.23 13.78,20H3V18C3,16.81 3.91,15.85 5.74,15.12C7.57,14.38 9.33,14 11,14M11,12C9.92,12 9,11.61 8.18,10.83C7.38,10.05 7,9.11 7,8C7,6.92 7.38,6 8.18,5.18C9,4.38 9.92,4 11,4C12.11,4 13.05,4.38 13.83,5.18C14.61,6 15,6.92 15,8C15,9.11 14.61,10.05 13.83,10.83C13.05,11.61 12.11,12 11,12M18.5,10H20L22,10V12H20V17.5A2.5,2.5 0 0,1 17.5,20A2.5,2.5 0 0,1 15,17.5A2.5,2.5 0 0,1 17.5,15C17.86,15 18.19,15.07 18.5,15.21V10Z" />
-						</Viewbox>
-						<Grid Visibility="{Binding Cover, Mode=OneTime, Converter={StaticResource StringToVisibilityConverter}}" Background="WhiteSmoke">
-							<Image Source="{Binding Cover, Mode=OneTime, IsAsync=True, Converter={StaticResource NullImageConverter}}" VerticalAlignment="Top" SnapsToDevicePixels="True"/>
-						</Grid>
-					</Grid>
-					<!-- Label -->
-					<TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" TextAlignment="Center" FontWeight="Bold"
-								  Text="{Binding DisplayName, Mode=OneTime}" ToolTip="{Binding Name, Mode=OneTime}" />
-				</Grid>
-			</Border>
-		</DataTemplate>
-	</UserControl.Resources>
-	<wpftk:GridView x:Name="grid1"
-						 ItemsSource="{Binding Content, Mode=OneWay}"
-						 SelectedValue="{Binding SelectedItem, Mode=TwoWay}"
-						 SelectedValuePath="Name"
-						 Margin="0,2,0,0"
-						 ItemTemplate="{StaticResource ItemTemplate}"
-						 VirtualizingPanel.CacheLengthUnit="Page"
-						 VirtualizingPanel.CacheLength="2"
-						 VirtualizingPanel.ScrollUnit="Item"
-						 VirtualizingPanel.VirtualizationMode="Standard">
-		<wpftk:GridView.ContextMenu>
-			<ContextMenu>
-				<MenuItem x:Name="menuPlay" Header="Play" Command="app:StaticCommands.PlayNow" CommandParameter="{Binding}"/>
-			</ContextMenu>
-		</wpftk:GridView.ContextMenu>
-	</wpftk:GridView>
+    <UserControl.Resources>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <converters:NullImageConverter x:Key="NullImageConverter"/>
+        <CollectionViewSource x:Key="cvs1" Source="{Binding Content, Mode=OneWay}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Year"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+        <DataTemplate x:Key="ItemTemplate">
+            <Border Style="{StaticResource ItemContainerBorder}">
+                <Border.InputBindings>
+                    <MouseBinding Gesture="LeftDoubleClick" Command="app:StaticCommands.BrowseLibraryItem" CommandParameter="{Binding}"/>
+                </Border.InputBindings>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="40"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <!-- Cover -->
+                    <Border BorderThickness="1" BorderBrush="{StaticResource TileBorder}">
+                        <Grid>
+                            <Viewbox Visibility="{Binding Cover, Mode=OneTime, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=True}">
+                                <Path Fill="LightSeaGreen" Data="M11,14C12,14 13.05,14.16 14.2,14.44C13.39,15.31 13,16.33 13,17.5C13,18.39 13.25,19.23 13.78,20H3V18C3,16.81 3.91,15.85 5.74,15.12C7.57,14.38 9.33,14 11,14M11,12C9.92,12 9,11.61 8.18,10.83C7.38,10.05 7,9.11 7,8C7,6.92 7.38,6 8.18,5.18C9,4.38 9.92,4 11,4C12.11,4 13.05,4.38 13.83,5.18C14.61,6 15,6.92 15,8C15,9.11 14.61,10.05 13.83,10.83C13.05,11.61 12.11,12 11,12M18.5,10H20L22,10V12H20V17.5A2.5,2.5 0 0,1 17.5,20A2.5,2.5 0 0,1 15,17.5A2.5,2.5 0 0,1 17.5,15C17.86,15 18.19,15.07 18.5,15.21V10Z" />
+                            </Viewbox>
+                            <Grid Visibility="{Binding Cover, Mode=OneTime, Converter={StaticResource StringToVisibilityConverter}}" Background="WhiteSmoke">
+                                <Image Source="{Binding Cover, Mode=OneTime, IsAsync=True, Converter={StaticResource NullImageConverter}}" VerticalAlignment="Top" SnapsToDevicePixels="True"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- Label -->
+                    <TextBlock Grid.Row="2" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" 
+                               TextWrapping="WrapWithOverflow" 
+                               TextAlignment="Center" 
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextForeground}"
+                               Text="{Binding DisplayName, Mode=OneTime}" 
+                               ToolTip="{Binding Name, Mode=OneTime}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+    <wpftk:GridView x:Name="grid1"
+                    ItemsSource="{Binding Content, Mode=OneWay}"
+                    SelectedValue="{Binding SelectedItem, Mode=TwoWay}"
+                    SelectedValuePath="Name"
+                    ItemTemplate="{StaticResource ItemTemplate}">
+        <wpftk:GridView.ContextMenu>
+            <ContextMenu>
+                <MenuItem x:Name="menuPlay" Header="Play" Command="app:StaticCommands.PlayNow" CommandParameter="{Binding}"/>
+            </ContextMenu>
+        </wpftk:GridView.ContextMenu>
+    </wpftk:GridView>
 </UserControl>

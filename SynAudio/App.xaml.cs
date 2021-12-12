@@ -8,11 +8,10 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using Newtonsoft.Json;
-using SynAudio.Utils;
+using SQLite;
 using SynAudio.Models.Config;
 using Utils;
 using Utils.ObjectStorage;
-using SQLite;
 
 namespace SynAudio
 {
@@ -22,6 +21,7 @@ namespace SynAudio
     public partial class App : Application
     {
         #region [Fields]
+
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
         private Mutex _mutex = null;
 
@@ -46,6 +46,7 @@ namespace SynAudio
         internal static readonly IObjectStorage Storage = new JsonStorage(UserDataFolder, SerializerSettings);
 
         internal static string ExeDirectory;
+
         #endregion
 
         #region [Properties]
@@ -55,6 +56,8 @@ namespace SynAudio
         internal static Random Rnd { get; } = new Random();
         internal static SettingsModel Config { get; private set; }
         internal static bool MusicFolderAvailableOnLan { get; set; }
+
+        public static Styles.Skin Skin { get; set; } = Styles.Skin.Dark;
 
         #endregion
 
@@ -220,7 +223,8 @@ namespace SynAudio
         {
             _log.Error(e.Exception);
 #if DEBUG
-            Debugger.Break();
+            Console.Error.WriteLine(e.Exception.ToString());
+            //Debugger.Break();
 #endif
         }
 
@@ -271,7 +275,8 @@ namespace SynAudio
                 _log.Error(exception, message);
             }
 #if DEBUG
-            Debugger.Break();
+            Console.Error.WriteLine(exception.ToString());
+            //Debugger.Break();
 #endif
         }
     }

@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:SynAudio">
+                    xmlns:local="clr-namespace:SynAudio"
+                    xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel">
     <Style x:Key="ItemContainerBorder" TargetType="Border">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Margin" Value="0"/>
@@ -30,4 +31,31 @@
         <Setter Property="RowHeaderWidth" Value="0"/>
         <Setter Property="Background" Value="White"/>
     </Style>
+
+    <Style TargetType="wpftk:GridView">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Margin" Value="0,2,0,0"/>
+        <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
+        <Setter Property="VirtualizingPanel.CacheLength" Value="2"/>
+        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Item"/>
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Standard"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <!-- Panels -->
+    <SolidColorBrush x:Key="PanelSeparator" Color="{StaticResource PanelSeparatorColor}"/>
+    <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource PanelBackgroundColor}"/>
+    <SolidColorBrush x:Key="PlayControlsPanelBackground" Color="{StaticResource PlayControlsPanelBackgroundColor}"/>
+
+    <!-- Borders -->
+    <SolidColorBrush x:Key="TileBorder" Color="{StaticResource TileBorderColor}"/>
+    
+    <!-- Text -->
+    <SolidColorBrush x:Key="TextForeground" Color="{StaticResource TextForegroundColor}"/>
+    <SolidColorBrush x:Key="ActiveForeground" Color="{StaticResource ActiveForegroundColor}"/>
+    <SolidColorBrush x:Key="ActiveBackground" Color="{StaticResource ActiveBackgroundColor}"/>
+    <SolidColorBrush x:Key="SelectionForeground" Color="{StaticResource SelectionForegroundColor}"/>
+    <SolidColorBrush x:Key="SelectionBackground" Color="{StaticResource SelectionBackgroundColor}"/>
+
+    <SolidColorBrush x:Key="H1Foreground" Color="{StaticResource H1ForegroundColor}"/>
 </ResourceDictionary>

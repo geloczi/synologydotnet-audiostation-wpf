@@ -5,34 +5,44 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-	<Grid>
-		<Grid.Resources>
-			<ControlTemplate x:Key="ratingtemplate" TargetType="{x:Type ToggleButton}">
-				<Viewbox>
-					<Path Name="star" Fill="LightGray" Data="F1 M 145.637,174.227L 127.619,110.39L 180.809,70.7577L 114.528,68.1664L 93.2725,5.33333L 70.3262,67.569L 4,68.3681L 56.0988,109.423L 36.3629,172.75L 91.508,135.888L 145.637,174.227 Z" />
-				</Viewbox>
-				<ControlTemplate.Triggers>
-					<Trigger Property="IsChecked" Value="True">
-						<Setter TargetName="star" Property="Fill" Value="Red" />
-					</Trigger>
-				</ControlTemplate.Triggers>
-			</ControlTemplate>
-			<Style TargetType="ToggleButton">
-				<Setter Property="Cursor" Value="Hand"/>
-				<Setter Property="Template" Value="{StaticResource ratingtemplate}"/>
-			</Style>
-		</Grid.Resources>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition />
-			<ColumnDefinition />
-			<ColumnDefinition />
-			<ColumnDefinition />
-			<ColumnDefinition />
-		</Grid.ColumnDefinitions>
-		<ToggleButton x:Name="tb1" Grid.Column="0" Click="ClickEventHandler" />
-		<ToggleButton x:Name="tb2" Grid.Column="1" Click="ClickEventHandler" />
-		<ToggleButton x:Name="tb3" Grid.Column="2" Click="ClickEventHandler" />
-		<ToggleButton x:Name="tb4" Grid.Column="3" Click="ClickEventHandler" />
-		<ToggleButton x:Name="tb5" Grid.Column="4" Click="ClickEventHandler" />
-	</Grid>
+    <Grid>
+        <Grid.Resources>
+            <ControlTemplate x:Key="ratingtemplate" TargetType="{x:Type ToggleButton}">
+                <Viewbox>
+                    <Border Background="Transparent">
+                        <Grid>
+                            <Path Fill="{StaticResource H1Foreground}" 
+                                  Data="M12,15.39L8.24,17.66L9.23,13.38L5.91,10.5L10.29,10.13L12,6.09L13.71,10.13L18.09,10.5L14.77,13.38L15.76,17.66M22,9.24L14.81,8.63L12,2L9.19,8.63L2,9.24L7.45,13.97L5.82,21L12,17.27L18.18,21L16.54,13.97L22,9.24Z" />
+                            <Path Name="star" 
+                                  Visibility="Hidden" 
+                                  Fill="{StaticResource ActiveForeground}" 
+                                  Data="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" />
+                        </Grid>
+                    </Border>
+                </Viewbox>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter TargetName="star" Property="Visibility" Value="Visible"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+            <Style TargetType="ToggleButton">
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template" Value="{StaticResource ratingtemplate}"/>
+                <Setter Property="Background" Value="Transparent"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <ToggleButton x:Name="tb1" Grid.Column="0" Click="ClickEventHandler" />
+        <ToggleButton x:Name="tb2" Grid.Column="1" Click="ClickEventHandler" />
+        <ToggleButton x:Name="tb3" Grid.Column="2" Click="ClickEventHandler" />
+        <ToggleButton x:Name="tb4" Grid.Column="3" Click="ClickEventHandler" />
+        <ToggleButton x:Name="tb5" Grid.Column="4" Click="ClickEventHandler" />
+    </Grid>
 </UserControl>

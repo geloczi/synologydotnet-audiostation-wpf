@@ -66,15 +66,18 @@
 
 					<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 					<Setter Property="FontWeight" Value="Normal" />
+                    <Setter Property="Background" Value="{StaticResource PanelBackground}"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextForeground}"/>
 
-					<Style.Triggers>
+                    <Style.Triggers>
 						<DataTrigger Binding="{Binding IsPlaying}" Value="True">
 							<Setter Property="FontWeight" Value="Bold" />
-							<Setter Property="Background" Value="WhiteSmoke"/>
+                            <Setter Property="Background" Value="{StaticResource ActiveBackground}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ActiveForeground}"/>
 						</DataTrigger>
 						<DataTrigger Binding="{Binding IsSelected}" Value="True">
-							<Setter Property="Background" Value="Cyan"/>
-							<Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Background" Value="{StaticResource SelectionForeground}"/>
+                            <Setter Property="Foreground" Value="{StaticResource SelectionBackground}"/>
 						</DataTrigger>
 					</Style.Triggers>
 				</Style>

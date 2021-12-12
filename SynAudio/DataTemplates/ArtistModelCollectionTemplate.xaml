@@ -2,6 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						  xmlns:controls="clr-namespace:SynAudio.Controls">
     <DataTemplate x:Key="ArtistModelCollectionTemplate">
-        <controls:ArtistsBrowser DataContext="{Binding}"/>
+        <controls:ArtistsBrowser DataContext="{Binding}" />
     </DataTemplate>
 </ResourceDictionary>

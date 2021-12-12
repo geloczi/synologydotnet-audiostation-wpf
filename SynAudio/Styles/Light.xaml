@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Panels -->
+    <Color x:Key="PanelSeparatorColor">Gray</Color>
+    <Color x:Key="PanelBackgroundColor">White</Color>
+    <Color x:Key="PlayControlsPanelBackgroundColor">White</Color>
+    
+    <!-- Borders -->
+    <Color x:Key="TileBorderColor">WhiteSmoke</Color>
+    
+    <!-- Text -->
+    <Color x:Key="TextForegroundColor">Black</Color>
+    <Color x:Key="ActiveForegroundColor">Red</Color>
+    <Color x:Key="ActiveBackgroundColor">White</Color>
+    <Color x:Key="SelectionForegroundColor">Black</Color>
+    <Color x:Key="SelectionBackgroundColor">#FF8000</Color>
+
+    <Color x:Key="H1ForegroundColor">DarkGray</Color>
+</ResourceDictionary>
