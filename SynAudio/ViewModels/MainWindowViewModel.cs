@@ -23,8 +23,6 @@ namespace SynAudio.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-
         #region [Events]
         public delegate void MainWindowViewModelEvent(MainWindowViewModel sender);
 
@@ -32,9 +30,11 @@ namespace SynAudio.ViewModels
         #endregion
 
         #region [Fields]
-        private int _volumeBeforeMuted = 100;
+        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
         private readonly object _syncRoot = new object();
         private readonly HashSet<string> _quickSyncedArtists = new HashSet<string>();
+        private readonly FrameworkElement _mainTabControl;
+        private int _volumeBeforeMuted = 100;
         private TimeSpan _restoreSongPosition;
         #endregion
 
@@ -95,9 +95,10 @@ namespace SynAudio.ViewModels
         #endregion
 
         #region [Public Methods]
-        public MainWindowViewModel(SettingsModel settings)
+        public MainWindowViewModel(SettingsModel settings, FrameworkElement mainTabControl)
         {
             Settings = settings;
+            _mainTabControl = mainTabControl;
 
             Player_PlayCommand = new RelayCommand(PlayCommand_Action, o => Connected && !(NowPlaying.CurrentSongVM is null) && Player?.PlaybackState != PlaybackStateType.Playing);
             Player_PauseCommand = new RelayCommand(Player_PauseCommand_Action, o => Player?.IsPlaying == true);
@@ -297,9 +298,9 @@ namespace SynAudio.ViewModels
 
         private void CloseTabCommand_Action(object o)
         {
-            if (o is NavigationItem ni)
+            if (o is TabViewModel tvm)
             {
-                var t = Tabs.First(x => x.Header == ni);
+                var t = Tabs.First(x => x.Header == tvm.CurrentNavigationItem);
                 var vm = (TabViewModel)t.Content;
                 CloseTab(vm);
             }
@@ -307,7 +308,7 @@ namespace SynAudio.ViewModels
 
         private TabViewModel OpenNewTab()
         {
-            var vm = new TabViewModel();
+            var vm = new TabViewModel(_mainTabControl);
             vm.NavigationRequest += Tab_NavigationRequest;
             Tabs.Add(vm.TabItem);
             CurrentTabItem = vm.TabItem;

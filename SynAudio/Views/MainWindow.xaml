@@ -194,39 +194,64 @@
                             PreviewKeyDown="tabs1_PreviewKeyDown">
                     <TabControl.Resources>
                         <datatemplateselectors:MainContentTemplateSelector x:Key="MainContentTemplateSelector" />
-                        <Style TargetType="{x:Type TabItem}">
-                            <Setter Property="HeaderTemplate">
+
+                        <!-- Inactive Tab Header -->
+                        <Style x:Key="MainContentInactiveTabHeader" TargetType="TabItem">
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,0,0"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Background" Value="Transparent"/>
+
+                            <Setter Property="Template">
                                 <Setter.Value>
-                                    <DataTemplate>
-                                        <ContentPresenter>
-                                            <ContentPresenter.Content>
-                                                <Border>
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Text="{Binding Title}"/>
-                                                        <Button Grid.Column="1" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CloseTabCommand}" 
-															  CommandParameter="{Binding}"
-															  Style="{StaticResource IconButton}"
-															  Foreground="Gray" Margin="4,0,0,0">
-                                                            <Viewbox Width="10" Height="10">
-                                                                <Path Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"
+                                    <ControlTemplate TargetType="{x:Type TabItem}">
+                                        <Border x:Name="TabHeaderContainer" 
+                                                    BorderThickness="0"
+                                                    BorderBrush="White"
+                                                    Padding="10,8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <ContentPresenter x:Name="TabHeaderText" ContentSource="Header">
+                                                    <ContentPresenter.Resources>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="{StaticResource TextForeground}" />
+                                                        </Style>
+                                                    </ContentPresenter.Resources>
+                                                </ContentPresenter>
+
+                                                <Button Grid.Column="1" 
+                                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CloseTabCommand}" 
+															CommandParameter="{Binding}"
+															Style="{StaticResource IconButton}"
+															Foreground="{StaticResource H1Foreground}" Margin="4,0,0,0">
+                                                    <Viewbox Width="10" Height="10">
+                                                        <Path Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"
 																	Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                                                            </Viewbox>
-                                                        </Button>
-                                                    </Grid>
-                                                </Border>
-                                            </ContentPresenter.Content>
-                                        </ContentPresenter>
-                                    </DataTemplate>
+                                                    </Viewbox>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="TabHeaderContainer" Property="Background" Value="{StaticResource TileBorder}" />
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="False">
+                                                <Setter TargetName="TabHeaderContainer" Property="Background" Value="{StaticResource PanelBackground}" />
+                                            </Trigger>
+                                            <!--<Trigger Property="IsEnabled" Value="False">
+                                            </Trigger>-->
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="BorderThickness" Value="0"/>
                         </Style>
                     </TabControl.Resources>
 
+                    <!-- Tab Content -->
                     <behaviors:TabContent.Template>
                         <DataTemplate>
                             <Grid Margin="0">
@@ -247,7 +272,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </StackPanel.Resources>
-                                    <ItemsControl ItemsSource="{Binding Content.NavigationItems}" Margin="2,2,0,2" Foreground="Black">
+                                    <ItemsControl ItemsSource="{Binding Content.NavigationItems}" Margin="8,2,0,2" Foreground="Black">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Border Background="Transparent" Cursor="Hand">
@@ -264,7 +289,7 @@
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
                                     </ItemsControl>
-                                    <Border Background="{StaticResource Brush_MainPanelSeparator}" BorderThickness="0" Height="1"/>
+                                    <Border Background="{StaticResource PanelSeparator}" BorderThickness="0" Height="2"/>
                                 </StackPanel>
 
                                 <!-- Content -->

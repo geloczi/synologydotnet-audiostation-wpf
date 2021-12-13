@@ -41,7 +41,7 @@ namespace SynAudio
             }
 
             Title = OriginalWindowTitle;
-            DataContext = VM = new MainWindowViewModel(Settings);
+            DataContext = VM = new MainWindowViewModel(Settings, tabs1);
             CommandBindings.Add(new ForwardCommandBinding(StaticCommands.BrowseLibraryItem, VM.BrowseLibraryItemCommand));
             CommandBindings.Add(new ForwardCommandBinding(StaticCommands.PlayNow, VM.PlayNowCommand));
             CommandBindings.Add(new ForwardCommandBinding(StaticCommands.BrowseByArtists, VM.BrowseByArtistsCommand));

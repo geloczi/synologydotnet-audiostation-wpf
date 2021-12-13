@@ -18,9 +18,15 @@ namespace SynAudio.ViewModels
         public RangeObservableCollection<NavigationItem> NavigationItems { get; } = new RangeObservableCollection<NavigationItem>();
         public ICommand NavigateCommand { get; set; }
         public NavigationItem CurrentNavigationItem => NavigationItems.LastOrDefault();
-        public TabViewModel()
+        public TabViewModel(FrameworkElement owner)
         {
-            TabItem = new TabItem() { Header = string.Empty, Content = this };
+            TabItem = new TabItem()
+            {
+                Header = string.Empty,
+                Content = this,
+                DataContext = this,
+                Style = (Style)owner.FindResource("MainContentInactiveTabHeader")
+            };
             NavigateCommand = new RelayCommand(NavigateCommand_Action);
         }
 
