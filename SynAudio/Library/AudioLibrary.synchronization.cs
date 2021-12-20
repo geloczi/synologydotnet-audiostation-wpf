@@ -18,14 +18,14 @@ namespace SynAudio.Library
 
             // Filter by Artist
             var query = Db.Table<SongModel>().Where(x => x.Artist == artist);
-            var queryFilter = new List<(SongQueryParameters, object)>();
-            queryFilter.Add((SongQueryParameters.artist, artist));
+            var queryFilter = new List<(SongQueryParameter, object)>();
+            queryFilter.Add((SongQueryParameter.artist, artist));
 
             // Filter by Album
             if (!string.IsNullOrEmpty(album))
             {
                 query = query.Where(x => x.Album == album);
-                queryFilter.Add((SongQueryParameters.album, album));
+                queryFilter.Add((SongQueryParameter.album, album));
             }
 
             // Query and update

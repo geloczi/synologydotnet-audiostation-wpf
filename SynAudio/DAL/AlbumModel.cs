@@ -30,7 +30,7 @@ namespace SynAudio.DAL
 
         [Column(nameof(Rating))]
         [NotNull]
-        public int Rating { get; set; }
+        public double Rating { get; set; }
 
         [Column(nameof(Year))]
         [NotNull]
@@ -48,7 +48,7 @@ namespace SynAudio.DAL
         public void LoadFromDto(Album dto)
         {
             Name = CleanString(dto.Name);
-            Rating = dto.Additional.AverageRating.Rating;
+            Rating = dto.Additional.AverageRating.Value;
             Year = dto.Year;
             Artist = GetFirstCleanString(dto.DisplayArtist, dto.AlbumArtist, dto.Artist);
         }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SynAudio.DAL;
 using SynologyDotNet.AudioStation;
+using SynologyDotNet.Core.Model;
 
 namespace SynAudio.Library
 {
@@ -122,7 +123,7 @@ namespace SynAudio.Library
             }
         }
 
-        public Task StreamSongAsync(CancellationToken token, TranscodeMode transcode, string songId, double positionSeconds, Action<SongStream> readAction)
+        public Task StreamSongAsync(CancellationToken token, TranscodeMode transcode, string songId, double positionSeconds, Action<StreamResult> readAction)
         {
             return _audioStation.StreamSongAsync(token, transcode, songId, positionSeconds, readAction);
         }
