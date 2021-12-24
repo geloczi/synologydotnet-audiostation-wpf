@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8FF3FE08-EA42-482E-A232-D74FDE7AEDE7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicPlayback", "MusicPlayback\MusicPlayback.csproj", "{F14832B1-1757-47B6-9536-F31A0B13A289}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utils", "Utils\Utils.csproj", "{91A4A6AF-3873-4823-8F3A-3121C6BA7ABB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynAudio", "SynAudio\SynAudio.csproj", "{2A59EBBB-635A-47E6-B91F-86EF402F3B1A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynologyDotNet.Core", "..\synologydotnet-core\SynologyDotNet.Core\SynologyDotNet.Core.csproj", "{FDC48286-20E9-4DCF-A71E-570E1A9027E3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynologyDotNet.AudioStation", "..\synologydotnet-audiostation\SynologyDotNet.AudioStation\SynologyDotNet.AudioStation.csproj", "{D50093B8-05FD-48E8-924F-A8CE0E61B87C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Local|Any CPU = Local|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F14832B1-1757-47B6-9536-F31A0B13A289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F14832B1-1757-47B6-9536-F31A0B13A289}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F14832B1-1757-47B6-9536-F31A0B13A289}.Local|Any CPU.ActiveCfg = Local|Any CPU
+		{F14832B1-1757-47B6-9536-F31A0B13A289}.Local|Any CPU.Build.0 = Local|Any CPU
+		{F14832B1-1757-47B6-9536-F31A0B13A289}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F14832B1-1757-47B6-9536-F31A0B13A289}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91A4A6AF-3873-4823-8F3A-3121C6BA7ABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91A4A6AF-3873-4823-8F3A-3121C6BA7ABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91A4A6AF-3873-4823-8F3A-3121C6BA7ABB}.Local|Any CPU.ActiveCfg = Local|Any CPU
+		{91A4A6AF-3873-4823-8F3A-3121C6BA7ABB}.Local|Any CPU.Build.0 = Local|Any CPU
+		{91A4A6AF-3873-4823-8F3A-3121C6BA7ABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91A4A6AF-3873-4823-8F3A-3121C6BA7ABB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A59EBBB-635A-47E6-B91F-86EF402F3B1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A59EBBB-635A-47E6-B91F-86EF402F3B1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A59EBBB-635A-47E6-B91F-86EF402F3B1A}.Local|Any CPU.ActiveCfg = Local|Any CPU
+		{2A59EBBB-635A-47E6-B91F-86EF402F3B1A}.Local|Any CPU.Build.0 = Local|Any CPU
+		{2A59EBBB-635A-47E6-B91F-86EF402F3B1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A59EBBB-635A-47E6-B91F-86EF402F3B1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDC48286-20E9-4DCF-A71E-570E1A9027E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDC48286-20E9-4DCF-A71E-570E1A9027E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDC48286-20E9-4DCF-A71E-570E1A9027E3}.Local|Any CPU.ActiveCfg = Local|Any CPU
+		{FDC48286-20E9-4DCF-A71E-570E1A9027E3}.Local|Any CPU.Build.0 = Local|Any CPU
+		{FDC48286-20E9-4DCF-A71E-570E1A9027E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDC48286-20E9-4DCF-A71E-570E1A9027E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D50093B8-05FD-48E8-924F-A8CE0E61B87C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D50093B8-05FD-48E8-924F-A8CE0E61B87C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D50093B8-05FD-48E8-924F-A8CE0E61B87C}.Local|Any CPU.ActiveCfg = Local|Any CPU
+		{D50093B8-05FD-48E8-924F-A8CE0E61B87C}.Local|Any CPU.Build.0 = Local|Any CPU
+		{D50093B8-05FD-48E8-924F-A8CE0E61B87C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D50093B8-05FD-48E8-924F-A8CE0E61B87C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01962D93-CA44-4C51-9E04-FDB0736AEA9B}
+	EndGlobalSection
+EndGlobal

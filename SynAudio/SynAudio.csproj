@@ -9,6 +9,7 @@
 		<ApplicationIcon>appicon.ico</ApplicationIcon>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<StartupObject />
+		<Configurations>Debug;Release;Local</Configurations>
 	</PropertyGroup>
 
 	<!-- General -->
@@ -38,6 +39,24 @@
 		<ProjectReference Include="..\Utils\Utils.csproj" />
 	</ItemGroup>
 
+	<!-- Local configuration uses project references -->
+	<Choose>
+		<When Condition="'$(Configuration)'=='Local'">
+			<PropertyGroup>
+				<DefineConstants>DEBUG;TRACE</DefineConstants>
+			</PropertyGroup>
+			<ItemGroup>
+				<ProjectReference Include="..\..\synologydotnet-core\SynologyDotNet.Core\SynologyDotNet.Core.csproj" />
+				<ProjectReference Include="..\..\synologydotnet-audiostation\SynologyDotNet.AudioStation\SynologyDotNet.AudioStation.csproj" />
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<PackageReference Include="SynologyDotNet.AudioStation" Version="0.4.0" />
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+
 	<ItemGroup>
 		<PackageReference Include="H.Hooks" Version="1.4.14" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -45,7 +64,7 @@
 		<PackageReference Include="NLog" Version="4.7.13" />
 		<PackageReference Include="PropertyChanged.Fody" PrivateAssets="all" Version="3.4.0" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-		<PackageReference Include="SynologyDotNet.AudioStation" Version="0.4.0" />
+		
 		<PackageReference Include="VirtualizingWrapPanel" Version="1.5.7" />
 	</ItemGroup>
 
