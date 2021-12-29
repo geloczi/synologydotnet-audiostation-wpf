@@ -37,13 +37,7 @@ namespace SynAudio
 
         internal static readonly Encryption.Encrypter Encrypter = new Encryption.Encrypter("833236b9e38f36c240fba48a48d2a160185671cc08a9d4fef75cc8b33e4166cd", Encoding.UTF8.GetBytes($"{UserDataFolder}-{Environment.UserDomainName}-{Environment.UserName}"));
 
-        internal static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings()
-        {
-            Formatting = Formatting.Indented,
-            TypeNameHandling = TypeNameHandling.Objects
-        };
-
-        internal static readonly IObjectStorage Storage = new JsonStorage(UserDataFolder, SerializerSettings);
+        internal static readonly IObjectStorage Storage = new JsonStorage(UserDataFolder);
 
         internal static string ExeDirectory;
 

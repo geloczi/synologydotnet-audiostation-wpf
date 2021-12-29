@@ -6,18 +6,21 @@ namespace Utils.ObjectStorage
     public class JsonStorage : IObjectStorage
     {
         public string Folder { get; }
-        public JsonSerializerSettings Settings { get; }
-        public JsonStorage(string folder, JsonSerializerSettings settings)
+        public JsonSerializerSettings SerializerSettings { get; set; } = new JsonSerializerSettings()
+        {
+            Formatting = Formatting.Indented
+        };
+
+        public JsonStorage(string folder)
         {
             Folder = folder;
             if (!Directory.Exists(Folder))
                 Directory.CreateDirectory(Folder);
-            Settings = settings;
         }
 
-        public void Save(string name, object o) => File.WriteAllText(GetFilePath(name), JsonConvert.SerializeObject(o, Settings));
+        public void Save(string name, object o) => File.WriteAllText(GetFilePath(name), JsonConvert.SerializeObject(o, SerializerSettings));
 
-        public T Load<T>(string name) => JsonConvert.DeserializeObject<T>(File.ReadAllText(GetFilePath(name)), Settings);
+        public T Load<T>(string name) => JsonConvert.DeserializeObject<T>(File.ReadAllText(GetFilePath(name)), SerializerSettings);
 
         public bool TryLoad<T>(string name, out T o)
         {
@@ -25,7 +28,7 @@ namespace Utils.ObjectStorage
             {
                 if (Exists(name))
                 {
-                    o = JsonConvert.DeserializeObject<T>(File.ReadAllText(GetFilePath(name)), Settings);
+                    o = JsonConvert.DeserializeObject<T>(File.ReadAllText(GetFilePath(name)), SerializerSettings);
                     return true;
                 }
             }

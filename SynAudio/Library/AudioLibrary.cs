@@ -131,9 +131,7 @@ namespace SynAudio.Library
             }
             SaveSession(session);
 
-            //sql.WriteBlob(ByteArrayValues.AudioStationConnectorSession, !(session is null) ? App.Encrypter.Encrypt(JsonSerialization.SerializeToBytes(session)) : null);
             Connected = response.Success;
-
             return Connected;
         }
 
