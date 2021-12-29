@@ -23,6 +23,6 @@ namespace SynAudio.Models.Config
         public RectangleD WindowDimensions { get; set; }
         public RectangleD LastVirtualScreenDimensions { get; set; }
         public bool UpdateLibraryOnStartup { get; set; } = true;
-        public bool RestrictedMode { get; set; };
+        public bool RestrictedMode { get; set; }
     }
 }
