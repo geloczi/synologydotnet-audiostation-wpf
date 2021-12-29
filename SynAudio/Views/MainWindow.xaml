@@ -173,7 +173,11 @@
 
                 <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
                     <TextBlock Text="{Binding Status.Current.Text}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
-                    <ComboBox ItemsSource="{Binding TranscodeModes}" SelectedItem="{Binding Settings.Transcoding, Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0,5,0,0"/>
+                    <ComboBox ItemsSource="{Binding TranscodeModes}" 
+                              SelectedItem="{Binding Settings.Transcoding, Mode=TwoWay}" 
+                              Visibility="{Binding Settings.RestrictedMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
+                              HorizontalAlignment="Stretch" 
+                              Margin="0,5,0,0"/>
                     <!--<Button x:Name="btnSynchronizeLibrary" Command="{Binding SynchronizeLibraryCommand}" HorizontalAlignment="Stretch">Sync Library</Button>-->
 
                 </StackPanel>
