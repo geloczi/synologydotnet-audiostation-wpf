@@ -52,7 +52,7 @@
 		</When>
 		<Otherwise>
 			<ItemGroup>
-				<PackageReference Include="SynologyDotNet.AudioStation" Version="0.4.1" />
+				<PackageReference Include="SynologyDotNet.AudioStation" Version="0.4.2" />
 			</ItemGroup>
 		</Otherwise>
 	</Choose>
