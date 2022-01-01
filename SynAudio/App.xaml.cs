@@ -51,7 +51,7 @@ namespace SynAudio
         internal static SettingsModel Config { get; private set; }
         internal static bool MusicFolderAvailableOnLan { get; set; }
 
-        public static Styles.Skin Skin { get; set; } = Styles.Skin.Dark;
+        public static Styles.Theme Skin { get; set; } = Styles.Theme.Dark;
 
         #endregion
 

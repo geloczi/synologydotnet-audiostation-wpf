@@ -1,6 +1,6 @@
 ﻿namespace SynAudio.Styles
 {
-    public enum Skin
+    public enum Theme
     {
         Light,
         Dark

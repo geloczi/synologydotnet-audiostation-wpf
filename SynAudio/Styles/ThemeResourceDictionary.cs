@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace SynAudio.Styles
 {
-    public class SkinResourceDictionary : ResourceDictionary
+    public class ThemeResourceDictionary : ResourceDictionary
     {
         public Uri LightSource
         {

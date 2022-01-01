@@ -5,7 +5,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <styles:SkinResourceDictionary 
+                <styles:ThemeResourceDictionary 
                     LightSource="Styles/Light.xaml" 
                     DarkSource="Styles/Dark.xaml" />
                 
