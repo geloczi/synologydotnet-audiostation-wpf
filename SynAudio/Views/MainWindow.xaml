@@ -15,7 +15,8 @@
         BorderThickness="0"
         Padding="0"
         Margin="0"
-        Height="800" Width="1100" MinWidth="800" MinHeight="600">
+        Width="1100" Height="800"
+        MinWidth="800" MinHeight="600">
     <Window.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullImageConverter x:Key="NullImageConverter"/>
@@ -88,7 +89,8 @@
     </Window.Resources>
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="28" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+        <WindowChrome CaptionHeight="28" 
+                      ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
     </WindowChrome.WindowChrome>
 
     <Window.TaskbarItemInfo>
@@ -147,7 +149,12 @@
             </Grid.ColumnDefinitions>
 
             <Grid>
-                <Label Content="{Binding Title}" Foreground="{StaticResource HighlightForeground}" />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="/SynAudio;component/appicon.ico" />
+                <Label Grid.Column="1" Content="{Binding Title}" Foreground="{StaticResource HighlightForeground}" />
             </Grid>
 
             <Grid Grid.Column="1" HorizontalAlignment="Center">
@@ -204,7 +211,7 @@
                         RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                         StrokeThickness="1" />
                 </Button>
-                
+
                 <Button
                     Name="MaximizeButton"
                     Grid.Column="3"
@@ -218,7 +225,7 @@
                         RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                         StrokeThickness="1" />
                 </Button>
-                
+
                 <Button
                     Name="RestoreButton"
                     Grid.Column="3"
@@ -232,7 +239,7 @@
                         RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                         StrokeThickness="1" />
                 </Button>
-                
+
                 <Button
                     Grid.Column="4"
                     Click="CloseButton_Click"
@@ -245,7 +252,7 @@
                         RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                         StrokeThickness="1" />
                 </Button>
-                
+
             </StackPanel>
 
         </Grid>
