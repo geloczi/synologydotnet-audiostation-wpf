@@ -8,14 +8,13 @@ using SynAudio.Models.Config;
 using SynAudio.ViewModels;
 using Utils;
 using Utils.Commands;
+using System.Runtime.InteropServices;
 
 namespace SynAudio
 {
     public partial class MainWindow : Window
     {
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-        public static readonly string OriginalWindowTitle = $"{nameof(SynAudio)} v{AssemblyProps.EntryAssembly.Version}";
-
         private readonly WindowStateWatcher _stateWatcher;
         private readonly bool _userTriggeredWindowStateReset;
 
@@ -27,7 +26,7 @@ namespace SynAudio
         public MainWindow()
         {
             InitializeComponent();
-            _log.Debug(nameof(MainWindow));
+            RefreshMaximizeRestoreButton();
 
             // Restore window dimensions only, if the screen setup is the same as last time
             // Example: The user changed the screen configuration or replaced/unplugged a screen, etc.
@@ -40,7 +39,6 @@ namespace SynAudio
                 Height = Settings.WindowDimensions.Height;
             }
 
-            Title = OriginalWindowTitle;
             DataContext = VM = new MainWindowViewModel(Settings, tabs1);
             CommandBindings.Add(new ForwardCommandBinding(StaticCommands.BrowseLibraryItem, VM.BrowseLibraryItemCommand));
             CommandBindings.Add(new ForwardCommandBinding(StaticCommands.PlayNow, VM.PlayNowCommand));
@@ -61,10 +59,26 @@ namespace SynAudio
             Loaded += Window_Loaded;
             Closing += Window_Closing;
             PreviewKeyDown += Window_PreviewKeyDown;
+            SizeChanged += MainWindow_SizeChanged;
 
             GlobalKeyboardHook = new H.Hooks.LowLevelKeyboardHook();
             GlobalKeyboardHook.Down += GlobalKeyboardHook_Down;
         }
+
+        private void RefreshMaximizeRestoreButton()
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                MaximizeButton.Visibility = Visibility.Collapsed;
+                RestoreButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                MaximizeButton.Visibility = Visibility.Visible;
+                RestoreButton.Visibility = Visibility.Collapsed;
+            }
+        }
+
 
         private void GlobalKeyboardHook_Down(object sender, H.Hooks.KeyboardEventArgs e)
         {
@@ -111,6 +125,7 @@ namespace SynAudio
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Loaded -= Window_Loaded;
+            UpdateWindowTitle(null);
 
             if (!_userTriggeredWindowStateReset)
                 WindowState = Settings.WindowState == WindowState.Minimized ? WindowState.Normal : Settings.WindowState;
@@ -138,6 +153,11 @@ namespace SynAudio
             //            PreviewKeyUp += (sender, e) => DebugWriteLineFocusedElement();
             //            PreviewMouseUp += (sender, e) => DebugWriteLineFocusedElement();
             //#endif
+        }
+
+        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            RefreshMaximizeRestoreButton();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -194,7 +214,7 @@ namespace SynAudio
         private void UpdateWindowTitle(SongModel song)
         {
             if (song is null)
-                Title = OriginalWindowTitle;
+                Title = MainWindowViewModel.OriginalWindowTitle;
             else
                 Title = $"{song.Title} - {song.Artist}";
         }
@@ -349,5 +369,125 @@ namespace SynAudio
                 e.Handled = true;
             }
         }
+
+        #region Custom Window Titlebar
+
+        private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.Maximized;
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            ((System.Windows.Interop.HwndSource)PresentationSource.FromVisual(this)).AddHook(HookProc);
+        }
+
+        public static IntPtr HookProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_GETMINMAXINFO)
+            {
+                // We need to tell the system what our size should be when maximized. Otherwise it will cover the whole screen,
+                // including the task bar.
+                MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
+
+                // Adjust the maximized size and position to fit the work area of the correct monitor
+                IntPtr monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+
+                if (monitor != IntPtr.Zero)
+                {
+                    MONITORINFO monitorInfo = new MONITORINFO();
+                    monitorInfo.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
+                    GetMonitorInfo(monitor, ref monitorInfo);
+                    RECT rcWorkArea = monitorInfo.rcWork;
+                    RECT rcMonitorArea = monitorInfo.rcMonitor;
+                    mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
+                    mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                    mmi.ptMaxSize.X = Math.Abs(rcWorkArea.Right - rcWorkArea.Left);
+                    mmi.ptMaxSize.Y = Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top);
+                }
+
+                Marshal.StructureToPtr(mmi, lParam, true);
+            }
+
+            return IntPtr.Zero;
+        }
+
+        private const int WM_GETMINMAXINFO = 0x0024;
+
+        private const uint MONITOR_DEFAULTTONEAREST = 0x00000002;
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr handle, uint flags);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
+        [Serializable]
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+
+            public RECT(int left, int top, int right, int bottom)
+            {
+                this.Left = left;
+                this.Top = top;
+                this.Right = right;
+                this.Bottom = bottom;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MONITORINFO
+        {
+            public int cbSize;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public uint dwFlags;
+        }
+
+        [Serializable]
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+
+            public POINT(int x, int y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MINMAXINFO
+        {
+            public POINT ptReserved;
+            public POINT ptMaxSize;
+            public POINT ptMaxPosition;
+            public POINT ptMinTrackSize;
+            public POINT ptMaxTrackSize;
+        }
+
+        #endregion Custom Window Titlebar
+
     }
 }

@@ -60,6 +60,8 @@
     <SolidColorBrush x:Key="ActiveBackground" Color="{StaticResource ActiveBackgroundColor}"/>
     <SolidColorBrush x:Key="SelectionForeground" Color="{StaticResource SelectionForegroundColor}"/>
     <SolidColorBrush x:Key="SelectionBackground" Color="{StaticResource SelectionBackgroundColor}"/>
+    <SolidColorBrush x:Key="InactiveForeground" Color="{StaticResource InactiveForegroundColor}"/>
 
     <SolidColorBrush x:Key="H1Foreground" Color="{StaticResource H1ForegroundColor}"/>
+    <SolidColorBrush x:Key="HighlightForeground" Color="{StaticResource HighlightForegroundColor}"/>
 </ResourceDictionary>

@@ -30,6 +30,8 @@ namespace SynAudio.ViewModels
         #endregion
 
         #region [Fields]
+        public static readonly string OriginalWindowTitle = $"{nameof(SynAudio)} v{AssemblyProps.EntryAssembly.Version}";
+
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
         private readonly object _syncRoot = new object();
         private readonly HashSet<string> _quickSyncedArtists = new HashSet<string>();
@@ -67,6 +69,7 @@ namespace SynAudio.ViewModels
         public bool LibraryLoaded { get; set; }
         public StatusViewModel Status { get; } = new StatusViewModel();
         public bool IsNowPlayingVisible { get; set; } = true;
+        public string Title { get; set; } = OriginalWindowTitle;
         #endregion
 
         #region [Commands]

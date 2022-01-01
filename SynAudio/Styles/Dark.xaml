@@ -14,6 +14,8 @@
     <Color x:Key="ActiveBackgroundColor">#22272D</Color>
     <Color x:Key="SelectionForegroundColor">#FF8000</Color>
     <Color x:Key="SelectionBackgroundColor">Black</Color>
+    <Color x:Key="InactiveForegroundColor">#A0A0A0</Color>
 
-    <Color x:Key="H1ForegroundColor">DarkGray</Color>
+    <Color x:Key="H1ForegroundColor">#A0A0A0</Color>
+    <Color x:Key="HighlightForegroundColor">White</Color>
 </ResourceDictionary>

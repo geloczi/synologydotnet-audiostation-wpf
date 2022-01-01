@@ -121,7 +121,7 @@ namespace SynAudio
                 }
                 else
                 {
-                    BringToFront(SynAudio.MainWindow.OriginalWindowTitle);
+                    BringToFront(ViewModels.MainWindowViewModel.OriginalWindowTitle);
                 }
 
                 // Exit, if could not create a new mutex

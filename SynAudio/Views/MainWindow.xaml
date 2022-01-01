@@ -3,14 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
-		  xmlns:controls="clr-namespace:SynAudio.Controls"
-		  xmlns:converters="clr-namespace:ValueConverters"
-		  xmlns:behaviors="clr-namespace:SynAudio.Behaviors"
-		  xmlns:datatemplateselectors="clr-namespace:SynAudio.DataTemplateSelectors"
-		  xmlns:app="clr-namespace:SynAudio" 
-		  xmlns:viewmodels="clr-namespace:SynAudio.ViewModels"
-		  d:DataContext="{d:DesignInstance viewmodels:MainWindowViewModel}"
-		  Height="800" Width="1100" MinWidth="800" MinHeight="600">
+        xmlns:controls="clr-namespace:SynAudio.Controls"
+        xmlns:converters="clr-namespace:ValueConverters"
+        xmlns:behaviors="clr-namespace:SynAudio.Behaviors"
+        xmlns:datatemplateselectors="clr-namespace:SynAudio.DataTemplateSelectors"
+        xmlns:app="clr-namespace:SynAudio" 
+        xmlns:viewmodels="clr-namespace:SynAudio.ViewModels"
+        d:DataContext="{d:DesignInstance viewmodels:MainWindowViewModel}"
+        WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
+        BorderThickness="0"
+        Padding="0"
+        Margin="0"
+        Height="800" Width="1100" MinWidth="800" MinHeight="600">
     <Window.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullImageConverter x:Key="NullImageConverter"/>
@@ -82,6 +87,10 @@
         </Style>
     </Window.Resources>
 
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="28" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+    </WindowChrome.WindowChrome>
+
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo x:Name="taskBarItemInfo1" Description="Media Controls">
             <TaskbarItemInfo.ThumbButtonInfos>
@@ -108,6 +117,7 @@
 
     <Grid Background="{StaticResource PanelBackground}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="28"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -128,8 +138,120 @@
             </ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <!-- Left panel -->
-        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="1" Grid.ColumnSpan="1" Margin="8,4,8,8">
+        <!-- Titlebar -->
+        <Grid Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Label Content="{Binding Title}" Foreground="{StaticResource HighlightForeground}" />
+            </Grid>
+
+            <Grid Grid.Column="1" HorizontalAlignment="Center">
+                <Label Content="{Binding Status.Current.Text}" Foreground="{StaticResource HighlightForeground}" />
+            </Grid>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+                        <Setter Property="Foreground" Value="{StaticResource HighlightForeground}" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+                        <Setter Property="IsTabStop" Value="False" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border
+                                        x:Name="border"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        SnapsToDevicePixels="true">
+                                        <ContentPresenter
+                                            x:Name="contentPresenter"
+                                            Margin="0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Focusable="False"
+                                            RecognizesAccessKey="True" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter TargetName="border" Property="Background" Value="{DynamicResource MouseOverOverlayBackgroundBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="true">
+                                            <Setter TargetName="border" Property="Background" Value="{DynamicResource PressedOverlayBackgroundBrush}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </StackPanel.Resources>
+
+                <Button
+                    Grid.Column="2"
+                    Click="MinimizeButton_Click"
+                    RenderOptions.EdgeMode="Aliased"
+                    Style="{StaticResource TitleBarButtonStyle}">
+                    <Path
+                        Width="46"
+                        Height="32"
+                        Data="M 18,15 H 28"
+                        Stroke="{Binding Path=Foreground,
+                        RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                        StrokeThickness="1" />
+                </Button>
+                
+                <Button
+                    Name="MaximizeButton"
+                    Grid.Column="3"
+                    Click="MaximizeRestoreButton_Click"
+                    Style="{StaticResource TitleBarButtonStyle}">
+                    <Path
+                        Width="46"
+                        Height="32"
+                        Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z"
+                        Stroke="{Binding Path=Foreground,
+                        RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                        StrokeThickness="1" />
+                </Button>
+                
+                <Button
+                    Name="RestoreButton"
+                    Grid.Column="3"
+                    Click="MaximizeRestoreButton_Click"
+                    Style="{StaticResource TitleBarButtonStyle}">
+                    <Path
+                        Width="46"
+                        Height="32"
+                        Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5"
+                        Stroke="{Binding Path=Foreground,
+                        RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                        StrokeThickness="1" />
+                </Button>
+                
+                <Button
+                    Grid.Column="4"
+                    Click="CloseButton_Click"
+                    Style="{StaticResource TitleBarButtonStyle}">
+                    <Path
+                        Width="46"
+                        Height="32"
+                        Data="M 18,11 27,20 M 18,20 27,11"
+                        Stroke="{Binding Path=Foreground,
+                        RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                        StrokeThickness="1" />
+                </Button>
+                
+            </StackPanel>
+
+        </Grid>
+
+        <!-- Menu -->
+        <Grid Grid.Row="1" Grid.Column="0" Margin="8,4,8,8">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -172,10 +294,10 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
-                    <TextBlock Text="{Binding Status.Current.Text}" 
+                    <!--<TextBlock Text="{Binding Status.Current.Text}" 
                                Foreground="{StaticResource TextForeground}"
                                HorizontalAlignment="Left" 
-                               VerticalAlignment="Bottom"/>
+                               VerticalAlignment="Bottom"/>-->
                     <ComboBox ItemsSource="{Binding TranscodeModes}" 
                               SelectedItem="{Binding Settings.Transcoding, Mode=TwoWay}" 
                               Visibility="{Binding Settings.RestrictedMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
@@ -187,8 +309,8 @@
             </Grid>
         </Grid>
 
-        <!-- Main section -->
-        <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="1" BorderThickness="2,0,2,0" BorderBrush="{StaticResource PanelSeparator}">
+        <!-- Main -->
+        <Border Grid.Row="1" Grid.Column="1" BorderThickness="2,0,2,0" BorderBrush="{StaticResource PanelSeparator}">
             <Grid Margin="0">
                 <TabControl x:Name="tabs1" ItemsSource="{Binding Tabs}" 
                             SelectedItem="{Binding CurrentTabItem}" 
@@ -323,8 +445,8 @@
             </Grid>
         </Border>
 
-        <!-- NowPlaying (right panel) -->
-        <Border Grid.Row="0" Grid.Column="2" Grid.RowSpan="1" Background="{StaticResource PanelBackground}" BorderThickness="0,0,0,0" BorderBrush="{StaticResource Brush_MainPanelSeparator}">
+        <!-- NowPlaying -->
+        <Border Grid.Row="1" Grid.Column="2" Background="{StaticResource PanelBackground}" BorderThickness="0,0,0,0" BorderBrush="{StaticResource Brush_MainPanelSeparator}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -360,8 +482,8 @@
             </Grid>
         </Border>
 
-        <!-- Bottom panel (Playback control)-->
-        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Background="{StaticResource PlayControlsPanelBackground}" 
+        <!-- Playback controls -->
+        <Border Grid.Row="2" Grid.ColumnSpan="3" Background="{StaticResource PlayControlsPanelBackground}" 
 				  BorderBrush="{StaticResource PanelSeparator}" BorderThickness="0,3,0,0">
             <Grid>
                 <Grid.Resources>
