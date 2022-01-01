@@ -2,14 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Panels -->
     <Color x:Key="PanelSeparatorColor">Black</Color>
-    <Color x:Key="PanelBackgroundColor">#22272D</Color>
-    <Color x:Key="PlayControlsPanelBackgroundColor">#22272D</Color>
+    <Color x:Key="PanelBackgroundColor">#181818</Color>
+    <Color x:Key="PlayControlsPanelBackgroundColor">#181818</Color>
     
     <!-- Borders -->
     <Color x:Key="TileBorderColor">#39424A</Color>
 
     <!-- Text -->
-    <Color x:Key="TextForegroundColor">White</Color>
+    <Color x:Key="TextForegroundColor">LightGray</Color>
     <Color x:Key="ActiveForegroundColor">Red</Color>
     <Color x:Key="ActiveBackgroundColor">#22272D</Color>
     <Color x:Key="SelectionForegroundColor">#FF8000</Color>
