@@ -172,7 +172,10 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
-                    <TextBlock Text="{Binding Status.Current.Text}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                    <TextBlock Text="{Binding Status.Current.Text}" 
+                               Foreground="{StaticResource TextForeground}"
+                               HorizontalAlignment="Left" 
+                               VerticalAlignment="Bottom"/>
                     <ComboBox ItemsSource="{Binding TranscodeModes}" 
                               SelectedItem="{Binding Settings.Transcoding, Mode=TwoWay}" 
                               Visibility="{Binding Settings.RestrictedMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
