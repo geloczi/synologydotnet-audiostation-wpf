@@ -18,9 +18,9 @@ namespace SynAudio.Views
             DataContext = VM = vm;
         }
 
-        private void btnDisconnect_Click(object sender, RoutedEventArgs e)
+        private async void btnDisconnect_Click(object sender, RoutedEventArgs e)
         {
-            VM.Main.Disconnect();
+            await VM.Main.DisconnectAsync();
         }
 
         private void btnBackupUserData_Click(object sender, RoutedEventArgs e)

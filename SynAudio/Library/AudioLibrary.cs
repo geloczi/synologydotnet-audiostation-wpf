@@ -135,11 +135,11 @@ namespace SynAudio.Library
             return Connected;
         }
 
-        public void Logout()
+        public async Task LogoutAsync()
         {
-            _log.Debug(nameof(Logout));
             Connected = false;
-            DbSettings.WriteBlob(ByteArrayValues.AudioStationConnectorSession, null);
+            SaveSession(null);
+            await _synoClient.LogoutAsync();
         }
 
         public void Dispose()

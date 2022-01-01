@@ -523,9 +523,9 @@ namespace SynAudio.ViewModels
             StartPlaypack(NowPlaying.CurrentSong);
         }
 
-        public void Disconnect()
+        public async Task DisconnectAsync()
         {
-            Library.Logout();
+            await Library.LogoutAsync();
             Application.Current.Shutdown();
         }
 
