@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="Styles/Common.xaml"/>
                 <ResourceDictionary Source="Styles/Controls/GridView.xaml"/>
                 <ResourceDictionary Source="Styles/Controls/DataGrid.xaml"/>
+                <ResourceDictionary Source="Styles/Controls/ComboBox.xaml"/>
                 <ResourceDictionary Source="Styles/Controls/Etc.xaml"/>
                 
                 <ResourceDictionary Source="DataTemplates/ArtistModelCollectionTemplate.xaml"/>

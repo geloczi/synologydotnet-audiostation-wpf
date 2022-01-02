@@ -306,7 +306,9 @@
                                Foreground="{StaticResource TextForeground}"
                                HorizontalAlignment="Left" 
                                VerticalAlignment="Bottom"/>-->
-                    <ComboBox ItemsSource="{Binding TranscodeModes}" 
+                    <ComboBox Style="{DynamicResource MyComboBoxStyle}" 
+                              ItemContainerStyle="{StaticResource MyComboBoxItem}"
+                              ItemsSource="{Binding TranscodeModes}" 
                               SelectedItem="{Binding Settings.Transcoding, Mode=TwoWay}" 
                               Visibility="{Binding Settings.RestrictedMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
                               HorizontalAlignment="Stretch" 
