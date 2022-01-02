@@ -4,6 +4,19 @@
                     xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
                     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
 
+    <Style x:Key="MainContentDataGridStyle" TargetType="DataGrid">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="DataGrid.GridLinesVisibility" Value="None"/>
+        <Setter Property="IsTextSearchEnabled" Value="False"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="SelectionMode" Value="Extended"/>
+        <Setter Property="SelectionUnit" Value="FullRow"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="RowHeaderWidth" Value="0"/>
+        <Setter Property="Background" Value="White"/>
+    </Style>
+    
     <Style x:Key="MyColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
         <Setter Property="Width" Value="8"/>
         <Setter Property="Background" Value="Transparent"/>

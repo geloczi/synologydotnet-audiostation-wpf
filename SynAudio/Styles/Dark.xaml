@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
     <!-- Panels -->
     <Color x:Key="PanelSeparatorColor">Black</Color>
     <Color x:Key="PanelBackgroundColor">#181818</Color>
@@ -19,4 +20,5 @@
 
     <Color x:Key="H1ForegroundColor">#A0A0A0</Color>
     <Color x:Key="HighlightForegroundColor">White</Color>
+    
 </ResourceDictionary>
