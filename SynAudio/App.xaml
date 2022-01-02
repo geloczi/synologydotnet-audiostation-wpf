@@ -10,7 +10,7 @@
                     DarkSource="Styles/Dark.xaml" />
                 
                 <ResourceDictionary Source="Styles/Common.xaml"/>
-                <ResourceDictionary Source="Styles/DataGrid.xaml"/>
+                <ResourceDictionary Source="Styles/Controls/DataGrid.xaml"/>
                 
                 <ResourceDictionary Source="DataTemplates/ArtistModelCollectionTemplate.xaml"/>
                 <ResourceDictionary Source="DataTemplates/AlbumModelCollectionTemplate.xaml"/>
