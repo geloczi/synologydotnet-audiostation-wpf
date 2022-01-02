@@ -59,15 +59,21 @@ namespace SynAudio
             Closing += Window_Closing;
             PreviewKeyDown += Window_PreviewKeyDown;
             StateChanged += MainWindow_StateChanged;
+            SizeChanged += MainWindow_SizeChanged;
 
             GlobalKeyboardHook = new H.Hooks.LowLevelKeyboardHook();
             GlobalKeyboardHook.Down += GlobalKeyboardHook_Down;
         }
 
+        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (WindowState == WindowState.Normal)
+                Settings.WindowDimensions = new RectangleD(Left, Top, Width, Height);
+        }
+
         private void MainWindow_StateChanged(object sender, EventArgs e)
         {
             RefreshMaximizeRestoreButton();
-
             if (WindowState == WindowState.Maximized)
             {
                 WindowStyle = WindowStyle.SingleBorderWindow;
@@ -139,8 +145,10 @@ namespace SynAudio
             Loaded -= Window_Loaded;
             UpdateWindowTitle(null);
 
+            Settings.WindowDimensions = new RectangleD(Left, Top, Width, Height);
             if (!_userTriggeredWindowStateReset)
                 WindowState = Settings.WindowState == WindowState.Minimized ? WindowState.Normal : Settings.WindowState;
+            
             try
             {
                 await VM.Open();
@@ -182,7 +190,6 @@ namespace SynAudio
                 VM.OnClose();
 
                 // Save settings
-                Settings.WindowDimensions = new RectangleD(Left, Top, Width, Height);
                 Settings.WindowState = _stateWatcher.LastVisibleState;
                 Settings.LastVirtualScreenDimensions = VirtualScreenToRectangleD();
             }
