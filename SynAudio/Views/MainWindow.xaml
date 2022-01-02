@@ -277,7 +277,7 @@
 
                     <Separator Style="{StaticResource ListSeparator}"/>
 
-                    <Button Style="{StaticResource LeftPanelButton}" >Home</Button>
+                    <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenHomeCommand}">Home</Button>
                     <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenSettingsCommand}">Settings</Button>
 
                     <Separator Style="{StaticResource ListSeparator}"/>

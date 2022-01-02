@@ -90,6 +90,7 @@ namespace SynAudio.ViewModels
         public ICommand OpenNewTabCommand { get; set; }
         public ICommand CloseTabCommand { get; set; }
         public ICommand OpenNowPlayingCommand { get; set; }
+        public ICommand OpenHomeCommand { get; set; }
         public ICommand OpenSettingsCommand { get; set; }
         public ICommand NowPlaying_ChangeCurrentSongCommand { get; set; }
         public ICommand OpenContainingFolderCommand { get; set; }
@@ -126,6 +127,8 @@ namespace SynAudio.ViewModels
             OpenContainingFolderCommand = new RelayCommand(OpenContainingFolderCommand_Action, o => App.MusicFolderAvailableOnLan);
             DeleteSelectedSongsFromLibraryCommand = new RelayCommand(DeleteSelectedSongsFromLibraryCommand_Action, o => App.MusicFolderAvailableOnLan);
             CopyToClipboardCommand = new RelayCommand(CopyToClipboardCommand_Action, o => App.MusicFolderAvailableOnLan);
+
+            OpenHomeCommand = BrowseByArtistsCommand;
         }
 
         private void CopyToClipboardCommand_Action(object o)
