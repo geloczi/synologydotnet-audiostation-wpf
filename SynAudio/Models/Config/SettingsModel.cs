@@ -1,4 +1,6 @@
 ﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SynologyDotNet.AudioStation;
 
 namespace SynAudio.Models.Config
@@ -24,5 +26,8 @@ namespace SynAudio.Models.Config
         public RectangleD LastVirtualScreenDimensions { get; set; }
         public bool UpdateLibraryOnStartup { get; set; } = true;
         public bool RestrictedMode { get; set; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public Styles.Theme Theme { get; set; } = Styles.Theme.Dark;
     }
 }

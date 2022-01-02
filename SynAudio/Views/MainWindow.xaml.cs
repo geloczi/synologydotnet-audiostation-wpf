@@ -3,12 +3,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using SynAudio.DAL;
-using SynAudio.Utils;
 using SynAudio.Models.Config;
+using SynAudio.Utils;
 using SynAudio.ViewModels;
 using Utils;
 using Utils.Commands;
-using System.Runtime.InteropServices;
 
 namespace SynAudio
 {

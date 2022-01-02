@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using Newtonsoft.Json;
 using SQLite;
 using SynAudio.Models.Config;
 using Utils;
@@ -23,6 +22,7 @@ namespace SynAudio
         #region [Fields]
 
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly object _configLock = new object();
         private Mutex _mutex = null;
 
 #if DEBUG
@@ -48,10 +48,30 @@ namespace SynAudio
         internal static SQLiteConnection Db { get; private set; }
         internal static SqlLiteSettingsRepository DbSettings { get; private set; }
         internal static Random Rnd { get; } = new Random();
-        internal static SettingsModel Config { get; private set; }
-        internal static bool MusicFolderAvailableOnLan { get; set; }
 
-        public static Styles.Theme Skin { get; set; } = Styles.Theme.Dark;
+        private static SettingsModel _config;
+        internal static SettingsModel Config
+        {
+            get
+            {
+                if (_config is null)
+                {
+                    lock (_configLock)
+                    {
+                        if (_config is null)
+                        {
+                            // Try to load settings, fallback to defaults (empty)
+                            if (!Storage.TryLoad<SettingsModel>("config", out var cfg))
+                                cfg = new SettingsModel();
+                            _config = cfg;
+                        }
+                    }
+                }
+                return _config;
+            }
+        }
+
+        internal static bool MusicFolderAvailableOnLan { get; set; }
 
         #endregion
 
@@ -90,8 +110,6 @@ namespace SynAudio
             //}
             return false;
         }
-
-        //internal static SqlCeLibrary.SqlCe GetSql() => new SqlCeLibrary.SqlCe(LibraryDatabaseFile, false);
 
         internal static void SaveSettings()
         {
@@ -167,11 +185,6 @@ namespace SynAudio
                 // Start event
                 _log.Info($"{nameof(OnStartup)}, {AssemblyProps.EntryAssembly.Product} v{AssemblyProps.EntryAssembly.Version}");
                 base.OnStartup(e);
-
-                // Try to load settings, fallback to defaults (empty)
-                if (!Storage.TryLoad<SettingsModel>("config", out var settings))
-                    settings = new SettingsModel();
-                Config = settings;
 
                 // Catch binding errors
                 PresentationTraceSources.Refresh();

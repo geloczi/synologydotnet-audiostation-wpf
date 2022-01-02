@@ -3,6 +3,7 @@ using System.Windows.Input;
 using SynAudio.Utils;
 using SynAudio.Models.Config;
 using SynAudio.ViewModels;
+using System;
 
 namespace SynAudio.Views
 {
@@ -15,6 +16,8 @@ namespace SynAudio.Views
         public RangeObservableCollection<object> OutputDeviceItems { get; } = new RangeObservableCollection<object>();
 
         public string ConnectionState => Main.Connected ? "Connected" : "Disconnected";
+
+        public Styles.Theme[] ThemeItems { get; } = Enum.GetValues<Styles.Theme>();
 
         public SettingsDialogModel(MainWindowViewModel main)
         {

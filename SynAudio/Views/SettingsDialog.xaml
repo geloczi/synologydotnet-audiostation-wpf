@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:app="clr-namespace:SynAudio"
-        xmlns:local="clr-namespace:SynAudio.Views"
+        xmlns:local="clr-namespace:SynAudio.Views" 
+        d:DataContext="{d:DesignInstance Type=local:SettingsDialogModel}"
         mc:Ignorable="d"
         Title="SettingsDialog" WindowStartupLocation="CenterOwner" Background="LightGray"
         Height="500" Width="800" MinHeight="500" MinWidth="800">
@@ -104,10 +105,15 @@
 				</Border>
 			</TabItem>-->
 
-            <TabItem Header="Skin">
+            <TabItem Header="Theme">
                 <Border Style="{StaticResource TabContentBorder}">
-                    <Grid>
-                    </Grid>
+                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <ComboBox ItemsSource="{Binding ThemeItems, Mode=OneTime}"
+                                  SelectedItem="{Binding Settings.Theme}"
+                                  HorizontalAlignment="Left"
+                                  MinWidth="100"/>
+                        <Label>Please restart the application to apply the selected theme!</Label>
+                    </StackPanel>
                 </Border>
             </TabItem>
 
