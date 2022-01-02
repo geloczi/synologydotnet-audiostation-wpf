@@ -52,6 +52,7 @@
     <SolidColorBrush x:Key="PlayControlsPanelBackground" Color="{StaticResource PlayControlsPanelBackgroundColor}"/>
 
     <!-- Borders -->
+    <SolidColorBrush x:Key="Border" Color="{StaticResource BorderColor}"/>
     <SolidColorBrush x:Key="TileBorder" Color="{StaticResource TileBorderColor}"/>
     
     <!-- Text -->
@@ -64,4 +65,5 @@
 
     <SolidColorBrush x:Key="H1Foreground" Color="{StaticResource H1ForegroundColor}"/>
     <SolidColorBrush x:Key="HighlightForeground" Color="{StaticResource HighlightForegroundColor}"/>
+    
 </ResourceDictionary>

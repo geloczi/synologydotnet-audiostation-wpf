@@ -515,13 +515,15 @@ namespace SynAudio.ViewModels
 
         public void PlaySong(SongModel song)
         {
-            _log.Debug($"{nameof(PlaySong)}, {song.Id}");
+            if (song is null)
+                return;
             NowPlaying.SetCurrentSong(song);
             StartPlaypack(NowPlaying.CurrentSong);
         }
         public void PlaySong(SongViewModel songVM)
         {
-            _log.Debug($"{nameof(PlaySong)}, {songVM.Song.Id}");
+            if (songVM is null)
+                return;
             NowPlaying.SetCurrentSongViewModel(songVM);
             StartPlaypack(NowPlaying.CurrentSong);
         }

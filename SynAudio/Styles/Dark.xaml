@@ -6,6 +6,7 @@
     <Color x:Key="PlayControlsPanelBackgroundColor">#181818</Color>
     
     <!-- Borders -->
+    <Color x:Key="BorderColor">#39424A</Color>
     <Color x:Key="TileBorderColor">#39424A</Color>
 
     <!-- Text -->

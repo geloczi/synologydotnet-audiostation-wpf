@@ -83,4 +83,10 @@
 	<ItemGroup>
 		<Compile Remove="Controls\AsyncImage.cs" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Styles\DataGrid.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	  </Page>
+	</ItemGroup>
 </Project>

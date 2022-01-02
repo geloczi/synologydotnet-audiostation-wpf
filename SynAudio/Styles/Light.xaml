@@ -6,6 +6,7 @@
     <Color x:Key="PlayControlsPanelBackgroundColor">White</Color>
     
     <!-- Borders -->
+    <Color x:Key="BorderColor">Black</Color>
     <Color x:Key="TileBorderColor">WhiteSmoke</Color>
     
     <!-- Text -->
