@@ -35,7 +35,9 @@
     </LinearGradientBrush>-->
     <SolidColorBrush x:Key="ComboBox.Static.Background" Color="{StaticResource PanelBackgroundColor}"/>
     
-    <SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FFACACAC"/>
+    <!--<SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FFACACAC"/>-->
+    <SolidColorBrush x:Key="ComboBox.Static.Border" Color="{StaticResource BorderColor}"/>
+    
     <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="#FF606060"/>
     <SolidColorBrush x:Key="ComboBox.Static.Editable.Background" Color="#FFFFFFFF"/>
     <SolidColorBrush x:Key="ComboBox.Static.Editable.Border" Color="#FFABADB3"/>
@@ -267,6 +269,7 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+    
     <Style x:Key="MyComboBoxStyle" TargetType="{x:Type ComboBox}">
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
         <Setter Property="Background" Value="{StaticResource ComboBox.Static.Background}"/>
