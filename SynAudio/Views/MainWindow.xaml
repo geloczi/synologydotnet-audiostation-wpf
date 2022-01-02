@@ -288,9 +288,16 @@
                         <!--<Button Style="{StaticResource LeftPanelButton}">By Album</Button>-->
                         <Button Style="{StaticResource LeftPanelButton}" Command="app:StaticCommands.BrowseByFolders">By Folder</Button>
                         <!--<Button Style="{StaticResource LeftPanelButton}">By Genre</Button>-->
-                        <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenNowPlayingCommand}">Now Playing</Button>
                     </StackPanel>
 
+
+                    <Separator Style="{StaticResource ListSeparator}"/>
+
+                    <Label Style="{StaticResource CaptionH1}">Now playing</Label>
+                    <StackPanel Orientation="Vertical" Margin="8,0,0,0">
+                        <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenNowPlayingCommand}">Playlist</Button>
+                    </StackPanel>
+                    
                     <Separator Style="{StaticResource ListSeparator}"/>
 
                     <!--<Label Style="{StaticResource CaptionH1}">Playlists</Label>
@@ -306,6 +313,14 @@
                                Foreground="{StaticResource TextForeground}"
                                HorizontalAlignment="Left" 
                                VerticalAlignment="Bottom"/>-->
+
+                    <Border MaxHeight="300">
+                        <Image Source="{Binding NowPlaying.Cover, Mode=OneWay, IsAsync=True, Converter={StaticResource NullImageConverter}}" 
+							   Visibility="{Binding NowPlaying.Cover, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}"
+							   Stretch="Uniform" 
+                               SnapsToDevicePixels="True"/>
+                    </Border>
+                    
                     <ComboBox Style="{DynamicResource MyComboBoxStyle}" 
                               ItemContainerStyle="{StaticResource MyComboBoxItem}"
                               ItemsSource="{Binding TranscodeModes}" 
@@ -314,6 +329,8 @@
                               HorizontalAlignment="Stretch" 
                               Margin="0,5,0,0"/>
                     <!--<Button x:Name="btnSynchronizeLibrary" Command="{Binding SynchronizeLibraryCommand}" HorizontalAlignment="Stretch">Sync Library</Button>-->
+
+                    
 
                 </StackPanel>
             </Grid>
@@ -462,11 +479,10 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Border BorderBrush="{StaticResource Brush_MainPanelSeparator}" BorderThickness="0,0,0,1">
-                    <Label Content="Now playing" Style="{StaticResource CaptionH2}"/>
+                    <Label Content="Playlist" Style="{StaticResource CaptionH2}"/>
                 </Border>
 
                 <controls:SongsDataGrid Grid.Row="1" 
@@ -484,12 +500,6 @@
                         <DataGridTextColumn Header="Duration" MinWidth="60" Width="60" Binding="{Binding Song.Duration, Converter={StaticResource TimeSpanToDurationConverter}}"/>
                     </controls:SongsDataGrid.Columns>
                 </controls:SongsDataGrid>
-
-                <Border Grid.Row="2" MaxHeight="300" Margin="8">
-                    <Image Source="{Binding NowPlaying.Cover, Mode=OneWay, IsAsync=True, Converter={StaticResource NullImageConverter}}" 
-							 Visibility="{Binding NowPlaying.Cover, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}"
-							 Stretch="Uniform" SnapsToDevicePixels="True"/>
-                </Border>
             </Grid>
         </Border>
 
@@ -623,7 +633,7 @@
                         <!-- Song info (left) -->
                         <StackPanel Orientation="Horizontal">
                             <!-- Cover -->
-                            <Grid Margin="5,-2,0,0" Width="47" Height="47">
+                            <!--<Grid Margin="5,-2,0,0" Width="47" Height="47">
                                 <Viewbox Margin="0,-3,0,2">
                                     <Path Fill="{StaticResource TextForeground}" Data="M14,2L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2H14M18,20V9H13V4H6V20H18M13,10V12H11V17A2,2 0 0,1 9,19A2,2 0 0,1 7,17A2,2 0 0,1 9,15C9.4,15 9.7,15.1 10,15.3V10H13Z" />
                                 </Viewbox>
@@ -631,7 +641,7 @@
                                     <Image Source="{Binding NowPlaying.Cover, Mode=OneWay, IsAsync=True, Converter={StaticResource NullImageConverter}}" 
 											 Margin="0" Width="47" Height="47" Stretch="Uniform" SnapsToDevicePixels="True"/>
                                 </Grid>
-                            </Grid>
+                            </Grid>-->
                             <!-- Song detials -->
                             <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,0,0,0">
                                 <TextBlock Text="{Binding NowPlaying.CurrentSong.Artist, Mode=OneWay}"/>
