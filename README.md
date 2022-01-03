@@ -27,6 +27,7 @@ AudioStation like **desktop application for Windows to stream music from your Sy
 * Local cache built from the Synology database, very fast browsing
 * Automatic sync with the Synology database
 * Faster than the original Audio Station, since this is a desktop application
+* Restore playback position after restart
 * Themes: Dark, Light
 
 ### Initial synchronization
