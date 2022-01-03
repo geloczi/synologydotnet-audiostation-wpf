@@ -9,8 +9,8 @@ namespace Utils
         public override void Write(string s) { }
         public override void WriteLine(string message)
         {
-            _log.Error(message);
 #if DEBUG
+            _log.Debug(message);
             Console.Error.WriteLine($"BINDING_ERROR: {message}");
             //Debugger.Break(); //Binding error, check the value of the "message" variable.
 #endif
