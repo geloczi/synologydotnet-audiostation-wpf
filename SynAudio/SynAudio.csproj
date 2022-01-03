@@ -3,7 +3,6 @@
     <PropertyGroup>
 		<TargetFramework>net6.0-windows</TargetFramework>
 		<OutputType>WinExe</OutputType>
-		<LangVersion>8.0</LangVersion>
 		<UseWPF>true</UseWPF>
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 		<ApplicationIcon>appicon.ico</ApplicationIcon>
@@ -15,11 +14,11 @@
 	<!-- General -->
 	<PropertyGroup>
 		<Product>SynAudio</Product>
-		<Version>0.4.0</Version>
+		<Version>0.5.0</Version>
 		<Description>Stream music from your Synology NAS.</Description>
 		<RepositoryUrl>https://github.com/geloczigeri/synologydotnet-audiostation-wpf</RepositoryUrl>
 		<Authors>Gergő Gelóczi</Authors>
-		<Copyright>Copyright © Gergő Gelóczi 2021</Copyright>
+		<Copyright>Copyright © Gergő Gelóczi 2022</Copyright>
 	</PropertyGroup>
 
 	<!-- Release mode -->

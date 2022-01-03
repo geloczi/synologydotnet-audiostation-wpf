@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using SQLite;
+using SynAudio.Utils;
 using SynAudio.ViewModels;
 using SynologyDotNet.AudioStation.Model;
 
@@ -9,7 +10,7 @@ namespace SynAudio.DAL
     [Table("Album")]
     public class AlbumModel : ViewModelBase
     {
-        public static readonly string CoversDirectory = Path.Combine(App.UserDataFolder, "albumcovers");
+        public static readonly string CoversDirectory = Path.Combine(App.UserDataFolder, "covers");
 
         [Column(nameof(Id))]
         [PrimaryKey]
@@ -36,12 +37,9 @@ namespace SynAudio.DAL
         [NotNull]
         public int Year { get; set; }
 
-        /// <summary>
-        /// Cover file state
-        /// </summary>
-        [Column(nameof(CoverFile))]
-        [NotNull]
-        public ResourceState CoverFile { get; set; }
+        [Column(nameof(CoverFileName))]
+        [MaxLength(64)]
+        public string CoverFileName { get; set; }
 
         public override string ToString() => Name ?? base.ToString();
 
@@ -52,42 +50,29 @@ namespace SynAudio.DAL
             Year = dto.Year;
             Artist = GetFirstCleanString(dto.DisplayArtist, dto.AlbumArtist, dto.Artist);
         }
-
-        public string Cover => CoverFile ==  ResourceState.Exists ? GetCoverFileFullPath() : null;
-
-        public string GetCoverFileFullPath() => GetCoverFileFullPath(Id);
-
-        public bool TryToFindCoverFile()
-        {
-            var file = GetCoverFileFullPath();
-            CoverFile = File.Exists(file) ? ResourceState.Exists : ResourceState.DoesNotExist;
-            return CoverFile == ResourceState.Exists;
-        }
-
         public string DisplayName => string.IsNullOrEmpty(Name) ? "Unknown" : TruncateString(Name, 26, "..");
 
-        public static string ConstructSimpleKey(AlbumModel album) => ConstructSimpleKey(album.Artist, album.Name, album.Year);
-        public static string ConstructSimpleKey(string artistName, string albumName, int? albumYear) => string.Join("\u000B", artistName, albumName, albumYear.HasValue ? albumYear.Value : 0);
-        public static string GetCoverFileFullPath(int albumId) => Path.Combine(CoversDirectory, $"{albumId}.dat");
+        public string Cover => GetCoverFileFullPath(CoverFileName);
 
-        public void SaveCover(byte[] bytes)
+        public static string GetCoverFileFullPath(string fileName)
         {
-            File.WriteAllBytes(GetCoverFileFullPath(), bytes);
-            CoverFile = ResourceState.Exists;
+            if (string.IsNullOrEmpty(fileName))
+                return null;
+            return Path.Combine(CoversDirectory, fileName);
         }
 
-        public void DeleteCover()
+        public static string GetCoverFileNameFromArtistAndAlbum(string artist, string album)
         {
-            var path = GetCoverFileFullPath();
-            if (File.Exists(path))
-            {
-                try
-                {
-                    File.Delete(path);
-                }
-                catch { }
-                CoverFile = ResourceState.DoesNotExist;
-            }
+            string hash = Sha256Hash.FromObject(new { artist, album });
+            if (hash.Length > 64)
+                throw new Exception($"Hash value must not exceed 64 characters! It was {hash.Length}.");
+            return hash;
+        }
+
+        public static void SaveCoverFile(string fileName, byte[] data)
+        {
+            string path = GetCoverFileFullPath(fileName);
+            File.WriteAllBytes(path, data);
         }
     }
 }

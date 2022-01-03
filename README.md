@@ -4,9 +4,9 @@ AudioStation like **desktop application for Windows to stream music from your Sy
 
 ## Screenshots
 
-![plot](./assets/light.png)  
-
 ![plot](./assets/dark.png)  
+
+![plot](./assets/light.png)  
 
 
 ## What's working

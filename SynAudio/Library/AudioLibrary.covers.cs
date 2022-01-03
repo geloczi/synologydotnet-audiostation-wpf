@@ -19,16 +19,15 @@ namespace SynAudio.Library
                 albums = new List<AlbumModel>();
                 foreach (var album in Db.Table<AlbumModel>())
                 {
-                    if (album.CoverFile != ResourceState.Exists)
+                    if (string.IsNullOrEmpty(album.CoverFileName))
                     {
-                        // Albums without cover (with retry download)
+                        // Albums without cover
                         albums.Add(album);
                     }
                     else
                     {
                         // If the cover file does not exist
-                        var path = album.GetCoverFileFullPath();
-                        if (!File.Exists(path))
+                        if (!File.Exists(album.Cover))
                             albums.Add(album);
                     }
                 }
@@ -36,7 +35,7 @@ namespace SynAudio.Library
             else
             {
                 // Get albums without cover (haven't tried to download yet)
-                albums = Db.Table<AlbumModel>().Where(x => x.CoverFile == ResourceState.NotSet).ToList();
+                albums = Db.Table<AlbumModel>().Where(x => x.CoverFileName == null).ToList();
             }
 
             // Sort albums
@@ -47,57 +46,98 @@ namespace SynAudio.Library
                 await DownloadAndSaveAlbumCover(album);
                 AlbumCoverUpdated.FireAsync(this, album);
             }, 4);
-
             foreach (var album in albums)
             {
-                if (album.TryToFindCoverFile())
-                {
-                    // Cover file re-link
-                    Db.Update(album);
-                    AlbumCoverUpdated.FireAsync(this, album);
-                }
-                else
-                {
-                    // Has to be downloaded
-                    processor.Enqueue(album);
-                }
+                processor.Enqueue(album);
             }
             await processor.WaitAsync();
 
-            // Generate Artist covers from Album covers
-            // The artist cover will be the newest album's cover inside that artist
-            var artists = Db.Table<ArtistModel>().ToArray();
-            foreach (var artist in artists)
+            // Set Artist covers from Album covers
+            // The artist cover will be it's newest album's cover
+            Db.RunInTransaction(() =>
             {
-                var latestAlbumByYear = Db.Table<AlbumModel>().Where(x => x.Artist == artist.Name && x.CoverFile == ResourceState.Exists).OrderByDescending(x => x.Year).FirstOrDefault();
-                if (latestAlbumByYear is null)
+                var artists = Db.Table<ArtistModel>().ToArray();
+                foreach (var artist in artists)
                 {
-                    artist.CoverAlbumId = null;
+                    var latestAlbumByYear = Db.Table<AlbumModel>()
+                        .Where(x => x.Artist == artist.Name && !string.IsNullOrEmpty(x.CoverFileName))
+                        .OrderByDescending(x => x.Year)
+                        .FirstOrDefault();
+                    artist.CoverFileName = latestAlbumByYear?.CoverFileName;
+                    Db.Update(artist);
                 }
-                else
-                {
-                    artist.CoverAlbumId = latestAlbumByYear.Id;
-                }
-                Db.Update(artist);
-            }
+            });
+
+            if (force)
+                DeleteOrphanedCoverFiles();
 
             ArtistsUpdated.FireAsync(this, EventArgs.Empty);
+        }
+
+        private void DeleteOrphanedCoverFiles()
+        {
+            var dbCoversHashSet = new HashSet<string>();
+            foreach (var cover in Db.Table<AlbumModel>()
+                .Where(x => !string.IsNullOrEmpty(x.CoverFileName))
+                .Select(x => x.CoverFileName))
+                dbCoversHashSet.Add(cover);
+            var coverFiles = Directory.GetFiles(AlbumModel.CoversDirectory, "*", SearchOption.TopDirectoryOnly);
+            foreach (var fullPath in coverFiles)
+            {
+                var fileName = Path.GetFileName(fullPath);
+                if (!dbCoversHashSet.Contains(fileName))
+                {
+                    try
+                    {
+                        File.Delete(fullPath);
+                    }
+                    catch { }
+                }
+            }
         }
 
         private async Task DownloadAndSaveAlbumCover(AlbumModel album)
         {
             try
             {
-                var data = await _audioStation.GetAlbumCoverAsync(album.Artist, album.Name);
-                if (data?.Data?.Length > 0)
-                    album.SaveCover(data.Data);
+                string coverFileName = AlbumModel.GetCoverFileNameFromArtistAndAlbum(album.Artist, album.Name);
+                string coverFilePath = AlbumModel.GetCoverFileFullPath(coverFileName);
+                if (File.Exists(coverFilePath))
+                {
+                    // File already exists, just re-link
+                    album.CoverFileName = coverFileName;
+                }
                 else
-                    album.DeleteCover();
+                {
+                    // Download file
+                    var data = await _audioStation.GetAlbumCoverAsync(album.Artist, album.Name);
+                    if (data?.Data?.Length > 0)
+                    {
+                        AlbumModel.SaveCoverFile(coverFileName, data.Data);
+                        album.CoverFileName = coverFileName;
+                    }
+                    else
+                    {
+                        album.CoverFileName = string.Empty;
+                    }
+                }
                 Db.Update(album);
+            }
+            catch (SynologyDotNet.Core.Exceptions.SynoHttpException synoHttpException)
+            {
+                if (synoHttpException.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    album.CoverFileName = string.Empty;
+                    Db.Update(album);
+                }
+                else
+                {
+                    _log.Error(synoHttpException, $"Unexpected error while downloading cover for: \"{album.Artist}\", \"{album.Name}\"");
+                }
             }
             catch (Exception ex)
             {
-                _log.Error(ex, $"Failed to save Album cover: \"{album.Artist}\", \"{album.Name}\"");
+                _log.Error(ex, $"Unexpected error while downloading cover for: \"{album.Artist}\", \"{album.Name}\"");
             }
         }
 

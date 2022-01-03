@@ -12,11 +12,13 @@ namespace SynAudio.DAL
         [MaxLength(255)]
         public string Name { get; set; }
 
-        [Column(nameof(CoverAlbumId))]
-        public int? CoverAlbumId { get; set; }
+        [Column(nameof(CoverFileName))]
+        [MaxLength(64)]
+        public string CoverFileName { get; set; }
+
+        public string Cover => AlbumModel.GetCoverFileFullPath(CoverFileName);
 
         public string DisplayName => string.IsNullOrEmpty(Name) ? "(Unknown)" : TruncateString(Name, 26, "..");
-        public string Cover => CoverAlbumId.HasValue ? AlbumModel.GetCoverFileFullPath(CoverAlbumId.Value) : null;
 
         public override string ToString() => Name ?? base.ToString();
 
