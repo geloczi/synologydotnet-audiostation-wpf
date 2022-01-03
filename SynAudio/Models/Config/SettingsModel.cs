@@ -26,12 +26,21 @@ namespace SynAudio.Models.Config
 
         public bool SavePassword { get; set; }
 
+
+        [JsonConverter(typeof(StringEnumConverter))]
         public TranscodeMode Transcoding { get; set; } = TranscodeMode.WAV;
+
         public int Volume { get; set; } = 100;
+
+        [JsonConverter(typeof(StringEnumConverter))]
         public System.Windows.WindowState WindowState { get; set; } = System.Windows.WindowState.Maximized;
+
         public RectangleD WindowDimensions { get; set; }
+
         public RectangleD LastVirtualScreenDimensions { get; set; }
+
         public bool UpdateLibraryOnStartup { get; set; } = true;
+
         public bool RestrictedMode { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
