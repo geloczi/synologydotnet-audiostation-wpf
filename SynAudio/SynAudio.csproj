@@ -19,6 +19,7 @@
 		<RepositoryUrl>https://github.com/geloczigeri/synologydotnet-audiostation-wpf</RepositoryUrl>
 		<Authors>Gergő Gelóczi</Authors>
 		<Copyright>Copyright © Gergő Gelóczi 2022</Copyright>
+		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 
 	<!-- Release mode -->

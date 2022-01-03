@@ -35,9 +35,13 @@ namespace SynAudio
 		internal static readonly string UserDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof(SynAudio));
 #endif
 
+        internal static readonly string ProgramFolder = Path.GetDirectoryName(AssemblyProps.EntryAssembly.Location);
+
         internal static readonly Encryption.Encrypter Encrypter = new Encryption.Encrypter("833236b9e38f36c240fba48a48d2a160185671cc08a9d4fef75cc8b33e4166cd", Encoding.UTF8.GetBytes($"{UserDataFolder}-{Environment.UserDomainName}-{Environment.UserName}"));
 
-        internal static readonly IObjectStorage Storage = new JsonStorage(UserDataFolder);
+        internal static readonly IObjectStorage UserFolderStorage = new JsonStorage(UserDataFolder);
+
+        internal static readonly IObjectStorage ProgramFolderStorage = new JsonStorage(ProgramFolder);
 
         internal static string ExeDirectory;
 
@@ -48,6 +52,8 @@ namespace SynAudio
         internal static SQLiteConnection Db { get; private set; }
         internal static SqlLiteSettingsRepository DbSettings { get; private set; }
         internal static Random Rnd { get; } = new Random();
+
+        private static IObjectStorage _configStorage = UserFolderStorage;
 
         private static SettingsModel _config;
         internal static SettingsModel Config
@@ -60,9 +66,18 @@ namespace SynAudio
                     {
                         if (_config is null)
                         {
-                            // Try to load settings, fallback to defaults (empty)
-                            if (!Storage.TryLoad<SettingsModel>("config", out var cfg))
-                                cfg = new SettingsModel();
+                            SettingsModel cfg;
+                            if (ProgramFolderStorage.TryLoad<SettingsModel>("config", out cfg))
+                            {
+                                // Use config file from program folder
+                                _configStorage = ProgramFolderStorage;
+                            }
+                            else
+                            {
+                                // Use config from user's app data folder
+                                if (!UserFolderStorage.TryLoad<SettingsModel>("config", out cfg))
+                                    cfg = new SettingsModel();
+                            }
                             _config = cfg;
                         }
                     }
@@ -113,7 +128,7 @@ namespace SynAudio
 
         internal static void SaveSettings()
         {
-            Storage.Save("config", Config);
+            _configStorage.Save("config", Config);
         }
 
         protected override void OnStartup(StartupEventArgs e)
