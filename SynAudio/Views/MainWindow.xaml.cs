@@ -97,7 +97,6 @@ namespace SynAudio
             }
         }
 
-
         private void GlobalKeyboardHook_Down(object sender, H.Hooks.KeyboardEventArgs e)
         {
             try
@@ -161,6 +160,7 @@ namespace SynAudio
             VM.PlaybackStarted += VM_PlaybackStarted;
             VM.PlaybackStopped += VM_PlaybackStopped;
             VM.NowPlaying.CurrentSongChanged += NowPlaying_CurrentSongChanged;
+            VM.PropertyChanged += VM_PropertyChanged;
             GlobalKeyboardHook.Start();
 
             //#if DEBUG
@@ -173,6 +173,25 @@ namespace SynAudio
             //            PreviewKeyUp += (sender, e) => DebugWriteLineFocusedElement();
             //            PreviewMouseUp += (sender, e) => DebugWriteLineFocusedElement();
             //#endif
+        }
+
+        private void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(VM.CurrentTabVM):
+                    CurrentTabVM_Changed();
+                    break;
+            }
+        }
+
+        private void CurrentTabVM_Changed()
+        {
+            // Toggle NowPlaying panel visibility
+            if (VM.CurrentTabVM?.CurrentNavigationItem?.Action == ActionType.NowPlaying)
+                VM.IsNowPlayingVisible = false;
+            else
+                VM.IsNowPlayingVisible = true;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -363,15 +382,6 @@ namespace SynAudio
         {
             if (sender is Controls.RatingControl rc)
                 VM.SetRating(rc.Value).FireAndForgetSafe(ErrorHandler);
-        }
-
-        private void tabs1_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            // Toggle NowPLaying panel visibility
-            if ((((TabControl)sender).SelectedItem as TabItem)?.Content is TabViewModel tab && tab.CurrentNavigationItem?.Action == ActionType.NowPlaying)
-                VM.IsNowPlayingVisible = false;
-            else
-                VM.IsNowPlayingVisible = true;
         }
 
         private void tabs1_PreviewKeyDown(object sender, KeyEventArgs e)

@@ -225,7 +225,10 @@ namespace SynAudio.ViewModels
         {
             lock (_syncRoot)
             {
-                FocusExistingOrCreateNewTab(false, new NavigationItem(ActionType.NowPlaying, "Now playing", null), NavigationNodePosition.Current,
+                FocusExistingOrCreateNewTab(
+                    false, 
+                    new NavigationItem(ActionType.NowPlaying, "Now playing", null), 
+                    NavigationNodePosition.Current,
                     () => NowPlaying.Songs);
             }
         }
@@ -277,7 +280,9 @@ namespace SynAudio.ViewModels
                 if (t is null || forceNew)
                 {
                     // New tab has to be opened
-                    OpenNewTab().Navigate(itemsProvider(), navigation);
+                    t = CreateNewTab();
+                    t.Navigate(itemsProvider(), navigation);
+                    CurrentTabItem = t.TabItem;
                 }
                 else
                 {
@@ -297,8 +302,9 @@ namespace SynAudio.ViewModels
         {
             lock (_syncRoot)
             {
-                var t = OpenNewTab();
+                var t = CreateNewTab();
                 t.Navigate(ToObservableCollection(Library.GetArtists()), new NavigationItem(ActionType.BrowseByArtists, "Artists", null));
+                CurrentTabItem = t.TabItem;
             }
         }
 
@@ -312,12 +318,11 @@ namespace SynAudio.ViewModels
             }
         }
 
-        private TabViewModel OpenNewTab()
+        private TabViewModel CreateNewTab()
         {
             var vm = new TabViewModel(_mainTabControl);
             vm.NavigationRequest += Tab_NavigationRequest;
             Tabs.Add(vm.TabItem);
-            CurrentTabItem = vm.TabItem;
             return vm;
         }
 

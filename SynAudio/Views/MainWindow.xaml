@@ -290,13 +290,6 @@
                         <!--<Button Style="{StaticResource LeftPanelButton}">By Genre</Button>-->
                     </StackPanel>
 
-
-                    <Separator Style="{StaticResource ListSeparator}"/>
-
-                    <Label Style="{StaticResource CaptionH1}">Now playing</Label>
-                    <StackPanel Orientation="Vertical" Margin="8,0,0,0">
-                        <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenNowPlayingCommand}">Playlist</Button>
-                    </StackPanel>
                     
                     <Separator Style="{StaticResource ListSeparator}"/>
 
@@ -346,7 +339,6 @@
                             Margin="0"
                             BorderThickness="0"
                             behaviors:TabContent.IsCached="True"
-                            SelectionChanged="tabs1_SelectionChanged"
                             PreviewKeyDown="tabs1_PreviewKeyDown">
                     <TabControl.Resources>
                         <datatemplateselectors:MainContentTemplateSelector x:Key="MainContentTemplateSelector" />
@@ -474,7 +466,11 @@
         </Border>
 
         <!-- NowPlaying -->
-        <Border Grid.Row="1" Grid.Column="2" Background="{StaticResource PanelBackground}" BorderThickness="0,0,0,0" BorderBrush="{StaticResource Brush_MainPanelSeparator}">
+        <Border Grid.Row="1" 
+                Grid.Column="2" 
+                Background="{StaticResource PanelBackground}" 
+                BorderThickness="0,0,0,0" 
+                BorderBrush="{StaticResource Brush_MainPanelSeparator}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -482,7 +478,7 @@
                 </Grid.RowDefinitions>
 
                 <Border BorderBrush="{StaticResource Brush_MainPanelSeparator}" BorderThickness="0,0,0,1">
-                    <Label Content="Playlist" Style="{StaticResource CaptionH2}"/>
+                    <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenNowPlayingCommand}">Now playing</Button>
                 </Border>
 
                 <controls:SongsDataGrid Grid.Row="1" 
