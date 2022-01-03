@@ -45,7 +45,7 @@ namespace SynAudio
 
         #region [Properties]
 
-        internal static Encryption.Encrypter Encrypter { get; } = new Encryption.Encrypter("833236b9e38f36c240fba48a48d2a160185671cc08a9d4fef75cc8b33e4166cd", Encoding.UTF8.GetBytes($"{UserDataFolder}-{Environment.UserDomainName}-{Environment.UserName}"));
+        internal static Encryption.Encrypter Encrypter { get; } = new Encryption.Encrypter("spGnKhrqZ6-VFuQ3TiRdEXvCo7AbBaeWfHy48_mxMLNgctz29j", Encoding.UTF8.GetBytes(Environment.UserName));
         internal static IObjectStorage ConfigStorage { get; private set; } = UserFolderStorage;
         internal static SQLiteConnection Db { get; private set; }
         internal static SqlLiteSettingsRepository DbSettings { get; private set; }
