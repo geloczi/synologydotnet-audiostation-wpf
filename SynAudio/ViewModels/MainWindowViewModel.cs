@@ -226,8 +226,8 @@ namespace SynAudio.ViewModels
             lock (_syncRoot)
             {
                 FocusExistingOrCreateNewTab(
-                    false, 
-                    new NavigationItem(ActionType.NowPlaying, "Now playing", null), 
+                    false,
+                    new NavigationItem(ActionType.NowPlaying, "Now playing", null),
                     NavigationNodePosition.Current,
                     () => NowPlaying.Songs);
             }
@@ -757,11 +757,16 @@ namespace SynAudio.ViewModels
             LogAndShowException(e);
         }
 
+
+
         private async Task TryToConnect()
         {
             Credentials credentials = null; // Try to re-use the session first
+            bool useSavedPassword = Settings.TryDecryptSavedPassword(out var savedPassword);
+
             while (!Connected)
             {
+                // 1. Login to NAS
                 try
                 {
                     using (var cur = new CursorChange(Cursors.Wait))
@@ -772,20 +777,37 @@ namespace SynAudio.ViewModels
                     _log.Error(ex);
                 }
 
-                // Show login dialog
                 if (!Connected)
                 {
                     if (credentials is null)
+                    {
                         credentials = new Credentials()
                         {
                             Url = Settings.Url,
                             Username = Settings.Username
                         };
-                    if (new LoginDialog(credentials).ShowDialog() != true)
-                        Environment.Exit(0);
-                    Settings.Url = credentials.Url;
-                    Settings.Username = credentials.Username;
-                    App.SaveSettings();
+                    }
+
+                    if (useSavedPassword)
+                    {
+                        // 2. If password is saved, try again with that instead of saved session
+                        credentials.Password = savedPassword;
+                        useSavedPassword = false;
+                    }
+                    else
+                    {
+                        // 3. If the saved password is also invalid, show login dialog
+                        credentials.Password = null;
+                        if (new LoginDialog(credentials).ShowDialog() != true)
+                            Environment.Exit(0);
+
+                        Settings.Url = credentials.Url;
+                        Settings.Username = credentials.Username;
+                        Settings.SavePassword = credentials.SavePassword;
+                        Settings.Password = credentials.SavePassword ? App.Encrypter.Encrypt(credentials.Password) : null;
+
+                        App.SaveSettings();
+                    }
                 }
             }
             App.RefreshCommands();

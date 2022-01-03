@@ -19,6 +19,13 @@ namespace SynAudio.Models.Config
         /// </summary>
         public string Username { get; set; }
 
+        /// <summary>
+        /// NAS user password (encrypted)
+        /// </summary>
+        public string Password { get; set; }
+
+        public bool SavePassword { get; set; }
+
         public TranscodeMode Transcoding { get; set; } = TranscodeMode.WAV;
         public int Volume { get; set; } = 100;
         public System.Windows.WindowState WindowState { get; set; } = System.Windows.WindowState.Maximized;
@@ -29,5 +36,20 @@ namespace SynAudio.Models.Config
 
         [JsonConverter(typeof(StringEnumConverter))]
         public Styles.Theme Theme { get; set; } = Styles.Theme.Dark;
+
+        public bool TryDecryptSavedPassword(out string password)
+        {
+            password = null;
+            if (!string.IsNullOrEmpty(Password))
+            {
+                try
+                {
+                    password = App.Encrypter.Decrypt(Password);
+                    return true;
+                }
+                catch { }
+            }
+            return false;
+        }
     }
 }

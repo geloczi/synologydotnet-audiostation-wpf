@@ -25,6 +25,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -37,7 +38,13 @@
         <Label Grid.Row="2">Password:</Label>
         <PasswordBox x:Name="tbPassword" Grid.Row="2" Grid.Column="1" />
 
-        <StackPanel Grid.Row="3" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0 8 0 0">
+        <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding SavePassword}">Save password</CheckBox>
+
+        <StackPanel Grid.Row="4" Grid.ColumnSpan="4" 
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom" 
+                    Margin="0 8 0 0">
             <StackPanel.Resources>
                 <Style TargetType="Button">
                     <Setter Property="Margin" Value="5"/>
