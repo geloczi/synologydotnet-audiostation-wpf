@@ -2,18 +2,23 @@
 
 AudioStation like **desktop application for Windows to stream music from your Synology NAS**. Built on top of my [SynologyDotNet.AudioStation](https://github.com/geloczigeri/synologydotnet-audiostation) package. It is under heavy development, but always stable. The music listening is already an easy-going and smooth experience with this app, I use it everyday.  
 
-![plot](./assets/artists.png)  
+## Screenshots
+
+![plot](./assets/light.png)  
+
+![plot](./assets/dark.png)  
+
 
 ## What's working
-* Streaming from Synology NAS using the Audio Station shared library (personal music library support will be implemented later)
-* WAV or MP3 streaming support
+* Streaming from Synology NAS using the Audio Station library (shared + personal libraries)
+* WAV or MP3 stream format support
 * Browse artists
 * Browse albums of an artist
-* Browse songs in an album or all albums of an artist.
+* Browse songs in an album or all albums of an artist
 * Display covers
-* Rate song (the 5 stars)
+* Rate song (5 star rating system)
 * Shuffle, Repeat, Start, Stop, Pause, Seek, Volume, Mute
-* Saves session, no need to login on next startup (does not save password!)
+* Saves session, no need to login on next startup
 * NowPlaying list
 * Drag&Drop songs into NowPlaying
 * Reorder songs list with Drag&Drop in the NowPlaying list
@@ -22,6 +27,7 @@ AudioStation like **desktop application for Windows to stream music from your Sy
 * Local cache built from the Synology database, very fast browsing
 * Automatic sync with the Synology database
 * Faster than the original Audio Station, since this is a desktop application
+* Themes: Dark, Light
 
 ### Initial synchronization
 The first sync will take some time depending on your library size. After the "Sync ..." message disappeared, please close and re-open your tabs.  
@@ -107,8 +113,6 @@ Apart from sability improvements and bug fixes, I want to implement most of the 
 
 ## Screenshots
 
-![plot](./assets/artists.png)
+![plot](./assets/dark.png)
 
-![plot](./assets/songs.png)
-
-![plot](./assets/folders.png)
+![plot](./assets/light.png)
