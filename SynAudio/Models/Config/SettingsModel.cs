@@ -46,6 +46,8 @@ namespace SynAudio.Models.Config
         [JsonConverter(typeof(StringEnumConverter))]
         public Styles.Theme Theme { get; set; } = Styles.Theme.Dark;
 
+        public SyslogConfig LogToSyslog { get; set; }
+
         public bool TryDecryptSavedPassword(out string password)
         {
             password = null;

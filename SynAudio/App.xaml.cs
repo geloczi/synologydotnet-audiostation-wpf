@@ -31,8 +31,8 @@ namespace SynAudio
         private static readonly string MutexName = nameof(SynAudio) + "_" + AssemblyProps.EntryAssembly.ProductGuid + DevSuffix;
         internal static readonly string UserDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof(SynAudio) + DevSuffix);
 #else
-		private static readonly string MutexName = nameof(SynAudio) + "_" + AssemblyProps.EntryAssembly.ProductGuid;
-		internal static readonly string UserDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof(SynAudio));
+        private static readonly string MutexName = nameof(SynAudio) + "_" + AssemblyProps.EntryAssembly.ProductGuid;
+        internal static readonly string UserDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof(SynAudio));
 #endif
 
         private static readonly string ProgramFolder = Path.GetDirectoryName(AssemblyProps.EntryAssembly.Location);
@@ -168,20 +168,7 @@ namespace SynAudio
             if (!Directory.Exists(DAL.AlbumModel.CoversDirectory))
                 Directory.CreateDirectory(DAL.AlbumModel.CoversDirectory);
 
-            // Configure NLog
-            var logConfig = new NLog.Config.LoggingConfiguration();
-            var fileTarget = new NLog.Targets.FileTarget()
-            {
-                FileName = Path.Combine(UserDataFolder, $"logs\\{nameof(SynAudio)}_{DateTime.Now.ToString("yyyyMMdd")}.log"),
-                CreateDirs = true,
-                Encoding = Encoding.UTF8,
-                Layout = @"${date:format=yyyy-MM-dd HH\:mm\:ss.fff}|${threadid}|${level}|${logger}|${message}|${exception:format=toString}"
-            };
-            logConfig.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, fileTarget);
-#if DEBUG
-            logConfig.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, new NLog.Targets.DebuggerTarget(nameof(NLog.Targets.DebuggerTarget)));
-#endif
-            NLog.LogManager.Configuration = logConfig;
+            SetupLogging();
             SetupExceptionHandling();
 
             try
@@ -215,6 +202,58 @@ namespace SynAudio
                 Debugger.Break();
 #endif
             }
+        }
+
+        private static void SetupLogging()
+        {
+            var logConfig = new NLog.Config.LoggingConfiguration();
+
+            // To file
+            var fileTarget = new NLog.Targets.FileTarget()
+            {
+                FileName = Path.Combine(UserDataFolder, $"logs\\{nameof(SynAudio)}_{DateTime.Now.ToString("yyyyMMdd")}.log"),
+                CreateDirs = true,
+                Encoding = Encoding.UTF8,
+                Layout = @"${date:format=yyyy-MM-dd HH\:mm\:ss.fff}|${threadid}|${level}|${logger}|${message}|${exception:format=toString}"
+            };
+#if DEBUG
+            logConfig.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, fileTarget);
+#else
+            logConfig.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Fatal, fileTarget);
+#endif
+
+#if DEBUG
+            // To debug console
+            logConfig.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, new NLog.Targets.DebuggerTarget(nameof(NLog.Targets.DebuggerTarget)));
+#endif
+
+            // To syslog server
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(Config.LogToSyslog?.Server))
+                {
+                    var syslogTarget = new NLog.Targets.Syslog.SyslogTarget()
+                    {
+                        Name = Config.LogToSyslog.Name ?? "synaudio",
+                        MessageSend = new NLog.Targets.Syslog.Settings.MessageTransmitterConfig()
+                        {
+                            Protocol = NLog.Targets.Syslog.Settings.ProtocolType.Udp,
+                            Udp = new NLog.Targets.Syslog.Settings.UdpConfig()
+                            {
+                                Server = Config.LogToSyslog.Server,
+                                Port = Config.LogToSyslog.Port
+                            }
+                        }
+                    };
+                    logConfig.AddRule(NLog.LogLevel.FromString(Config.LogToSyslog.Level ?? "Info"), NLog.LogLevel.Fatal, syslogTarget);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Syslog configuration error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            NLog.LogManager.Configuration = logConfig;
         }
 
         private static void EnsureDatabase()
