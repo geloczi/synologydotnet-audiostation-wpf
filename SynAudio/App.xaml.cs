@@ -243,7 +243,9 @@ namespace SynAudio
                                 Server = Config.LogToSyslog.Server,
                                 Port = Config.LogToSyslog.Port
                             }
-                        }
+                        },
+                        //Layout = @"${longdate}|${level:uppercase=true}|${logger}|${message}"
+                        Layout = @"${logger}|${message}|${exception:format=toString}"
                     };
                     logConfig.AddRule(NLog.LogLevel.FromString(Config.LogToSyslog.Level ?? "Info"), NLog.LogLevel.Fatal, syslogTarget);
                 }
