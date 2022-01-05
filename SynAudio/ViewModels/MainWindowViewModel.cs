@@ -57,8 +57,9 @@ namespace SynAudio.ViewModels
             get => Settings.Volume;
             set
             {
-                Settings.Volume = value;
-                SetPlayerVolumeFromPercentage(Settings.Volume);
+                SetPlayerVolumeFromPercentage(value);
+                if (!Settings.RestrictedMode)
+                    Settings.Volume = value;
             }
         }
 
