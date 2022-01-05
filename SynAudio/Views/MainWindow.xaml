@@ -282,7 +282,7 @@
                             Content="Home"/>
                     <Button Style="{StaticResource LeftPanelButton}" 
                             Command="{Binding OpenSettingsCommand}"
-                            Visibility="{Binding Settings.RestrictedMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
+                            Visibility="{Binding Settings.SimpleMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
                             Content="Settings"/>
 
                     <Separator Style="{StaticResource ListSeparator}"/>
@@ -326,7 +326,7 @@
                               ItemContainerStyle="{StaticResource MyComboBoxItem}"
                               ItemsSource="{Binding TranscodeModes}" 
                               SelectedItem="{Binding Settings.Transcoding, Mode=TwoWay}" 
-                              Visibility="{Binding Settings.RestrictedMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
+                              Visibility="{Binding Settings.SimpleMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
                               HorizontalAlignment="Stretch" 
                               Margin="0,5,0,0"/>
                     <!--<Button x:Name="btnSynchronizeLibrary" Command="{Binding SynchronizeLibraryCommand}" HorizontalAlignment="Stretch">Sync Library</Button>-->
@@ -744,7 +744,7 @@
                                     Value="{Binding PlayerVolume}" 
                                     Orientation="Vertical" 
                                     Margin="0"
-                                    Visibility="{Binding Settings.RestrictedMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                                    Visibility="{Binding Settings.SimpleMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
                         </StackPanel>
                     </StackPanel>
 

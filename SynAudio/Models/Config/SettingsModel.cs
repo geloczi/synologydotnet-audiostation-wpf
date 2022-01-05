@@ -41,7 +41,7 @@ namespace SynAudio.Models.Config
 
         public bool UpdateLibraryOnStartup { get; set; } = true;
 
-        public bool RestrictedMode { get; set; }
+        public bool SimpleMode { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         public Styles.Theme Theme { get; set; } = Styles.Theme.Dark;
