@@ -277,19 +277,27 @@
 
                     <Separator Style="{StaticResource ListSeparator}"/>
 
-                    <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenHomeCommand}">Home</Button>
-                    <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenSettingsCommand}">Settings</Button>
+                    <Button Style="{StaticResource LeftPanelButton}" 
+                            Command="{Binding OpenHomeCommand}"
+                            Content="Home"/>
+                    <Button Style="{StaticResource LeftPanelButton}" 
+                            Command="{Binding OpenSettingsCommand}"
+                            Visibility="{Binding Settings.RestrictedMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
+                            Content="Settings"/>
 
                     <Separator Style="{StaticResource ListSeparator}"/>
 
                     <Label Style="{StaticResource CaptionH1}">My Music</Label>
                     <StackPanel Orientation="Vertical" Margin="8,0,0,0">
-                        <Button Style="{StaticResource LeftPanelButton}" Command="app:StaticCommands.BrowseByArtists">By Artist</Button>
+                        <Button Style="{StaticResource LeftPanelButton}" 
+                                Command="app:StaticCommands.BrowseByArtists" 
+                                Content="By Artist"/>
                         <!--<Button Style="{StaticResource LeftPanelButton}">By Album</Button>-->
-                        <Button Style="{StaticResource LeftPanelButton}" Command="app:StaticCommands.BrowseByFolders">By Folder</Button>
+                        <Button Style="{StaticResource LeftPanelButton}" 
+                                Command="app:StaticCommands.BrowseByFolders"
+                                Content="By Folder"/>
                         <!--<Button Style="{StaticResource LeftPanelButton}">By Genre</Button>-->
                     </StackPanel>
-
                     
                     <Separator Style="{StaticResource ListSeparator}"/>
 
