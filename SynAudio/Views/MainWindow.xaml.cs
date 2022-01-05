@@ -19,7 +19,7 @@ namespace SynAudio
 
         private H.Hooks.LowLevelKeyboardHook GlobalKeyboardHook { get; }
         private MainWindowViewModel VM { get; }
-        public SettingsModel Settings => App.Config;
+        public SettingsModel Settings => App.Settings;
         public ErrorDialogErrorHandler ErrorHandler { get; } = new ErrorDialogErrorHandler();
 
         public MainWindow()

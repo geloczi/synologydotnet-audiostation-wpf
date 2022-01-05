@@ -51,16 +51,16 @@ namespace SynAudio
         internal static SqlLiteSettingsRepository DbSettings { get; private set; }
         internal static Random Rnd { get; } = new Random();
 
-        private static SettingsModel _config;
-        internal static SettingsModel Config
+        private static SettingsModel _settings;
+        internal static SettingsModel Settings
         {
             get
             {
-                if (_config is null)
+                if (_settings is null)
                 {
                     lock (_configLock)
                     {
-                        if (_config is null)
+                        if (_settings is null)
                         {
                             SettingsModel cfg;
                             if (ProgramFolderStorage.TryLoad<SettingsModel>("config", out cfg))
@@ -74,11 +74,11 @@ namespace SynAudio
                                 if (!UserFolderStorage.TryLoad<SettingsModel>("config", out cfg))
                                     cfg = new SettingsModel();
                             }
-                            _config = cfg;
+                            _settings = cfg;
                         }
                     }
                 }
-                return _config;
+                return _settings;
             }
         }
 
@@ -124,7 +124,7 @@ namespace SynAudio
 
         internal static void SaveSettings()
         {
-            ConfigStorage.Save("config", Config);
+            ConfigStorage.Save("config", Settings);
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -230,24 +230,24 @@ namespace SynAudio
             // To syslog server
             try
             {
-                if (!string.IsNullOrWhiteSpace(Config.LogToSyslog?.Server))
+                if (!string.IsNullOrWhiteSpace(Settings.LogToSyslog?.Server))
                 {
                     var syslogTarget = new NLog.Targets.Syslog.SyslogTarget()
                     {
-                        Name = Config.LogToSyslog.Name ?? "synaudio",
+                        Name = Settings.LogToSyslog.Name ?? "synaudio",
                         MessageSend = new NLog.Targets.Syslog.Settings.MessageTransmitterConfig()
                         {
                             Protocol = NLog.Targets.Syslog.Settings.ProtocolType.Udp,
                             Udp = new NLog.Targets.Syslog.Settings.UdpConfig()
                             {
-                                Server = Config.LogToSyslog.Server,
-                                Port = Config.LogToSyslog.Port
+                                Server = Settings.LogToSyslog.Server,
+                                Port = Settings.LogToSyslog.Port
                             }
                         },
                         //Layout = @"${longdate}|${level:uppercase=true}|${logger}|${message}"
                         Layout = @"${logger}|${message}|${exception:format=toString}"
                     };
-                    logConfig.AddRule(NLog.LogLevel.FromString(Config.LogToSyslog.Level ?? "Info"), NLog.LogLevel.Fatal, syslogTarget);
+                    logConfig.AddRule(NLog.LogLevel.FromString(Settings.LogToSyslog.Level ?? "Info"), NLog.LogLevel.Fatal, syslogTarget);
                 }
             }
             catch (Exception ex)

@@ -18,7 +18,7 @@ namespace SynAudio.Styles
 
         private void UpdateSource(Uri value)
         {
-            if (value.OriginalString.EndsWith($"{App.Config.Theme}.xaml"))
+            if (value.OriginalString.EndsWith($"{App.Settings.Theme}.xaml"))
                 Source = value;
         }
     }
