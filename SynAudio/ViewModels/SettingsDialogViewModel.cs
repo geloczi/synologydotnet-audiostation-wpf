@@ -9,8 +9,10 @@ namespace SynAudio.Views
 {
     public class SettingsDialogModel : ViewModelBase
     {
+        public static SettingsModel Settings => App.Settings;
+
         public MainWindowViewModel Main { get; set; }
-        public SettingsModel Settings => Main.Settings;
+        
         public List<HotkeyViewModel> Hotkeys { get; } = new List<HotkeyViewModel>();
 
         public RangeObservableCollection<object> OutputDeviceItems { get; } = new RangeObservableCollection<object>();

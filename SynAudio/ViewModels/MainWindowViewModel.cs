@@ -36,13 +36,12 @@ namespace SynAudio.ViewModels
         private readonly object _syncRoot = new object();
         private readonly HashSet<string> _quickSyncedArtists = new HashSet<string>();
         private readonly FrameworkElement _mainTabControl;
-        private int _volumeBeforeMuted = 100;
         private TimeSpan _restoreSongPosition;
         #endregion
 
         #region [Properties]
 
-        public SettingsModel Settings { get; }
+        public static SettingsModel Settings => App.Settings;
         public ErrorDialogErrorHandler ErrorHandler { get; } = new ErrorDialogErrorHandler();
         public bool Connected { get; private set; }
         public TranscodeMode[] TranscodeModes { get; } = ((TranscodeMode[])Enum.GetValues(typeof(TranscodeMode))).Where(x => x != TranscodeMode.None).ToArray();
@@ -52,16 +51,14 @@ namespace SynAudio.ViewModels
         public TabViewModel CurrentTabVM => CurrentTabItem?.Content as TabViewModel;
         public AudioLibrary Library { get; private set; }
         public NowPlayingViewModel NowPlaying { get; } = new NowPlayingViewModel();
+
         public int PlayerVolume
         {
             get => Settings.Volume;
             set
             {
-                if (value != Settings.Volume)
-                {
-                    Settings.Volume = value;
-                    Player.Volume = PercentageToRatio(PlayerVolume);
-                }
+                Settings.Volume = value;
+                SetPlayerVolumeFromPercentage(Settings.Volume);
             }
         }
 
@@ -99,9 +96,8 @@ namespace SynAudio.ViewModels
         #endregion
 
         #region [Public Methods]
-        public MainWindowViewModel(SettingsModel settings, FrameworkElement mainTabControl)
+        public MainWindowViewModel(FrameworkElement mainTabControl)
         {
-            Settings = settings;
             _mainTabControl = mainTabControl;
 
             Player_PlayCommand = new RelayCommand(PlayCommand_Action, o => Connected && !(NowPlaying.CurrentSongVM is null) && Player?.PlaybackState != PlaybackStateType.Playing);
@@ -1148,17 +1144,17 @@ namespace SynAudio.ViewModels
 
         private void Player_MuteCommand_Action(object obj)
         {
-            if (PlayerVolume > 0)
-            {
-                _volumeBeforeMuted = PlayerVolume;
-                PlayerVolume = 0;
-            }
+            if (Player is null)
+                return;
+            if (Player.Volume > 0)
+                Player.Volume = 0;
             else
-            {
-                PlayerVolume = _volumeBeforeMuted;
-            }
-            if (!(Player is null))
-                Player.Volume = PercentageToRatio(PlayerVolume);
+                SetPlayerVolumeFromPercentage(Settings.Volume);
+        }
+
+        private void SetPlayerVolumeFromPercentage(int percentage)
+        {
+            Player.Volume = PercentageToRatio(percentage);
         }
 
         #endregion

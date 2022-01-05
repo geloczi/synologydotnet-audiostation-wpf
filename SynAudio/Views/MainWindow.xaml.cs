@@ -42,7 +42,7 @@ namespace SynAudio
                 Settings.WindowDimensions = new RectangleD(Left, Top, Width, Height);
             }
 
-            DataContext = VM = new MainWindowViewModel(Settings, tabs1);
+            DataContext = VM = new MainWindowViewModel(tabs1);
             CommandBindings.Add(new ForwardCommandBinding(StaticCommands.BrowseLibraryItem, VM.BrowseLibraryItemCommand));
             CommandBindings.Add(new ForwardCommandBinding(StaticCommands.PlayNow, VM.PlayNowCommand));
             CommandBindings.Add(new ForwardCommandBinding(StaticCommands.BrowseByArtists, VM.BrowseByArtistsCommand));
