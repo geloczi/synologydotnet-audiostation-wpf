@@ -8,7 +8,8 @@ namespace Utils.ObjectStorage
         public string Folder { get; }
         public JsonSerializerSettings SerializerSettings { get; set; } = new JsonSerializerSettings()
         {
-            Formatting = Formatting.Indented
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore
         };
 
         public JsonStorage(string folder)
