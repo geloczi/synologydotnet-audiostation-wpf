@@ -51,6 +51,7 @@ namespace SynAudio
         internal static SqlLiteSettingsRepository DbSettings { get; private set; }
         internal static Random Rnd { get; } = new Random();
 
+        private static string _settingsHash;
         private static SettingsModel _settings;
         internal static SettingsModel Settings
         {
@@ -62,8 +63,8 @@ namespace SynAudio
                     {
                         if (_settings is null)
                         {
-                            SettingsModel cfg;
-                            if (ProgramFolderStorage.TryLoad<SettingsModel>("config", out cfg))
+                            SettingsModel sm;
+                            if (ProgramFolderStorage.TryLoad<SettingsModel>("config", out sm))
                             {
                                 // Use config file from program folder
                                 ConfigStorage = ProgramFolderStorage;
@@ -71,10 +72,11 @@ namespace SynAudio
                             else
                             {
                                 // Use config from user's app data folder
-                                if (!UserFolderStorage.TryLoad<SettingsModel>("config", out cfg))
-                                    cfg = new SettingsModel();
+                                if (!UserFolderStorage.TryLoad<SettingsModel>("config", out sm))
+                                    sm = new SettingsModel();
                             }
-                            _settings = cfg;
+                            _settings = sm;
+                            _settingsHash = Utils.Md5Hash.FromObject(_settings);
                         }
                     }
                 }
@@ -124,7 +126,21 @@ namespace SynAudio
 
         internal static void SaveSettings()
         {
-            ConfigStorage.Save("config", Settings);
+            if (_settings is null)
+                return;
+            try
+            {
+                var newHash = Utils.Md5Hash.FromObject(_settings);
+                if (newHash != _settingsHash)
+                {
+                    ConfigStorage.Save("config", _settings);
+                    _settingsHash = newHash;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Cannot save settings.");
+            }
         }
 
         protected override void OnStartup(StartupEventArgs e)
