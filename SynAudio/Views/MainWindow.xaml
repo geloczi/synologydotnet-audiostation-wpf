@@ -743,7 +743,8 @@
                                     Minimum="0" Maximum="100" 
                                     Value="{Binding PlayerVolume}" 
                                     Orientation="Vertical" 
-                                    Margin="0"/>
+                                    Margin="0"
+                                    Visibility="{Binding Settings.RestrictedMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
                         </StackPanel>
                     </StackPanel>
 
