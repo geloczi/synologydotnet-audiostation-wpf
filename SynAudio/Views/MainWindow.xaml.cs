@@ -37,6 +37,10 @@ namespace SynAudio
                 Width = Settings.WindowDimensions.Width;
                 Height = Settings.WindowDimensions.Height;
             }
+            else
+            {
+                Settings.WindowDimensions = new RectangleD(Left, Top, Width, Height);
+            }
 
             DataContext = VM = new MainWindowViewModel(Settings, tabs1);
             CommandBindings.Add(new ForwardCommandBinding(StaticCommands.BrowseLibraryItem, VM.BrowseLibraryItemCommand));
@@ -144,7 +148,6 @@ namespace SynAudio
             Loaded -= Window_Loaded;
             UpdateWindowTitle(null);
 
-            Settings.WindowDimensions = new RectangleD(Left, Top, Width, Height);
             if (!_userTriggeredWindowStateReset)
                 WindowState = Settings.WindowState == WindowState.Minimized ? WindowState.Normal : Settings.WindowState;
             
