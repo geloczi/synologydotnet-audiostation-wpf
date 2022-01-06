@@ -8,7 +8,6 @@ AudioStation like **desktop application for Windows to stream music from your Sy
 
 ![plot](./assets/light.png)  
 
-
 ## What's working
 * Streaming from Synology NAS using the Audio Station library (shared + personal libraries)
 * WAV or MP3 stream format support
@@ -111,9 +110,3 @@ The personal library is filled from your "/home/music" folder and visible only t
 ### Many more various improvements
 
 Apart from sability improvements and bug fixes, I want to implement most of the functionality available in the original Audio Station app, and implement features which are simplfy not possible with it. 
-
-## Screenshots
-
-![plot](./assets/dark.png)
-
-![plot](./assets/light.png)
