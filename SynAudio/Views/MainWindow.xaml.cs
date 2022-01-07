@@ -39,7 +39,7 @@ namespace SynAudio
             }
             else
             {
-                Settings.WindowDimensions = new RectangleD(Left, Top, Width, Height);
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
             DataContext = VM = new MainWindowViewModel(tabs1);
@@ -150,6 +150,7 @@ namespace SynAudio
             Loaded -= Window_Loaded;
             UpdateWindowTitle(null);
 
+            Settings.WindowDimensions = new RectangleD(Left, Top, Width, Height);
             if (!_userTriggeredWindowStateReset)
                 WindowState = Settings.WindowState == WindowState.Minimized ? WindowState.Normal : Settings.WindowState;
             
