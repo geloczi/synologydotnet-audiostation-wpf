@@ -9,6 +9,7 @@
     <!-- Borders -->
     <Color x:Key="BorderColor">#39424A</Color>
     <Color x:Key="TileBorderColor">#39424A</Color>
+    <Color x:Key="WindowBorderColor">#B06000</Color>
 
     <!-- Text -->
     <Color x:Key="TextForegroundColor">LightGray</Color>

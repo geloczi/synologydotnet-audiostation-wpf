@@ -10,13 +10,15 @@
         xmlns:app="clr-namespace:SynAudio" 
         xmlns:viewmodels="clr-namespace:SynAudio.ViewModels"
         d:DataContext="{d:DesignInstance viewmodels:MainWindowViewModel}"
-        WindowStyle="None"
+        WindowStyle="SingleBorderWindow"
         WindowStartupLocation="CenterScreen"
-        BorderThickness="0"
+        BorderThickness="1"
+        BorderBrush="{StaticResource WindowBorder}"
         Padding="0"
         Margin="0"
         Width="1100" Height="800"
-        MinWidth="800" MinHeight="600">
+        MinWidth="800" MinHeight="600"
+        Background="{StaticResource PanelBackground}">
     <Window.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:NullImageConverter x:Key="NullImageConverter"/>
@@ -117,230 +119,231 @@
         </TaskbarItemInfo>
     </Window.TaskbarItemInfo>
 
-    <Grid Background="{StaticResource PanelBackground}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="28"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition>
-                <ColumnDefinition.Style>
-                    <Style TargetType="ColumnDefinition">
-                        <Setter Property="Width" Value="300" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsNowPlayingVisible}" Value="False">
-                                <Setter Property="Width" Value="0" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ColumnDefinition.Style>
-            </ColumnDefinition>
-        </Grid.ColumnDefinitions>
-
-        <!-- Titlebar -->
-        <Grid Grid.ColumnSpan="3">
+    <Border x:Name="mainBorder">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition>
+                    <ColumnDefinition.Style>
+                        <Style TargetType="ColumnDefinition">
+                            <Setter Property="Width" Value="300" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsNowPlayingVisible}" Value="False">
+                                    <Setter Property="Width" Value="0" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ColumnDefinition.Style>
+                </ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Grid>
+            <!-- Titlebar -->
+            <Grid Grid.ColumnSpan="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Image Source="/SynAudio;component/appicon.ico" />
-                <Label Grid.Column="1" Content="{Binding Title}" Foreground="{StaticResource HighlightForeground}" />
-            </Grid>
 
-            <Grid Grid.Column="1" HorizontalAlignment="Center">
-                <Label Content="{Binding Status.Current.Text}" Foreground="{StaticResource HighlightForeground}" />
-            </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Source="/SynAudio;component/appicon.ico" />
+                    <Label Grid.Column="1" Content="{Binding Title}" Foreground="{StaticResource HighlightForeground}" />
+                </Grid>
 
-            <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style x:Key="TitleBarButtonStyle" TargetType="Button">
-                        <Setter Property="Foreground" Value="{StaticResource HighlightForeground}" />
-                        <Setter Property="Padding" Value="0" />
-                        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
-                        <Setter Property="IsTabStop" Value="False" />
-                        <Setter Property="Cursor" Value="Hand"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border
+                <Grid Grid.Column="1" HorizontalAlignment="Center">
+                    <Label Content="{Binding Status.Current.Text}" Foreground="{StaticResource HighlightForeground}" />
+                </Grid>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <StackPanel.Resources>
+                        <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+                            <Setter Property="Foreground" Value="{StaticResource HighlightForeground}" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+                            <Setter Property="IsTabStop" Value="False" />
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border
                                         x:Name="border"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         SnapsToDevicePixels="true">
-                                        <ContentPresenter
+                                            <ContentPresenter
                                             x:Name="contentPresenter"
                                             Margin="0"
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
                                             Focusable="False"
                                             RecognizesAccessKey="True" />
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="true">
-                                            <Setter TargetName="border" Property="Background" Value="{DynamicResource MouseOverOverlayBackgroundBrush}" />
-                                        </Trigger>
-                                        <Trigger Property="IsPressed" Value="true">
-                                            <Setter TargetName="border" Property="Background" Value="{DynamicResource PressedOverlayBackgroundBrush}" />
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </StackPanel.Resources>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="true">
+                                                <Setter TargetName="border" Property="Background" Value="{DynamicResource MouseOverOverlayBackgroundBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="true">
+                                                <Setter TargetName="border" Property="Background" Value="{DynamicResource PressedOverlayBackgroundBrush}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </StackPanel.Resources>
 
-                <Button
+                    <Button
                     Grid.Column="2"
                     Click="MinimizeButton_Click"
                     RenderOptions.EdgeMode="Aliased"
                     Style="{StaticResource TitleBarButtonStyle}">
-                    <Path
+                        <Path
                         Width="46"
                         Height="32"
                         Data="M 18,15 H 28"
                         Stroke="{Binding Path=Foreground,
                         RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                         StrokeThickness="1" />
-                </Button>
+                    </Button>
 
-                <Button
+                    <Button
                     Name="MaximizeButton"
                     Grid.Column="3"
                     Click="MaximizeRestoreButton_Click"
                     Style="{StaticResource TitleBarButtonStyle}">
-                    <Path
+                        <Path
                         Width="46"
                         Height="32"
                         Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z"
                         Stroke="{Binding Path=Foreground,
                         RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                         StrokeThickness="1" />
-                </Button>
+                    </Button>
 
-                <Button
+                    <Button
                     Name="RestoreButton"
                     Grid.Column="3"
                     Click="MaximizeRestoreButton_Click"
                     Style="{StaticResource TitleBarButtonStyle}">
-                    <Path
+                        <Path
                         Width="46"
                         Height="32"
                         Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5"
                         Stroke="{Binding Path=Foreground,
                         RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                         StrokeThickness="1" />
-                </Button>
+                    </Button>
 
-                <Button
+                    <Button
                     Grid.Column="4"
                     Click="CloseButton_Click"
                     Style="{StaticResource TitleBarButtonStyle}">
-                    <Path
+                        <Path
                         Width="46"
                         Height="32"
                         Data="M 18,11 27,20 M 18,20 27,11"
                         Stroke="{Binding Path=Foreground,
                         RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                         StrokeThickness="1" />
-                </Button>
+                    </Button>
 
-            </StackPanel>
+                </StackPanel>
 
-        </Grid>
+            </Grid>
 
-        <!-- Menu -->
-        <Grid Grid.Row="1" Grid.Column="0" Margin="8,4,8,8">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <!-- Menu -->
+            <Grid Grid.Row="1" Grid.Column="0" Margin="8,4,8,8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Vertical">
-                    <!-- Search box -->
-                    <!--<Grid>
+                    <StackPanel Orientation="Vertical">
+                        <!-- Search box -->
+                        <!--<Grid>
 						<TextBox Text="" Foreground="Black" FontSize="14" Margin="0,8,0,0" Padding="16,0,0,0"/>
 						<Viewbox Width="14" Height="14" HorizontalAlignment="Left" Margin="2,7,0,0">
 							<Path Fill="Gray" Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
 						</Viewbox>
 					</Grid>-->
 
-                    <Separator Style="{StaticResource ListSeparator}"/>
+                        <Separator Style="{StaticResource ListSeparator}"/>
 
-                    <Button Style="{StaticResource LeftPanelButton}" 
+                        <Button Style="{StaticResource LeftPanelButton}" 
                             Command="{Binding OpenHomeCommand}"
                             Content="Home"/>
-                    <Button Style="{StaticResource LeftPanelButton}" 
+                        <Button Style="{StaticResource LeftPanelButton}" 
                             Command="{Binding OpenSettingsCommand}"
                             Visibility="{Binding Settings.SimpleMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
                             Content="Settings"/>
 
-                    <Separator Style="{StaticResource ListSeparator}"/>
+                        <Separator Style="{StaticResource ListSeparator}"/>
 
-                    <Label Style="{StaticResource CaptionH1}">My Music</Label>
-                    <StackPanel Orientation="Vertical" Margin="8,0,0,0">
-                        <Button Style="{StaticResource LeftPanelButton}" 
+                        <Label Style="{StaticResource CaptionH1}">My Music</Label>
+                        <StackPanel Orientation="Vertical" Margin="8,0,0,0">
+                            <Button Style="{StaticResource LeftPanelButton}" 
                                 Command="app:StaticCommands.BrowseByArtists" 
                                 Content="By Artist"/>
-                        <!--<Button Style="{StaticResource LeftPanelButton}">By Album</Button>-->
-                        <Button Style="{StaticResource LeftPanelButton}" 
+                            <!--<Button Style="{StaticResource LeftPanelButton}">By Album</Button>-->
+                            <Button Style="{StaticResource LeftPanelButton}" 
                                 Command="app:StaticCommands.BrowseByFolders"
                                 Content="By Folder"/>
-                        <!--<Button Style="{StaticResource LeftPanelButton}">By Genre</Button>-->
-                    </StackPanel>
-                    
-                    <Separator Style="{StaticResource ListSeparator}"/>
+                            <!--<Button Style="{StaticResource LeftPanelButton}">By Genre</Button>-->
+                        </StackPanel>
 
-                    <!--<Label Style="{StaticResource CaptionH1}">Playlists</Label>
+                        <Separator Style="{StaticResource ListSeparator}"/>
+
+                        <!--<Label Style="{StaticResource CaptionH1}">Playlists</Label>
 					<StackPanel Orientation="Vertical" Margin="8,0,0,0">
 						<Button Style="{StaticResource LeftPanelButton}">Random 100</Button>
 						<Button Style="{StaticResource LeftPanelButton}">Recently added</Button>
 						<Button Style="{StaticResource LeftPanelButton}">Recently listened</Button>
 					</StackPanel>-->
-                </StackPanel>
+                    </StackPanel>
 
-                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
-                    <!--<TextBlock Text="{Binding Status.Current.Text}" 
+                    <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
+                        <!--<TextBlock Text="{Binding Status.Current.Text}" 
                                Foreground="{StaticResource TextForeground}"
                                HorizontalAlignment="Left" 
                                VerticalAlignment="Bottom"/>-->
 
-                    <Border MaxHeight="300">
-                        <Image Source="{Binding NowPlaying.Cover, Mode=OneWay, IsAsync=True, Converter={StaticResource NullImageConverter}}" 
+                        <Border MaxHeight="300">
+                            <Image Source="{Binding NowPlaying.Cover, Mode=OneWay, IsAsync=True, Converter={StaticResource NullImageConverter}}" 
 							   Visibility="{Binding NowPlaying.Cover, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}"
 							   Stretch="Uniform" 
                                SnapsToDevicePixels="True"/>
-                    </Border>
-                    
-                    <ComboBox Style="{DynamicResource MyComboBoxStyle}" 
+                        </Border>
+
+                        <ComboBox Style="{DynamicResource MyComboBoxStyle}" 
                               ItemContainerStyle="{StaticResource MyComboBoxItem}"
                               ItemsSource="{Binding TranscodeModes}" 
                               SelectedItem="{Binding Settings.Transcoding, Mode=TwoWay}" 
                               Visibility="{Binding Settings.SimpleMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"
                               HorizontalAlignment="Stretch" 
                               Margin="0,5,0,0"/>
-                    <!--<Button x:Name="btnSynchronizeLibrary" Command="{Binding SynchronizeLibraryCommand}" HorizontalAlignment="Stretch">Sync Library</Button>-->
+                        <!--<Button x:Name="btnSynchronizeLibrary" Command="{Binding SynchronizeLibraryCommand}" HorizontalAlignment="Stretch">Sync Library</Button>-->
 
-                    
 
-                </StackPanel>
+
+                    </StackPanel>
+                </Grid>
             </Grid>
-        </Grid>
 
-        <!-- Main -->
-        <Border Grid.Row="1" Grid.Column="1" BorderThickness="2,0,2,0" BorderBrush="{StaticResource PanelSeparator}">
-            <Grid Margin="0">
-                <TabControl x:Name="tabs1" ItemsSource="{Binding Tabs}" 
+            <!-- Main -->
+            <Border Grid.Row="1" Grid.Column="1" BorderThickness="2,0,2,0" BorderBrush="{StaticResource PanelSeparator}">
+                <Grid Margin="0">
+                    <TabControl x:Name="tabs1" ItemsSource="{Binding Tabs}" 
                             SelectedItem="{Binding CurrentTabItem}" 
                             Background="{StaticResource PanelBackground}" 
                             Padding="0"
@@ -348,120 +351,120 @@
                             BorderThickness="0"
                             behaviors:TabContent.IsCached="True"
                             PreviewKeyDown="tabs1_PreviewKeyDown">
-                    <TabControl.Resources>
-                        <datatemplateselectors:MainContentTemplateSelector x:Key="MainContentTemplateSelector" />
+                        <TabControl.Resources>
+                            <datatemplateselectors:MainContentTemplateSelector x:Key="MainContentTemplateSelector" />
 
-                        <!-- Inactive Tab Header -->
-                        <Style x:Key="MainContentInactiveTabHeader" TargetType="TabItem">
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Margin" Value="0,0,0,0"/>
-                            <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Cursor" Value="Hand"/>
+                            <!-- Inactive Tab Header -->
+                            <Style x:Key="MainContentInactiveTabHeader" TargetType="TabItem">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Margin" Value="0,0,0,0"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Cursor" Value="Hand"/>
 
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type TabItem}">
-                                        <Border x:Name="TabHeaderContainer" 
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type TabItem}">
+                                            <Border x:Name="TabHeaderContainer" 
                                                     BorderThickness="0"
                                                     BorderBrush="White"
                                                     Padding="10,8">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
 
-                                                <ContentPresenter x:Name="TabHeaderText" ContentSource="Header">
-                                                    <ContentPresenter.Resources>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="{StaticResource TextForeground}" />
-                                                        </Style>
-                                                    </ContentPresenter.Resources>
-                                                </ContentPresenter>
+                                                    <ContentPresenter x:Name="TabHeaderText" ContentSource="Header">
+                                                        <ContentPresenter.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{StaticResource TextForeground}" />
+                                                            </Style>
+                                                        </ContentPresenter.Resources>
+                                                    </ContentPresenter>
 
-                                                <Button Grid.Column="1" 
+                                                    <Button Grid.Column="1" 
                                                             Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.CloseTabCommand}" 
 															CommandParameter="{Binding}"
 															Style="{StaticResource IconButton}"
 															Foreground="{StaticResource H1Foreground}" Margin="4,0,0,0">
-                                                    <Viewbox Width="10" Height="10">
-                                                        <Path Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"
+                                                        <Viewbox Width="10" Height="10">
+                                                            <Path Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"
 																	Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                                                    </Viewbox>
-                                                </Button>
-                                            </Grid>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="TabHeaderContainer" Property="Background" Value="{StaticResource TileBorder}" />
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="False">
-                                                <Setter TargetName="TabHeaderContainer" Property="Background" Value="{StaticResource PanelBackground}" />
-                                            </Trigger>
-                                            <!--<Trigger Property="IsEnabled" Value="False">
+                                                        </Viewbox>
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="TabHeaderContainer" Property="Background" Value="{StaticResource TileBorder}" />
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="False">
+                                                    <Setter TargetName="TabHeaderContainer" Property="Background" Value="{StaticResource PanelBackground}" />
+                                                </Trigger>
+                                                <!--<Trigger Property="IsEnabled" Value="False">
                                             </Trigger>-->
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </TabControl.Resources>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TabControl.Resources>
 
-                    <!-- Tab Content -->
-                    <behaviors:TabContent.Template>
-                        <DataTemplate>
-                            <Grid Margin="0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
+                        <!-- Tab Content -->
+                        <behaviors:TabContent.Template>
+                            <DataTemplate>
+                                <Grid Margin="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
 
-                                <!-- Navigation header -->
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel.Resources>
-                                        <Style TargetType="StackPanel">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Content.NavigationItems.Count}" Value="1">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </StackPanel.Resources>
-                                    <ItemsControl ItemsSource="{Binding Content.NavigationItems}" Margin="8,2,0,2" Foreground="Black">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border Background="Transparent" Cursor="Hand">
-                                                    <Border.InputBindings>
-                                                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, Path=DataContext.Content.NavigateCommand}" CommandParameter="{Binding}"/>
-                                                    </Border.InputBindings>
-                                                    <TextBlock Text="{Binding}" Padding="4,4" Foreground="{StaticResource TextForeground}" />
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <WrapPanel/>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                    </ItemsControl>
-                                    <Border Background="{StaticResource PanelSeparator}" BorderThickness="0" Height="2"/>
-                                </StackPanel>
+                                    <!-- Navigation header -->
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Content.NavigationItems.Count}" Value="1">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <ItemsControl ItemsSource="{Binding Content.NavigationItems}" Margin="8,2,0,2" Foreground="Black">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="Transparent" Cursor="Hand">
+                                                        <Border.InputBindings>
+                                                            <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, Path=DataContext.Content.NavigateCommand}" CommandParameter="{Binding}"/>
+                                                        </Border.InputBindings>
+                                                        <TextBlock Text="{Binding}" Padding="4,4" Foreground="{StaticResource TextForeground}" />
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                        <Border Background="{StaticResource PanelSeparator}" BorderThickness="0" Height="2"/>
+                                    </StackPanel>
 
-                                <!-- Content -->
-                                <ContentControl Grid.Row="1" 
+                                    <!-- Content -->
+                                    <ContentControl Grid.Row="1" 
                                                 Content="{Binding Content.Content}" 
                                                 ContentTemplateSelector="{StaticResource MainContentTemplateSelector}"
                                                 BorderThickness="0"
                                                 />
-                            </Grid>
-                        </DataTemplate>
-                    </behaviors:TabContent.Template>
-                </TabControl>
+                                </Grid>
+                            </DataTemplate>
+                        </behaviors:TabContent.Template>
+                    </TabControl>
 
-                <!-- New tab button -->
-                <!--<Button HorizontalAlignment="Right" VerticalAlignment="Top" Padding="0" Background="Transparent" BorderThickness="0" Margin="0,3,6,0" Style="{StaticResource IconButton}" Foreground="Gray"
+                    <!-- New tab button -->
+                    <!--<Button HorizontalAlignment="Right" VerticalAlignment="Top" Padding="0" Background="Transparent" BorderThickness="0" Margin="0,3,6,0" Style="{StaticResource IconButton}" Foreground="Gray"
 							  Command="{Binding OpenNewTabCommand}">
 					<Viewbox Width="14" Height="14">
 						<Path 
@@ -470,26 +473,26 @@
 								/>
 					</Viewbox>
 				</Button>-->
-            </Grid>
-        </Border>
+                </Grid>
+            </Border>
 
-        <!-- NowPlaying -->
-        <Border Grid.Row="1" 
+            <!-- NowPlaying -->
+            <Border Grid.Row="1" 
                 Grid.Column="2" 
                 Background="{StaticResource PanelBackground}" 
                 BorderThickness="0,0,0,0" 
                 BorderBrush="{StaticResource Brush_MainPanelSeparator}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <Border BorderBrush="{StaticResource Brush_MainPanelSeparator}" BorderThickness="0,0,0,1">
-                    <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenNowPlayingCommand}">Now playing</Button>
-                </Border>
+                    <Border BorderBrush="{StaticResource Brush_MainPanelSeparator}" BorderThickness="0,0,0,1">
+                        <Button Style="{StaticResource LeftPanelButton}" Command="{Binding OpenNowPlayingCommand}">Now playing</Button>
+                    </Border>
 
-                <controls:SongsDataGrid Grid.Row="1" 
+                    <controls:SongsDataGrid Grid.Row="1" 
 												x:Name="nowPlayingGrid" 
 												DataContext="{Binding NowPlaying.Songs}"
 												ItemDoubleClickCommand="app:StaticCommands.NowPlaying_ChangeCurrentSong" 
@@ -498,146 +501,146 @@
 												CanUserSortColumns="False" 
 												EnablePlayMenu="False"
 												HeadersVisibility="None">
-                    <controls:SongsDataGrid.Columns>
-                        <DataGridTextColumn Header="Title" Width="2*" Binding="{Binding Song.Title}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Artist" Width="*" Binding="{Binding Song.Artist}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Duration" MinWidth="60" Width="60" Binding="{Binding Song.Duration, Converter={StaticResource TimeSpanToDurationConverter}}"/>
-                    </controls:SongsDataGrid.Columns>
-                </controls:SongsDataGrid>
-            </Grid>
-        </Border>
+                        <controls:SongsDataGrid.Columns>
+                            <DataGridTextColumn Header="Title" Width="2*" Binding="{Binding Song.Title}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Artist" Width="*" Binding="{Binding Song.Artist}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Duration" MinWidth="60" Width="60" Binding="{Binding Song.Duration, Converter={StaticResource TimeSpanToDurationConverter}}"/>
+                        </controls:SongsDataGrid.Columns>
+                    </controls:SongsDataGrid>
+                </Grid>
+            </Border>
 
-        <!-- Playback controls -->
-        <Border Grid.Row="2" Grid.ColumnSpan="3" Background="{StaticResource PlayControlsPanelBackground}" 
+            <!-- Playback controls -->
+            <Border Grid.Row="2" Grid.ColumnSpan="3" Background="{StaticResource PlayControlsPanelBackground}" 
 				  BorderBrush="{StaticResource PanelSeparator}" BorderThickness="0,3,0,0">
-            <Grid>
-                <Grid.Resources>
-                    <Style x:Key="PlaybackButton" TargetType="Button">
-                        <Setter Property="Padding" Value="0"/>
-                        <Setter Property="Margin" Value="12"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Foreground" Value="{StaticResource TextForeground}"/>
-                        <Setter Property="Height" Value="24"/>
-                        <Setter Property="Width" Value="24"/>
-                        <Setter Property="Cursor" Value="Hand"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <ContentPresenter VerticalAlignment="Center"
+                <Grid>
+                    <Grid.Resources>
+                        <Style x:Key="PlaybackButton" TargetType="Button">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="12"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextForeground}"/>
+                            <Setter Property="Height" Value="24"/>
+                            <Setter Property="Width" Value="24"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <ContentPresenter VerticalAlignment="Center"
                                                       Content="{TemplateBinding Content}"
                                                       ContentTemplate="{TemplateBinding ContentTemplate}">
-                                    </ContentPresenter>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Foreground" Value="{StaticResource SelectionForeground}"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Grid.Resources>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                                        </ContentPresenter>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource SelectionForeground}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <!-- Seekbar -->
-                <Grid Margin="0,-3,0,-3">
-                    <!-- Position slider -->
-                    <Slider Minimum="0" Interval="1"
+                    <!-- Seekbar -->
+                    <Grid Margin="0,-3,0,-3">
+                        <!-- Position slider -->
+                        <Slider Minimum="0" Interval="1"
 									Maximum="{Binding Player.Length, Mode=OneWay, Converter={StaticResource TimeSpanToSecondsConverter}}" 
 									Value="{Binding Player.Position, Converter={StaticResource TimeSpanToSecondsConverter}}"
 									IsMoveToPointEnabled="True">
-                    </Slider>
-                </Grid>
+                        </Slider>
+                    </Grid>
 
-                <!-- Control bar -->
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.Resources>
-                        <Style x:Key="CornerControlBox" TargetType="StackPanel">
-                            <Setter Property="Margin" Value="4,0,4,4"/>
-                            <Setter Property="Orientation" Value="Horizontal"/>
-                        </Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="{StaticResource TextForeground}"/>
-                        </Style>
-                    </Grid.Resources>
-
-                    <!-- Bottom-left panel (playback controls) -->
-                    <StackPanel Style="{StaticResource CornerControlBox}" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left">
-                        <Button x:Name="btnPrevious" Command="{Binding Player_PlayPrevCommand}" Style="{StaticResource PlaybackButton}">
-                            <Border Background="Transparent">
-                                <Path Stretch="Fill"
-									Data="M6,18V6H8V18H6M9.5,12L18,6V18L9.5,12Z" 
-									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
-                            </Border>
-                        </Button>
-
-                        <Button x:Name="btnPlay" Command="{Binding Player_PlayCommand}" Style="{StaticResource PlaybackButton}">
-                            <Button.Visibility>
-                                <Binding Path="Player.IsPlaying" Converter="{StaticResource BoolToVisibilityConverter}" ConverterParameter="true"/>
-                            </Button.Visibility>
-                            <Border Background="Transparent">
-                                <Path Stretch="Fill"
-									Data="M8,5.14V19.14L19,12.14L8,5.14Z"
-									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
-                            </Border>
-                        </Button>
-
-                        <Button x:Name="btnPause" Command="{Binding Player_PauseCommand}" Style="{StaticResource PlaybackButton}">
-                            <Button.Visibility>
-                                <Binding Path="Player.IsPlaying" Converter="{StaticResource BoolToVisibilityConverter}" ConverterParameter="false"/>
-                            </Button.Visibility>
-                            <Border Background="Transparent">
-                                <Path Stretch="Fill"
-									Data="M14,19H18V5H14M6,19H10V5H6V19Z"
-									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
-                            </Border>
-                        </Button>
-
-                        <Button x:Name="btnNext" Command="{Binding Player_PlayNextCommand}" Style="{StaticResource PlaybackButton}">
-                            <Border Background="Transparent">
-                                <Path Stretch="Fill"
-									Data="M16,18H18V6H16M6,18L14.5,12L6,6V18Z" 
-									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
-                            </Border>
-                        </Button>
-
-                        <Button x:Name="btnStop" Command="{Binding Player_StopCommand}" Style="{StaticResource PlaybackButton}">
-                            <Border Background="Transparent">
-                                <Path Stretch="Fill"
-									Data="M18,18H6V6H18V18Z" 
-									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
-                            </Border>
-                        </Button>
-                    </StackPanel>
-
-                    <!-- Bottom-Middle panel (song info bar) -->
-                    <Grid Grid.Column="1" Margin="8,0" Visibility="{Binding NowPlaying.CurrentSong, Mode=OneWay, Converter={StaticResource ObjectToVisibilityConverter}}">
+                    <!-- Control bar -->
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
                         <Grid.Resources>
-                            <Style x:Key="SongTime" TargetType="TextBlock">
-                                <Setter Property="FontFamily" Value="Consolas"/>
-                                <Setter Property="FontSize" Value="14"/>
+                            <Style x:Key="CornerControlBox" TargetType="StackPanel">
+                                <Setter Property="Margin" Value="4,0,4,4"/>
+                                <Setter Property="Orientation" Value="Horizontal"/>
+                            </Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource TextForeground}"/>
                             </Style>
                         </Grid.Resources>
 
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
+                        <!-- Bottom-left panel (playback controls) -->
+                        <StackPanel Style="{StaticResource CornerControlBox}" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left">
+                            <Button x:Name="btnPrevious" Command="{Binding Player_PlayPrevCommand}" Style="{StaticResource PlaybackButton}">
+                                <Border Background="Transparent">
+                                    <Path Stretch="Fill"
+									Data="M6,18V6H8V18H6M9.5,12L18,6V18L9.5,12Z" 
+									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
+                                </Border>
+                            </Button>
 
-                        <!-- Song info (left) -->
-                        <StackPanel Orientation="Horizontal">
-                            <!-- Cover -->
-                            <!--<Grid Margin="5,-2,0,0" Width="47" Height="47">
+                            <Button x:Name="btnPlay" Command="{Binding Player_PlayCommand}" Style="{StaticResource PlaybackButton}">
+                                <Button.Visibility>
+                                    <Binding Path="Player.IsPlaying" Converter="{StaticResource BoolToVisibilityConverter}" ConverterParameter="true"/>
+                                </Button.Visibility>
+                                <Border Background="Transparent">
+                                    <Path Stretch="Fill"
+									Data="M8,5.14V19.14L19,12.14L8,5.14Z"
+									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
+                                </Border>
+                            </Button>
+
+                            <Button x:Name="btnPause" Command="{Binding Player_PauseCommand}" Style="{StaticResource PlaybackButton}">
+                                <Button.Visibility>
+                                    <Binding Path="Player.IsPlaying" Converter="{StaticResource BoolToVisibilityConverter}" ConverterParameter="false"/>
+                                </Button.Visibility>
+                                <Border Background="Transparent">
+                                    <Path Stretch="Fill"
+									Data="M14,19H18V5H14M6,19H10V5H6V19Z"
+									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
+                                </Border>
+                            </Button>
+
+                            <Button x:Name="btnNext" Command="{Binding Player_PlayNextCommand}" Style="{StaticResource PlaybackButton}">
+                                <Border Background="Transparent">
+                                    <Path Stretch="Fill"
+									Data="M16,18H18V6H16M6,18L14.5,12L6,6V18Z" 
+									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
+                                </Border>
+                            </Button>
+
+                            <Button x:Name="btnStop" Command="{Binding Player_StopCommand}" Style="{StaticResource PlaybackButton}">
+                                <Border Background="Transparent">
+                                    <Path Stretch="Fill"
+									Data="M18,18H6V6H18V18Z" 
+									Fill="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
+                                </Border>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- Bottom-Middle panel (song info bar) -->
+                        <Grid Grid.Column="1" Margin="8,0" Visibility="{Binding NowPlaying.CurrentSong, Mode=OneWay, Converter={StaticResource ObjectToVisibilityConverter}}">
+                            <Grid.Resources>
+                                <Style x:Key="SongTime" TargetType="TextBlock">
+                                    <Setter Property="FontFamily" Value="Consolas"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                </Style>
+                            </Grid.Resources>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Song info (left) -->
+                            <StackPanel Orientation="Horizontal">
+                                <!-- Cover -->
+                                <!--<Grid Margin="5,-2,0,0" Width="47" Height="47">
                                 <Viewbox Margin="0,-3,0,2">
                                     <Path Fill="{StaticResource TextForeground}" Data="M14,2L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2H14M18,20V9H13V4H6V20H18M13,10V12H11V17A2,2 0 0,1 9,19A2,2 0 0,1 7,17A2,2 0 0,1 9,15C9.4,15 9.7,15.1 10,15.3V10H13Z" />
                                 </Viewbox>
@@ -646,111 +649,112 @@
 											 Margin="0" Width="47" Height="47" Stretch="Uniform" SnapsToDevicePixels="True"/>
                                 </Grid>
                             </Grid>-->
-                            <!-- Song detials -->
-                            <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,0,0,0">
-                                <TextBlock Text="{Binding NowPlaying.CurrentSong.Artist, Mode=OneWay}"/>
-                                <TextBlock Text="{Binding NowPlaying.CurrentSong.Album, Mode=OneWay}"/>
-                                <TextBlock Text="{Binding NowPlaying.CurrentSong.Year, Mode=OneWay}" Visibility="{Binding NowPlaying.CurrentSong.Year, Mode=OneWay, Converter={StaticResource NumberToVisibilityConverter}}"/>
+                                <!-- Song detials -->
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,0,0,0">
+                                    <TextBlock Text="{Binding NowPlaying.CurrentSong.Artist, Mode=OneWay}"/>
+                                    <TextBlock Text="{Binding NowPlaying.CurrentSong.Album, Mode=OneWay}"/>
+                                    <TextBlock Text="{Binding NowPlaying.CurrentSong.Year, Mode=OneWay}" Visibility="{Binding NowPlaying.CurrentSong.Year, Mode=OneWay, Converter={StaticResource NumberToVisibilityConverter}}"/>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
 
-                        <!-- Song title and rating (center) -->
-                        <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-5,0,0">
-                            <TextBlock Text="{Binding NowPlaying.CurrentSong.Title, Mode=OneWay}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
-                            <controls:RatingControl Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Margin="0,4,0,0"
+                            <!-- Song title and rating (center) -->
+                            <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-5,0,0">
+                                <TextBlock Text="{Binding NowPlaying.CurrentSong.Title, Mode=OneWay}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                                <controls:RatingControl Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Margin="0,4,0,0"
 								Height="Auto" Width="110"
 								Value="{Binding NowPlaying.CurrentSong.Rating, UpdateSourceTrigger=PropertyChanged}"
 								ValueChanged="RatingControl_ValueChanged"/>
-                        </StackPanel>
+                            </StackPanel>
 
-                        <!-- Counters (right) -->
-                        <Grid Grid.Column="2" VerticalAlignment="Stretch">
-                            <TextBlock Margin="0,-6,0,0" FontSize="14" FontFamily="Consolas" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <!-- Counters (right) -->
+                            <Grid Grid.Column="2" VerticalAlignment="Stretch">
+                                <TextBlock Margin="0,-6,0,0" FontSize="14" FontFamily="Consolas" VerticalAlignment="Center" HorizontalAlignment="Right">
                                 <Run Text="{Binding Player.Position, Mode=OneWay, Converter={StaticResource TimeSpanToDurationConverter}}"/>
 								<Run Text="/"/>
 								<Run Text="{Binding Player.Length, Mode=OneWay, Converter={StaticResource TimeSpanToDurationConverter}}"/>
-                            </TextBlock>
-                            <TextBlock Margin="0,0,0,5" FontSize="10" FontFamily="Consolas" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="Gray"
+                                </TextBlock>
+                                <TextBlock Margin="0,0,0,5" FontSize="10" FontFamily="Consolas" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="Gray"
                                        Visibility="{Binding Player.BytesPerSecond, Mode=OneWay, Converter={StaticResource NumberToVisibilityConverter}}">
                                 <Run Text="{Binding Player.BytesPerSecond, Mode=OneWay, Converter={StaticResource BytesToFriendlySizeConverter}}"/><Run Text="/s"/>
-                            </TextBlock>
+                                </TextBlock>
+                            </Grid>
                         </Grid>
-                    </Grid>
 
-                    <!-- Bottom-right panel (options, volume) -->
-                    <StackPanel Style="{StaticResource CornerControlBox}" Grid.Column="2" HorizontalAlignment="Right">
-                        <Button x:Name="btnShuffle" Command="{Binding Player_ShuffleCommand}" Style="{StaticResource PlaybackButton}">
-                            <Border Background="Transparent">
-                                <Path Stretch="Fill">
-                                    <Path.Style>
-                                        <Style TargetType="Path">
-                                            <Setter Property="Data" Value="M16,4.5V7H5V9H16V11.5L19.5,8M16,12.5V15H5V17H16V19.5L19.5,16"/>
-                                            <Setter Property="Fill" Value="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding NowPlaying.Shuffle}" Value="true">
-                                                    <Setter Property="Data" Value="M17,3L22.25,7.5L17,12L22.25,16.5L17,21V18H14.26L11.44,15.18L13.56,13.06L15.5,15H17V12L17,9H15.5L6.5,18H2V15H5.26L14.26,6H17V3M2,6H6.5L9.32,8.82L7.2,10.94L5.26,9H2V6Z"/>
-                                                    <Setter Property="Fill" Value="Red"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
-                                </Path>
-                            </Border>
-                        </Button>
-                        
-                        <Button x:Name="btnRepeat" Command="{Binding Player_RepeatCommand}" Style="{StaticResource PlaybackButton}">
-                            <Border Background="Transparent">
-                                <Path Stretch="Fill">
-                                    <Path.Style>
-                                        <Style TargetType="Path">
-                                            <Setter Property="Data" Value="M2,5.27L3.28,4L20,20.72L18.73,22L15.73,19H7V22L3,18L7,14V17H13.73L7,10.27V11H5V8.27L2,5.27M17,13H19V17.18L17,15.18V13M17,5V2L21,6L17,10V7H8.82L6.82,5H17Z"/>
-                                            <Setter Property="Fill" Value="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding NowPlaying.Repeat}" Value="true">
-                                                    <Setter Property="Data" Value="M17,17H7V14L3,18L7,22V19H19V13H17M7,7H17V10L21,6L17,2V5H5V11H7V7Z"/>
-                                                    <Setter Property="Fill" Value="Red"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
-                                </Path>
-                            </Border>
-                        </Button>
-                        
-                        <Button x:Name="btnMute" 
+                        <!-- Bottom-right panel (options, volume) -->
+                        <StackPanel Style="{StaticResource CornerControlBox}" Grid.Column="2" HorizontalAlignment="Right">
+                            <Button x:Name="btnShuffle" Command="{Binding Player_ShuffleCommand}" Style="{StaticResource PlaybackButton}">
+                                <Border Background="Transparent">
+                                    <Path Stretch="Fill">
+                                        <Path.Style>
+                                            <Style TargetType="Path">
+                                                <Setter Property="Data" Value="M16,4.5V7H5V9H16V11.5L19.5,8M16,12.5V15H5V17H16V19.5L19.5,16"/>
+                                                <Setter Property="Fill" Value="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding NowPlaying.Shuffle}" Value="true">
+                                                        <Setter Property="Data" Value="M17,3L22.25,7.5L17,12L22.25,16.5L17,21V18H14.26L11.44,15.18L13.56,13.06L15.5,15H17V12L17,9H15.5L6.5,18H2V15H5.26L14.26,6H17V3M2,6H6.5L9.32,8.82L7.2,10.94L5.26,9H2V6Z"/>
+                                                        <Setter Property="Fill" Value="Red"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Path.Style>
+                                    </Path>
+                                </Border>
+                            </Button>
+
+                            <Button x:Name="btnRepeat" Command="{Binding Player_RepeatCommand}" Style="{StaticResource PlaybackButton}">
+                                <Border Background="Transparent">
+                                    <Path Stretch="Fill">
+                                        <Path.Style>
+                                            <Style TargetType="Path">
+                                                <Setter Property="Data" Value="M2,5.27L3.28,4L20,20.72L18.73,22L15.73,19H7V22L3,18L7,14V17H13.73L7,10.27V11H5V8.27L2,5.27M17,13H19V17.18L17,15.18V13M17,5V2L21,6L17,10V7H8.82L6.82,5H17Z"/>
+                                                <Setter Property="Fill" Value="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding NowPlaying.Repeat}" Value="true">
+                                                        <Setter Property="Data" Value="M17,17H7V14L3,18L7,22V19H19V13H17M7,7H17V10L21,6L17,2V5H5V11H7V7Z"/>
+                                                        <Setter Property="Fill" Value="Red"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Path.Style>
+                                    </Path>
+                                </Border>
+                            </Button>
+
+                            <Button x:Name="btnMute" 
                                 Command="{Binding Player_MuteCommand}" 
                                 Style="{StaticResource PlaybackButton}">
-                            <Border Background="Transparent">
-                                <Path Stretch="Fill">
-                                    <Path.Style>
-                                        <Style TargetType="Path">
-                                            <Setter Property="Data" Value="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
-                                            <Setter Property="Fill" Value="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Player.Volume}" Value="0">
-                                                    <Setter Property="Data" Value="M12,4L9.91,6.09L12,8.18M4.27,3L3,4.27L7.73,9H3V15H7L12,20V13.27L16.25,17.53C15.58,18.04 14.83,18.46 14,18.7V20.77C15.38,20.45 16.63,19.82 17.68,18.96L19.73,21L21,19.73L12,10.73M19,12C19,12.94 18.8,13.82 18.46,14.64L19.97,16.15C20.62,14.91 21,13.5 21,12C21,7.72 18,4.14 14,3.23V5.29C16.89,6.15 19,8.83 19,12M16.5,12C16.5,10.23 15.5,8.71 14,7.97V10.18L16.45,12.63C16.5,12.43 16.5,12.21 16.5,12Z"/>
-                                                    <Setter Property="Fill" Value="Red"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Path.Style>
-                                </Path>
-                            </Border>
-                        </Button>
+                                <Border Background="Transparent">
+                                    <Path Stretch="Fill">
+                                        <Path.Style>
+                                            <Style TargetType="Path">
+                                                <Setter Property="Data" Value="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
+                                                <Setter Property="Fill" Value="{Binding Path=Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Player.Volume}" Value="0">
+                                                        <Setter Property="Data" Value="M12,4L9.91,6.09L12,8.18M4.27,3L3,4.27L7.73,9H3V15H7L12,20V13.27L16.25,17.53C15.58,18.04 14.83,18.46 14,18.7V20.77C15.38,20.45 16.63,19.82 17.68,18.96L19.73,21L21,19.73L12,10.73M19,12C19,12.94 18.8,13.82 18.46,14.64L19.97,16.15C20.62,14.91 21,13.5 21,12C21,7.72 18,4.14 14,3.23V5.29C16.89,6.15 19,8.83 19,12M16.5,12C16.5,10.23 15.5,8.71 14,7.97V10.18L16.45,12.63C16.5,12.43 16.5,12.21 16.5,12Z"/>
+                                                        <Setter Property="Fill" Value="Red"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Path.Style>
+                                    </Path>
+                                </Border>
+                            </Button>
 
-                        <StackPanel Orientation="Horizontal">
-                            <Slider x:Name="sliderVolume" 
+                            <StackPanel Orientation="Horizontal">
+                                <Slider x:Name="sliderVolume" 
                                     Minimum="0" Maximum="100" 
                                     Value="{Binding PlayerVolume}" 
                                     Orientation="Vertical" 
                                     Margin="0"
                                     Visibility="{Binding Settings.SimpleMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
 
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Border>
+            </Border>
 
-    </Grid>
+        </Grid>
+    </Border>
 </Window>

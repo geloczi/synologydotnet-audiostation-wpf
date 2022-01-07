@@ -9,6 +9,7 @@
     <!-- Borders -->
     <Color x:Key="BorderColor">Gray</Color>
     <Color x:Key="TileBorderColor">WhiteSmoke</Color>
+    <Color x:Key="WindowBorderColor">Gray</Color>
     
     <!-- Text -->
     <Color x:Key="TextForegroundColor">Black</Color>

@@ -9,6 +9,7 @@
     <!-- Borders -->
     <SolidColorBrush x:Key="Border" Color="{StaticResource BorderColor}"/>
     <SolidColorBrush x:Key="TileBorder" Color="{StaticResource TileBorderColor}"/>
+    <SolidColorBrush x:Key="WindowBorder" Color="{StaticResource WindowBorderColor}"/>
     
     <!-- Text -->
     <SolidColorBrush x:Key="TextForeground" Color="{StaticResource TextForegroundColor}"/>

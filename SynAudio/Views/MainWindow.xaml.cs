@@ -78,11 +78,6 @@ namespace SynAudio
         private void MainWindow_StateChanged(object sender, EventArgs e)
         {
             RefreshMaximizeRestoreButton();
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowStyle = WindowStyle.SingleBorderWindow;
-                WindowStyle = WindowStyle.None;
-            }
         }
 
         private void RefreshMaximizeRestoreButton()
@@ -91,13 +86,13 @@ namespace SynAudio
             {
                 MaximizeButton.Visibility = Visibility.Collapsed;
                 RestoreButton.Visibility = Visibility.Visible;
-                BorderThickness = new Thickness(7);
+                mainBorder.Padding = new Thickness(7);
             }
             else
             {
                 MaximizeButton.Visibility = Visibility.Visible;
                 RestoreButton.Visibility = Visibility.Collapsed;
-                BorderThickness = new Thickness(0);
+                mainBorder.Padding = new Thickness(0);
             }
         }
 
