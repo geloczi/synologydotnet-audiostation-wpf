@@ -62,5 +62,7 @@ namespace SynAudio.Models.Config
             }
             return false;
         }
+
+        public string GetMd5Hash() => Utils.Md5Hash.FromObject(this);
     }
 }

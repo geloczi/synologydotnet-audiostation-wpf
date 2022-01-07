@@ -64,9 +64,16 @@ namespace SynAudio
             PreviewKeyDown += Window_PreviewKeyDown;
             StateChanged += MainWindow_StateChanged;
             SizeChanged += MainWindow_SizeChanged;
+            LocationChanged += MainWindow_LocationChanged;
 
             GlobalKeyboardHook = new H.Hooks.LowLevelKeyboardHook();
             GlobalKeyboardHook.Down += GlobalKeyboardHook_Down;
+        }
+
+        private void MainWindow_LocationChanged(object sender, EventArgs e)
+        {
+            if (WindowState == WindowState.Normal)
+                Settings.WindowDimensions = new RectangleD(Left, Top, Width, Height);
         }
 
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -197,12 +204,15 @@ namespace SynAudio
             try
             {
                 Closing -= Window_Closing;
+                PreviewKeyDown -= Window_PreviewKeyDown;
+                StateChanged -= MainWindow_StateChanged;
+                SizeChanged -= MainWindow_SizeChanged;
+                LocationChanged -= MainWindow_LocationChanged;
 
                 GlobalKeyboardHook.Down -= GlobalKeyboardHook_Down;
                 GlobalKeyboardHook.Stop();
                 GlobalKeyboardHook.Dispose();
-
-                PreviewKeyDown -= Window_PreviewKeyDown;
+                
                 VM.NowPlaying.CurrentSongChanged -= NowPlaying_CurrentSongChanged;
                 VM.OnClose();
 

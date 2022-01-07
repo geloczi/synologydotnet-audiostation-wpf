@@ -11,7 +11,7 @@
         xmlns:viewmodels="clr-namespace:SynAudio.ViewModels"
         d:DataContext="{d:DesignInstance viewmodels:MainWindowViewModel}"
         WindowStyle="SingleBorderWindow"
-        WindowStartupLocation="CenterScreen"
+        WindowStartupLocation="Manual"
         BorderThickness="1"
         BorderBrush="{StaticResource WindowBorder}"
         Padding="0"

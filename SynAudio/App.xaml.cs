@@ -76,7 +76,7 @@ namespace SynAudio
                                     sm = new SettingsModel();
                             }
                             _settings = sm;
-                            _settingsHash = Utils.Md5Hash.FromObject(_settings);
+                            _settingsHash = _settings.GetMd5Hash();
                         }
                     }
                 }
@@ -130,7 +130,7 @@ namespace SynAudio
                 return;
             try
             {
-                var newHash = Utils.Md5Hash.FromObject(_settings);
+                var newHash = _settings.GetMd5Hash();
                 if (newHash != _settingsHash)
                 {
                     ConfigStorage.Save("config", _settings);

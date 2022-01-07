@@ -2,10 +2,10 @@
 {
     public struct RectangleD
     {
-        public double X;
-        public double Y;
-        public double Width;
-        public double Height;
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
 
         public RectangleD(double x, double y, double width, double height)
         {
