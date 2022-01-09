@@ -22,6 +22,7 @@ namespace SynAudio.MediaPlayer
         private bool _disposed;
         private BackgroundThreadWorker _streamWorker;
         private BackgroundAsyncTaskWorker _pollTask;
+        private BackgroundAsyncTaskWorker _pauseCleanupWorker;
         private SongModel _song;
         private BlockingReadStream _songStream;
         private long _songStreamFullLength;
@@ -108,8 +109,6 @@ namespace SynAudio.MediaPlayer
                 }
             }
         }
-
-        BackgroundAsyncTaskWorker _pauseCleanupWorker;
 
         public void Pause()
         {
@@ -282,10 +281,12 @@ namespace SynAudio.MediaPlayer
             lock (_lock)
             {
                 StopPolling();
+
                 if (_song is null)
                     return;
-                if (position >= Length)
-                    throw new ArgumentOutOfRangeException(nameof(position));
+                
+                if (position > Length - TimeSpan.FromSeconds(1))
+                    position = Length > TimeSpan.FromSeconds(1) ? Length - TimeSpan.FromSeconds(1) : TimeSpan.Zero;
 
                 if (PlaybackState == PlaybackStateType.Playing)
                 {
@@ -353,7 +354,7 @@ namespace SynAudio.MediaPlayer
             }
         }
 
-        public void UpdateCounters()
+        private void UpdateCounters()
         {
             lock (_lock)
             {
