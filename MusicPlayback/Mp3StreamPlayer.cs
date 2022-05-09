@@ -7,6 +7,11 @@ namespace MusicPlayback
 {
     public class Mp3StreamPlayer : WavStreamPlayer
     {
+        public Mp3StreamPlayer(int bufferSizeInSeconds)
+            : base(bufferSizeInSeconds)
+        {
+        }
+
         public override void ReadStreamIntoBuffer(Stream stream, CancellationToken token)
         {
             var playbackStarted = false;

@@ -28,6 +28,8 @@
         <converters:ObjectToVisibilityConverter x:Key="ObjectToVisibilityConverter"/>
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
         <converters:BytesToFriendlySizeConverter x:Key="BytesToFriendlySizeConverter"/>
+        <converters:DoubleToPercentageConverter x:Key="DoubleToPercentageConverter"/>
+        
         <SolidColorBrush x:Key="Brush_MainPanelSeparator" Color="Gray"/>
 
         <Style x:Key="IconButton" TargetType="Button">
@@ -675,7 +677,8 @@
                                 </TextBlock>
                                 <TextBlock Margin="0,0,0,5" FontSize="10" FontFamily="Consolas" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="Gray"
                                        Visibility="{Binding Player.BytesPerSecond, Mode=OneWay, Converter={StaticResource NumberToVisibilityConverter}}">
-                                <Run Text="{Binding Player.BytesPerSecond, Mode=OneWay, Converter={StaticResource BytesToFriendlySizeConverter}}"/><Run Text="/s"/>
+                                    <Run Text="{Binding Player.BytesPerSecond, Mode=OneWay, Converter={StaticResource BytesToFriendlySizeConverter}}"/><Run Text="/s"/>
+                                    <Run Text=" ("/><Run Text="{Binding Player.BufferFillRatio, Mode=OneWay, Converter={StaticResource DoubleToPercentageConverter}}"/><Run Text="%)"/>
                                 </TextBlock>
                             </Grid>
                         </Grid>

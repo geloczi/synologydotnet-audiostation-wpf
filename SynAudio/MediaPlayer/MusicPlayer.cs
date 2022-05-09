@@ -14,6 +14,7 @@ namespace SynAudio.MediaPlayer
     public class MusicPlayer : ViewModelBase, IDisposable
     {
         #region [Fields]
+        private const int BufferLengthInSeconds = 60;
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
 
         private readonly object _lock = new object();
@@ -75,6 +76,8 @@ namespace SynAudio.MediaPlayer
         }
 
         public int BytesPerSecond { get; private set; }
+
+        public double BufferFillRatio { get; private set; }
 
         #endregion
 
@@ -220,9 +223,9 @@ namespace SynAudio.MediaPlayer
             if (transcode == TranscodeMode.None)
                 throw new NotSupportedException();
             else if (transcode == TranscodeMode.WAV)
-                Player = new WavStreamPlayer();
+                Player = new WavStreamPlayer(BufferLengthInSeconds);
             else
-                Player = new Mp3StreamPlayer();
+                Player = new Mp3StreamPlayer(BufferLengthInSeconds);
 
             Player.Volume = _volume;
             Player.PlaybackStarted += Player_PlaybackStarted;
@@ -375,6 +378,8 @@ namespace SynAudio.MediaPlayer
                     var positionInFullStream = _songStreamFullLength - _songStream.Length + songStreamPosition;
                     TimeSpan downloaded = TimeSpan.FromMilliseconds(Length.TotalMilliseconds * (positionInFullStream / (double)_songStreamFullLength));
                     SetPosition(downloaded - Player.BufferedDuration);
+                    BufferFillRatio = Player.BufferedDuration.TotalSeconds / BufferLengthInSeconds;
+                    //OnPropertyChanged(nameof(BufferFillRatio));
                 }
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using MusicPlayback.Utils;
 using NAudio.Wave;
 
 namespace MusicPlayback
@@ -8,9 +9,10 @@ namespace MusicPlayback
     public class WavStreamPlayer : IAudioStreamPlayer
     {
         #region Fields
+        private const int SleepMillisecondsWhenBufferFull = 2;
         private IWavePlayer _outputDevice;
         protected readonly object _lock = new object();
-        protected readonly BufferedWaveProvider _bufferedWaveProvider;
+        protected readonly MyBufferedWaveProvider _bufferedWaveProvider;
         #endregion Fields
 
         #region Events
@@ -63,9 +65,9 @@ namespace MusicPlayback
         /// <summary>
         /// Creates a BufferedWavPlayer with standard WAV format.
         /// </summary>
-        public WavStreamPlayer()
+        public WavStreamPlayer(int bufferSizeInSeconds)
         {
-            _bufferedWaveProvider = new BufferedWaveProvider(new WaveFormat());
+            _bufferedWaveProvider = new MyBufferedWaveProvider(new WaveFormat(), bufferSizeInSeconds);
         }
         #endregion Constructor
 
@@ -168,7 +170,7 @@ namespace MusicPlayback
 
             while (_bufferedWaveProvider.BufferLength - _bufferedWaveProvider.BufferedBytes <= count)
             {
-                Thread.Sleep(10);
+                Thread.Sleep(SleepMillisecondsWhenBufferFull);
                 if (token.IsCancellationRequested || IsDisposed)
                     return;
             }
