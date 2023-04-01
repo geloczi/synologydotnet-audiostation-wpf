@@ -655,7 +655,8 @@ namespace SynAudio.ViewModels
                     {
                         Player = new MusicPlayer(Library)
                         {
-                            Volume = PercentageToRatio(Settings.Volume)
+                            Volume = PercentageToRatio(Settings.Volume),
+                            OutputApi = Settings.OutputApi
                         };
                         Player.PlaybackStateChanged += Player_PlaybackStateChanged;
 

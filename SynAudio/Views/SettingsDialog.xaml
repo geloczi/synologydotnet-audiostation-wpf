@@ -100,10 +100,17 @@
                 </Border>
             </TabItem>
 
-            <!--<TabItem Header="Audio">
+            <TabItem Header="Audio">
 				<Border Style="{StaticResource TabContentBorder}">
+                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <ComboBox ItemsSource="{Binding OutputApiItems, Mode=OneTime}"
+                                  SelectedItem="{Binding Settings.OutputApi}"
+                                  HorizontalAlignment="Left"
+                                  MinWidth="100"/>
+                        <Label>Please restart the application to apply the selected Output API!</Label>
+                    </StackPanel>
 				</Border>
-			</TabItem>-->
+			</TabItem>
 
             <TabItem Header="Theme">
                 <Border Style="{StaticResource TabContentBorder}">

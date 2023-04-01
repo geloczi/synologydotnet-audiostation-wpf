@@ -1,4 +1,5 @@
 ﻿using System;
+using MusicPlayback;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SynologyDotNet.AudioStation;
@@ -26,6 +27,8 @@ namespace SynAudio.Models.Config
 
         public bool SavePassword { get; set; }
 
+        [JsonConverter(typeof(StringEnumConverter))]
+        public OutputApiType OutputApi { get; set; } = OutputApiType.DirectSound;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public TranscodeMode Transcoding { get; set; } = TranscodeMode.WAV;

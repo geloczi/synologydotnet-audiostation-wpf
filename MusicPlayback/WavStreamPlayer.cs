@@ -13,6 +13,7 @@ namespace MusicPlayback
         private IWavePlayer _outputDevice;
         protected readonly object _lock = new object();
         protected readonly MyBufferedWaveProvider _bufferedWaveProvider;
+        private readonly OutputApiType _outputType;
         #endregion Fields
 
         #region Events
@@ -65,8 +66,9 @@ namespace MusicPlayback
         /// <summary>
         /// Creates a BufferedWavPlayer with standard WAV format.
         /// </summary>
-        public WavStreamPlayer(int bufferSizeInSeconds)
+        public WavStreamPlayer(OutputApiType outputType, int bufferSizeInSeconds)
         {
+            _outputType = outputType;
             _bufferedWaveProvider = new MyBufferedWaveProvider(new WaveFormat(), bufferSizeInSeconds);
         }
         #endregion Constructor
@@ -186,7 +188,25 @@ namespace MusicPlayback
         {
             if (!(_outputDevice is null))
                 throw new InvalidOperationException("Output device already created.");
-            _outputDevice = new WaveOutEvent();
+
+            
+            switch (_outputType)
+            {
+                case OutputApiType.ASIO:
+                    _outputDevice = new AsioOut();
+                    break;
+                case OutputApiType.DirectSound:
+                    _outputDevice = new DirectSoundOut();
+                    break;
+                case OutputApiType.Wasapi:
+                    _outputDevice = new WasapiOut();
+                    break;
+                case OutputApiType.WaveOut:
+                    _outputDevice = new WaveOutEvent();
+                    break;
+                default:
+                    throw new NotSupportedException($"{_outputType}");
+            }
             _outputDevice.Volume = (float)_volume;
             _outputDevice.PlaybackStopped += OutputDevice_PlaybackStopped;
             _outputDevice.Init(_bufferedWaveProvider);

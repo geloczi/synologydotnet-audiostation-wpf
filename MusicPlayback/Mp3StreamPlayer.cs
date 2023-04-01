@@ -7,8 +7,8 @@ namespace MusicPlayback
 {
     public class Mp3StreamPlayer : WavStreamPlayer
     {
-        public Mp3StreamPlayer(int bufferSizeInSeconds)
-            : base(bufferSizeInSeconds)
+        public Mp3StreamPlayer(OutputApiType outputType, int bufferSizeInSeconds)
+            : base(outputType, bufferSizeInSeconds)
         {
         }
 

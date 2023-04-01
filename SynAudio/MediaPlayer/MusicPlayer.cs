@@ -38,6 +38,8 @@ namespace SynAudio.MediaPlayer
         #region [Properties]
         public IAudioStreamPlayer Player;
 
+        public OutputApiType OutputApi { get; set; } = OutputApiType.DirectSound;
+
         private PlaybackStateType _playbackState = PlaybackStateType.Stopped;
         public PlaybackStateType PlaybackState
         {
@@ -93,6 +95,7 @@ namespace SynAudio.MediaPlayer
         {
             if (_disposed)
                 return;
+            CleanUpPlayback();
             _disposed = true;
         }
 
@@ -223,9 +226,9 @@ namespace SynAudio.MediaPlayer
             if (transcode == TranscodeMode.None)
                 throw new NotSupportedException();
             else if (transcode == TranscodeMode.WAV)
-                Player = new WavStreamPlayer(BufferLengthInSeconds);
+                Player = new WavStreamPlayer(OutputApi, BufferLengthInSeconds);
             else
-                Player = new Mp3StreamPlayer(BufferLengthInSeconds);
+                Player = new Mp3StreamPlayer(OutputApi, BufferLengthInSeconds);
 
             Player.Volume = _volume;
             Player.PlaybackStarted += Player_PlaybackStarted;
@@ -287,7 +290,7 @@ namespace SynAudio.MediaPlayer
 
                 if (_song is null)
                     return;
-                
+
                 if (position > Length - TimeSpan.FromSeconds(1))
                     position = Length > TimeSpan.FromSeconds(1) ? Length - TimeSpan.FromSeconds(1) : TimeSpan.Zero;
 

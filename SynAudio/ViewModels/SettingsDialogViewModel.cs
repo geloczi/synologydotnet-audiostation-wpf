@@ -4,6 +4,7 @@ using SynAudio.Utils;
 using SynAudio.Models.Config;
 using SynAudio.ViewModels;
 using System;
+using MusicPlayback;
 
 namespace SynAudio.Views
 {
@@ -20,6 +21,8 @@ namespace SynAudio.Views
         public string ConnectionState => Main.Connected ? "Connected" : "Disconnected";
 
         public Styles.Theme[] ThemeItems { get; } = Enum.GetValues<Styles.Theme>();
+
+        public OutputApiType[] OutputApiItems { get; } = Enum.GetValues<OutputApiType>();
 
         public SettingsDialogModel(MainWindowViewModel main)
         {

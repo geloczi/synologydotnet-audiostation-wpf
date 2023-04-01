@@ -14,7 +14,7 @@
 	<!-- General -->
 	<PropertyGroup>
 		<Product>SynAudio</Product>
-		<Version>0.6.3</Version>
+		<Version>0.6.4</Version>
 		<Description>Stream music from your Synology NAS.</Description>
 		<RepositoryUrl>https://github.com/geloczigeri/synologydotnet-audiostation-wpf</RepositoryUrl>
 		<Authors>Gergő Gelóczi</Authors>
