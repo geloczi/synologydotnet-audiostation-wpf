@@ -3,16 +3,19 @@ using System.IO;
 using System.Threading;
 using MusicPlayback.Utils;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace MusicPlayback
 {
     public class WavStreamPlayer : IAudioStreamPlayer
     {
         #region Fields
+        private readonly object _lock = new object();
         private const int SleepMillisecondsWhenBufferFull = 2;
         private IWavePlayer _outputDevice;
-        protected readonly object _lock = new object();
+        
         protected readonly MyBufferedWaveProvider _bufferedWaveProvider;
+        private readonly VolumeSampleProvider _volumeSampleProvider;
         private readonly OutputApiType _outputType;
         #endregion Fields
 
@@ -56,7 +59,7 @@ namespace MusicPlayback
                 lock (_lock)
                 {
                     if (_outputDevice != null)
-                        _outputDevice.Volume = (float)_volume;
+                        _volumeSampleProvider.Volume = (float)Volume;
                 }
             }
         }
@@ -70,6 +73,7 @@ namespace MusicPlayback
         {
             _outputType = outputType;
             _bufferedWaveProvider = new MyBufferedWaveProvider(new WaveFormat(), bufferSizeInSeconds);
+            _volumeSampleProvider = new VolumeSampleProvider(_bufferedWaveProvider.ToSampleProvider());
         }
         #endregion Constructor
 
@@ -207,9 +211,9 @@ namespace MusicPlayback
                 default:
                     throw new NotSupportedException($"{_outputType}");
             }
-            _outputDevice.Volume = (float)_volume;
             _outputDevice.PlaybackStopped += OutputDevice_PlaybackStopped;
-            _outputDevice.Init(_bufferedWaveProvider);
+            _volumeSampleProvider.Volume = (float)Volume;
+            _outputDevice.Init(_volumeSampleProvider);
         }
 
         private void DisposeOutputDevice()
